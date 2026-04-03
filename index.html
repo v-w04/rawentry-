@@ -572,7 +572,7 @@ html,body{
 html.mob .app{max-width:430px !important}
 html.mob body{height:auto !important;overflow-y:auto !important}
 html.mob .hero{
-  padding:10px 14px 12px !important;
+  padding:67px 14px 12px !important;
   display:block !important;
 }
 html.mob .hero-top{margin-bottom:8px !important}
@@ -676,7 +676,7 @@ html.mob .panel-overlay.show{display:block !important}
           <div class="hero-icon-ring"></div>
         </div>
         <div class="hero-brand-text">
-          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver">v.1.0034</span></div>
+          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver">v.1.0035</span></div>
           <div class="hero-sub">Trello · Sheets</div>
         </div>
       </div>
@@ -894,18 +894,6 @@ html.mob .panel-overlay.show{display:block !important}
 const API_URL = 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec';
 
 // Detectar si estamos en GAS o en GitHub Pages
-// ── Ajuste notch PWA ──
-(function(){
-  if(window.navigator.standalone){
-    // iPhone 13 Max: Dynamic Island = 59px, otros iPhones = 44px
-    // Detectar por altura de pantalla
-    var notch = screen.height >= 844 ? 59 : 44;
-    var style = document.createElement('style');
-    style.textContent = '.hero{ padding-top:' + (notch + 8) + 'px !important }';
-    document.head.appendChild(style);
-  }
-})();
-
 // Detectar GAS de forma robusta
 const EN_GAS = (function(){
   try {
