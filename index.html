@@ -551,21 +551,21 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 624px 380px;
+    grid-template-columns:300px 648px 648px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
-    align-items:stretch;
+    align-items:start;
     align-content:start;
     overflow-y:auto;flex:1;
     justify-content:center;
     width:fit-content;
     margin:0 auto;
   }
-  #sec-entrada{grid-column:1;grid-row:1;align-self:start}
-  #sec-entes{grid-column:1;grid-row:2;align-self:start}
-  #sec-gastos{grid-column:2;grid-row:1;align-self:start}
-  #sec-graficas{grid-column:3;grid-row:1;align-self:stretch;display:flex;flex-direction:column}
-  #sec-anualidad{grid-column:2;grid-row:2;align-self:start}
+  #sec-entrada{grid-column:1;grid-row:1}
+  #sec-entes{grid-column:1;grid-row:2}
+  #sec-gastos{grid-column:2;grid-row:1}
+  #sec-graficas{grid-column:2 / span 2;grid-row:2;height:380px;display:flex;flex-direction:column}
+  #sec-anualidad{grid-column:2;grid-row:3}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -763,7 +763,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0039 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0041 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
