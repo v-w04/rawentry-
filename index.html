@@ -50,12 +50,12 @@ html,body{
 ═══════════════════════════════════════════ */
 #pts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .pt{position:absolute;border-radius:50%;will-change:transform,opacity}
-@keyframes rise{
-  0%{transform:translateY(100vh) scale(0);opacity:0}
-  5%{opacity:1}
-  95%{opacity:.4}
-  100%{transform:translateY(-10vh) scale(0);opacity:0}
-}
+.pt.blue{background:rgba(59,130,246,.9);box-shadow:0 0 8px 2px rgba(59,130,246,.7),0 0 20px rgba(59,130,246,.4)}
+.pt.cyan{background:rgba(6,182,212,.9);box-shadow:0 0 8px 2px rgba(6,182,212,.7),0 0 20px rgba(6,182,212,.4)}
+.pt.white{background:rgba(220,240,255,.8);box-shadow:0 0 6px rgba(200,220,255,.6)}
+@keyframes f1{0%{transform:translate(0,100vh) scale(0);opacity:0}5%{opacity:1}50%{transform:translate(-15px,45vh) scale(.9)}95%{opacity:.5}100%{transform:translate(0,0) scale(0);opacity:0}}
+@keyframes f2{0%{transform:translate(0,100vh) scale(0) rotate(0deg);opacity:0}5%{opacity:1}60%{transform:translate(30px,35vh) scale(.8) rotate(200deg)}100%{transform:translate(0,0) scale(0) rotate(360deg);opacity:0}}
+@keyframes f3{0%{transform:translate(0,100vh) scale(0);opacity:0}8%{opacity:1}55%{transform:translate(-25px,40vh) scale(1.2)}100%{transform:translate(0,0) scale(0);opacity:0}}
 
 /* ═══════════════════════════════════════════
    LAYOUT PRINCIPAL
@@ -88,13 +88,20 @@ html,body{
 }
 .hero-brand{display:flex;align-items:center;gap:10px}
 .hero-icon{
-  width:36px;height:36px;border-radius:10px;
+  width:42px;height:42px;border-radius:13px;
   background:linear-gradient(135deg,var(--p),var(--s));
   display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:#fff;
+  font-size:18px;color:#fff;position:relative;flex-shrink:0;
+  box-shadow:0 4px 16px rgba(59,130,246,.4);
 }
-.hero-title{font-size:var(--base);font-weight:700;letter-spacing:-.01em}
-.hero-ver{font-size:10px;color:var(--m);font-weight:400;margin-left:4px}
+.hero-icon-ring{
+  position:absolute;inset:-3px;border-radius:16px;
+  border:1.5px solid rgba(59,130,246,.35);
+  animation:ringPulse 3s ease-in-out infinite;
+}
+@keyframes ringPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+.hero-title{font-size:16px;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.hero-ver{font-size:9px;color:var(--m);font-weight:500;margin-left:4px;letter-spacing:.3px}
 .hero-actions{display:flex;align-items:center;gap:8px}
 .hero-chip{
   display:flex;align-items:center;gap:5px;
@@ -590,6 +597,25 @@ html.mob .panel.open{transform:translateY(0) !important}
 
 /* mob 2x removido — GitHub Pages tiene viewport real */
 
+
+.hero-sub{font-size:10px;color:var(--m);letter-spacing:.3px;margin-top:1px}
+.chip-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  background:var(--m);
+  box-shadow:0 0 0 0 var(--m);
+}
+.hero-chip.ok .chip-dot{background:var(--ok);animation:chipPulse 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(34,197,94,.4)}
+.hero-chip.err .chip-dot{background:var(--err)}
+.hero-chip.load .chip-dot{background:var(--p);animation:chipPulse 1s ease-in-out infinite}
+@keyframes chipPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.saldo-refresh-btn{
+  background:none;border:none;color:var(--m);cursor:pointer;
+  font-size:11px;padding:2px 4px;border-radius:4px;
+  transition:color .2s;
+}
+.saldo-refresh-btn:hover{color:var(--p)}
+.saldo-clock{font-size:11px;color:var(--m);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+
 </style>
 </head>
 <body>
@@ -633,26 +659,38 @@ html.mob .panel.open{transform:translateY(0) !important}
   <!-- HERO / SALDO -->
   <div class="hero">
     <div class="hero-top">
+      <!-- Logo renovado -->
       <div class="hero-brand">
-        <div class="hero-icon"><i class="fas fa-table-list"></i></div>
-        <div>
-          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0026</span></div>
-          <div style="font-size:11px;color:var(--m)">Trello · Sheets</div>
+        <div class="hero-icon">
+          <i class="fas fa-table-list"></i>
+          <div class="hero-icon-ring"></div>
+        </div>
+        <div class="hero-brand-text">
+          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver">v.1.0028</span></div>
+          <div class="hero-sub">Trello · Sheets</div>
         </div>
       </div>
+      <!-- Acciones -->
       <div class="hero-actions">
-        <div class="hero-chip load" id="chip"><i class="fas fa-circle-notch fa-spin" style="font-size:10px"></i> Cargando</div>
-        <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar"><i class="fas fa-arrows-rotate" id="rf-ico"></i></button>
+        <div class="hero-chip load" id="chip">
+          <span class="chip-dot"></span>
+          <span id="chip-txt">Cargando</span>
+        </div>
+        <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar">
+          <i class="fas fa-arrows-rotate" id="rf-ico"></i>
+        </button>
       </div>
     </div>
+    <!-- Saldo -->
     <div class="hero-saldo">
       <div class="saldo-label">
-        <i class="fas fa-scale-balanced" style="color:var(--p);font-size:11px"></i>
-        SALDO
+        <i class="fas fa-scale-balanced"></i>
+        <span>SALDO</span>
         <input type="date" class="saldo-fecha-input" id="saldo-fecha" onchange="consultarSaldo()">
-        <button onclick="consultarSaldo()" style="background:none;border:none;color:var(--m);cursor:pointer;font-size:12px"><i class="fas fa-arrows-rotate"></i></button>
+        <button onclick="consultarSaldo()" class="saldo-refresh-btn"><i class="fas fa-arrows-rotate"></i></button>
       </div>
       <div class="saldo-val ld" id="saldo-val">—</div>
+      <div class="saldo-clock" id="saldo-clock"></div>
     </div>
   </div>
   <div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
@@ -917,14 +955,22 @@ let _toast=null;
 (()=>{
   const c=document.getElementById('pts');
   if(!c)return;
-  const cols=['rgba(59,130,246,.8)','rgba(6,182,212,.8)','rgba(148,163,184,.5)','rgba(99,102,241,.6)'];
+  const anims=['f1','f2','f3'];
+  const types=['blue','blue','blue','cyan','cyan','white'];
   for(let i=0;i<52;i++){
-    const p=document.createElement('div');p.className='pt';
-    const s=1.5+Math.random()*3;
-    p.style.cssText='left:'+Math.random()*100+'%;width:'+s+'px;height:'+s+'px;'+
-      'background:'+cols[i%cols.length]+';'+
-      'box-shadow:0 0 '+(s*3)+'px '+cols[i%cols.length]+';'+
-      'animation:rise '+(14+Math.random()*18)+'s '+(Math.random()*20)+'s ease-in-out infinite';
+    const p=document.createElement('div');
+    const type=types[Math.floor(Math.random()*types.length)];
+    p.className='pt '+type;
+    p.style.left=Math.random()*100+'%';
+    p.style.animationName=anims[i%3];
+    const dur=12+Math.random()*16;
+    p.style.animationDuration=dur+'s';
+    p.style.animationDelay=(Math.random()*20)+'s';
+    p.style.animationTimingFunction='ease-in-out';
+    p.style.animationIterationCount='infinite';
+    const s=type==='white'?1+Math.random():2+Math.random()*2.5;
+    p.style.width=p.style.height=s+'px';
+    p.style.opacity=type==='white'?0.5+Math.random()*0.4:0.7+Math.random()*0.3;
     c.appendChild(p);
   }
 })();
@@ -981,8 +1027,8 @@ function fmtMoneda(v){
 function setChip(t,txt){
   const c=document.getElementById('chip');
   c.className='hero-chip '+t;
-  const ic=t==='ok'?'fa-circle':t==='load'?'fa-circle-notch fa-spin':'fa-triangle-exclamation';
-  c.innerHTML=`<i class="fas ${ic}" style="font-size:10px"></i> ${txt}`;
+  const ct=document.getElementById('chip-txt');
+  if(ct)ct.textContent=txt;
 }
 
 function showToast(msg,ok=true){
@@ -1007,12 +1053,14 @@ function progDone(){const b=document.getElementById('prog');b.className='prog-ba
 function togKard(id){
   const el=document.getElementById(id);
   if(!el)return;
-  const isOpen=el.style.display!=='none';
+  const isOpen=el.style.display==='block';
   el.style.display=isOpen?'none':'block';
-  // Rotar el triángulo
-  const lbl=el.previousElementSibling;
-  if(lbl){const chev=lbl.previousElementSibling?.previousElementSibling?.querySelector('span[style*="float:right"]');
-    if(chev)chev.textContent=isOpen?'▾':'▴';}
+  // Buscar el triángulo ▾/▴ en la card
+  const card=el.closest?el.closest('.kard'):el.parentElement;
+  if(card){
+    const chev=card.querySelector('span.kard-chev');
+    if(chev)chev.textContent=isOpen?'▾':'▴';
+  }
 }
 
 function togSec(hdr){
@@ -1360,7 +1408,10 @@ function renderGastos(){
       const cardId = uid2+'_'+ei;
       // Total del ente a través de todos los meses
       let total=0;
-      data.meses.forEach(m=>{ total+=idx[m]?.[ente]?.monto||0; });
+      data.meses.forEach(m=>{
+        const mIdx=MESES_ES.indexOf(m);
+        if(mIdx<=new Date().getMonth()) total+=idx[m]?.[ente]?.monto||0;
+      });
       const {txt,cls}=fmtMoneda(total||null);
       // Meses de este ente
       const mesesHTML = data.meses.map(mes=>{
@@ -1380,7 +1431,7 @@ function renderGastos(){
       return `<div class="kard" style="cursor:pointer;grid-column:span 1"
           onclick="togKard('${cardId}')">
         <div class="kard-name">${ente}
-          <span style="float:right;font-size:11px;color:var(--m);font-weight:400">▾</span>
+          <span class="kard-chev" style="float:right;font-size:11px;color:var(--m);font-weight:400">▾</span>
         </div>
         <div class="kard-val ${cls}">${txt}</div>
         <div id="${cardId}" style="display:none;margin:8px -14px -14px;
@@ -1504,10 +1555,15 @@ function initTooltip(){
   document.addEventListener('mouseout',()=>tip.classList.remove('show'));
 }
 
-// Hora — solo desktop
-if(window.innerWidth>=900){
-  (function tick(){setTimeout(tick,1000)})();
-}
+// Reloj en vivo — siempre
+(function tickClock(){
+  const el=document.getElementById('saldo-clock');
+  if(el){
+    const now=new Date();
+    el.textContent=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  }
+  setTimeout(tickClock,1000);
+})();
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
