@@ -24,7 +24,7 @@
   --border:rgba(255,255,255,.07);
   --p:#3B82F6;
   --s:#06B6D4;
-  --ok:#FFFFFF;
+  --ok:#4ADE80;
   --err:#EF4444;
   --warn:#F59E0B;
   --t:#F1F5F9;
@@ -402,7 +402,7 @@ html,body{
 }
 .tbl tr:hover td{background:rgba(59,130,246,.04)}
 .tbl tr:hover td:first-child{background:rgba(59,130,246,.08)}
-.tbl td.pos{color:#22C55E;font-weight:600}
+.tbl td.pos{color:var(--ok);font-weight:600}
 .tbl td.neg{color:var(--err);font-weight:600}
 .tbl td.z{color:var(--m);opacity:.4}
 .tbl td.mes-actual{background:rgba(59,130,246,.07)!important}
@@ -787,7 +787,7 @@ html.mob .hero-right{display:none !important}
   box-shadow:0 6px 20px rgba(0,0,0,.4),0 0 12px rgba(251,191,36,.15);
 }
 .inv-item.done{
-  border-color:rgba(34,197,94,.4);
+  border-color:rgba(74,222,128,.3);
   background:linear-gradient(145deg,#0f2a1a,#0d1f15);
 }
 .inv-item.done .inv-icon{filter:none}
@@ -798,7 +798,7 @@ html.mob .hero-right{display:none !important}
   width:16px;height:16px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;font-size:8px;
 }
-.inv-corner.done{background:rgba(34,197,94,.2);color:#22C55E}
+.inv-corner.done{background:rgba(34,197,94,.2);color:var(--ok)}
 .inv-corner.pend{background:rgba(255,255,255,.06);color:var(--dim)}
 .inv-icon{
   font-size:28px;line-height:1;margin-bottom:2px;
@@ -872,7 +872,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0058 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0059 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1158,7 +1158,7 @@ html.mob .hero-right{display:none !important}
       <div class="sec-body" id="sec-flujo-body">
         <div id="flujo-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%">
           <div style="text-align:center;padding:20px;color:var(--m)">
-            <i class="fas fa-circle-notch fa-spin" style="color:#22C55E"></i>
+            <i class="fas fa-circle-notch fa-spin" style="color:var(--ok)"></i>
           </div>
         </div>
       </div>
@@ -1200,7 +1200,7 @@ html.mob .hero-right{display:none !important}
         </select>
         <button id="reverso-tog-done" onclick="toggleReversoMostrarDone()"
           style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;
-          color:#22C55E;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;font-weight:600">
+          color:var(--ok);font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;font-weight:600">
           <i class="fas fa-eye-slash"></i> Completados
         </button>
         <button onclick="resetReverso()"
@@ -2542,7 +2542,7 @@ function renderFlujoMensual(data){
 
     const ingCell  = ingresos===0
       ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
-      : `<td style="${tdStyle};color:#22C55E;font-weight:600">${fmtMXN(ingresos)}</td>`;
+      : `<td style="${tdStyle};color:var(--ok);font-weight:600">${fmtMXN(ingresos)}</td>`;
 
     const egrCell  = egresos===0
       ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
@@ -2552,7 +2552,7 @@ function renderFlujoMensual(data){
       ? `<td style="${tdStyle};color:var(--m)">—</td>`
       : neto===0
         ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
-        : `<td style="${tdStyle};color:${neto>0?'#22C55E':'var(--err)'};font-weight:700">${neto<0?'− ':''}${fmtMXN(neto)}</td>`;
+        : `<td style="${tdStyle};color:${neto>0?'var(--ok)':'var(--err)'};font-weight:700">${neto<0?'− ':''}${fmtMXN(neto)}</td>`;
 
     return `<tr style="${esActual?'background:rgba(59,130,246,.07)':''}">
       <td style="${mesCol}">${mes}${esActual?' 📍':''}</td>
@@ -2563,7 +2563,7 @@ function renderFlujoMensual(data){
   body.innerHTML=`<div class="tbl-wrap"><table class="tbl" style="width:max-content;min-width:100%">
     <thead><tr>
       ${TH('Mes','left','')}
-      ${TH('Ingresos','right','#22C55E')}
+      ${TH('Ingresos','right','var(--ok)')}
       ${TH('Egresos','right','var(--err)')}
       ${TH('Neto (Final)','right','')}
     </tr></thead>
