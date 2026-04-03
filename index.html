@@ -636,7 +636,7 @@ html.mob .panel.open{transform:translateY(0) !important}
       <div class="hero-brand">
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
-          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0020</span></div>
+          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0022</span></div>
           <div style="font-size:11px;color:var(--m)">Trello · Sheets</div>
         </div>
       </div>
@@ -686,7 +686,7 @@ html.mob .panel.open{transform:translateY(0) !important}
         <div class="field" id="cf-proyecto" onclick="activarCampo('proyecto')">
           <div class="field-bar"></div>
           <div class="field-lbl">Proyecto</div>
-          <div class="field-val empty" id="cv-proyecto">Sin seleccionar</div>
+          <div class="field-val empty" id="cv-proyecto"></div>
           <i class="fas fa-chevron-down field-chev"></i>
           <div class="field-expand">
             <div class="field-expand-inner">
@@ -698,7 +698,7 @@ html.mob .panel.open{transform:translateY(0) !important}
         <div class="field" id="cf-contacto" onclick="activarCampo('contacto')">
           <div class="field-bar"></div>
           <div class="field-lbl">Contacto</div>
-          <div class="field-val empty" id="cv-contacto">Sin seleccionar</div>
+          <div class="field-val empty" id="cv-contacto"></div>
           <i class="fas fa-chevron-down field-chev"></i>
           <div class="field-expand">
             <div class="field-expand-inner">
@@ -710,7 +710,7 @@ html.mob .panel.open{transform:translateY(0) !important}
         <div class="field" id="cf-concepto" onclick="abrirConcepto()">
           <div class="field-bar"></div>
           <div class="field-lbl">Concepto</div>
-          <div class="field-val empty" id="cv-concepto">Toca para elegir</div>
+          <div class="field-val empty" id="cv-concepto"></div>
           <i class="fas fa-chevron-down field-chev"></i>
         </div>
 
@@ -736,7 +736,7 @@ html.mob .panel.open{transform:translateY(0) !important}
         <div class="field" id="cf-recurrencia" onclick="activarCampo('recurrencia')">
           <div class="field-bar"></div>
           <div class="field-lbl">Recurrencia</div>
-          <div class="field-val empty" id="cv-recurrencia">Sin seleccionar</div>
+          <div class="field-val empty" id="cv-recurrencia"></div>
           <i class="fas fa-chevron-down field-chev"></i>
           <div class="field-expand">
             <div class="field-expand-inner">
@@ -748,7 +748,7 @@ html.mob .panel.open{transform:translateY(0) !important}
         <div class="field" id="cf-clave" onclick="activarCampo('clave')">
           <div class="field-bar"></div>
           <div class="field-lbl">Clave</div>
-          <div class="field-val empty" id="cv-clave">Opcional</div>
+          <div class="field-val empty" id="cv-clave"></div>
           <i class="fas fa-chevron-down field-chev"></i>
           <div class="field-expand">
             <div class="field-expand-inner">
@@ -1209,14 +1209,14 @@ function limpiar(rf=true){
   actualizarResumenFecha(rf?fmtD(new Date()):'');
   ['proyecto','contacto','recurrencia'].forEach(k=>{
     document.querySelectorAll(`#sw-${k} .opt`).forEach(b=>b.classList.remove('on'));
-    setFieldVal(k,'Sin seleccionar',true);
+    setFieldVal(k,'',true);
   });
   proxSel='';contactoSel='';recSel='';
   document.getElementById('monto').value='';
   document.getElementById('clave').value='';
-  setFieldVal('concepto','Toca para elegir',true);
+  setFieldVal('concepto','',true);
   setFieldVal('monto','$ 0.00',true);
-  setFieldVal('clave','Opcional',true);
+  setFieldVal('clave','',true);
   CAMPOS.forEach(f=>document.getElementById('cf-'+f)?.classList.remove('done'));
   setSign(1);upM();ocultarRes();activarCampo('fecha');
 }
@@ -1315,7 +1315,8 @@ function renderAnualidad(data){
         const {txt,cls}=fmtMoneda(it.monto);
         const pag=it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
         const esA=clave.toUpperCase()===mesActual.toUpperCase();
-        return `<td class="${cls}${esA?' mes-actual':''}" style="text-align:center">
+        const colorCls = pag ? 'pos' : cls;
+        return `<td class="${colorCls}${esA?' mes-actual':''}" style="text-align:center">
           <div>${txt}</div>
           <div style="font-size:10px;color:${pag?'var(--ok)':'var(--err)'};margin-top:2px">${pag?'✓':'✗'}</div>
         </td>`;
