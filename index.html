@@ -555,15 +555,14 @@ html,body{
     grid-template-columns:300px 624px 624px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
-    align-items:stretch;
+    align-items:start;
     align-content:start;
     overflow-y:auto;flex:1;
     justify-content:center;
     width:fit-content;
     margin:0 auto;
   }
-  #sec-entrada{grid-column:1;grid-row:1;align-self:start}
-  #sec-entes{grid-column:1;grid-row:2;align-self:start}
+  #col1-wrap{grid-column:1;grid-row:1 / span 2;align-self:start}
   #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
   #sec-gastos{grid-column:2;grid-row:1 / span 2;align-self:start}
   .sec-hdr{cursor:default}
@@ -737,7 +736,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0045 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0046 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -788,6 +787,8 @@ html.mob .hero-right{display:none !important}
   <!-- SECCIONES -->
   <div class="sections">
 
+    <!-- COL 1: Nueva Entrada + Bancos en contenedor flex independiente -->
+    <div id="col1-wrap" style="display:flex;flex-direction:column;gap:12px;align-self:start">
     <!-- ① NUEVA ENTRADA -->
     <div class="section" id="sec-entrada">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-entrada-hdr">
@@ -918,6 +919,7 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
     </div>
+    </div><!-- /col1-wrap -->
 
     <!-- ③ VARIABLES (tabla + gráfica fusionadas) -->
     <div class="section" id="sec-gastos">
