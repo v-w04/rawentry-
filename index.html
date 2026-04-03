@@ -16,7 +16,7 @@
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
 
-  --bg:#0A0F1E;
+  --bg:#060912;
   --bg2:#111827;
   --card:#141E35;
   --card2:#1A2540;
@@ -73,7 +73,7 @@ html,body{
 
 /* ── HEADER HERO ── */
 .hero{
-  background:linear-gradient(160deg,#0D1635 0%,#0A0F1E 100%);
+  background:linear-gradient(160deg,#0A1228 0%,#060912 100%);
   padding:12px var(--pad) 14px;
   position:relative;overflow:hidden;
   flex-shrink:0;
@@ -84,11 +84,14 @@ html,body{
   background:radial-gradient(ellipse at 70% 20%,rgba(59,130,246,.1) 0%,transparent 60%);
   pointer-events:none;
 }
-.hero-top{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;position:relative;z-index:1;
-}
+.hero-top{display:none}
 .hero-brand{display:flex;align-items:center;gap:10px}
+/* Nuevo layout hero 3 zonas */
+.hero{display:flex !important;align-items:center;justify-content:space-between;gap:16px}
+.hero-left{display:flex;align-items:center;gap:10px;flex:1}
+.hero-center{display:flex;flex-direction:column;align-items:center;flex:1}
+.hero-right{display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end}
+.hero-clock{font-size:12px;color:var(--m);font-variant-numeric:tabular-nums;white-space:nowrap}
 .hero-icon{
   width:42px;height:42px;border-radius:13px;
   background:linear-gradient(135deg,var(--p),var(--s));
@@ -571,10 +574,13 @@ html.mob .app{max-width:430px !important}
 html.mob body{height:auto !important;overflow-y:auto !important}
 html.mob .hero{
   padding:67px 14px 12px !important;
-  display:block !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:8px !important;
 }
-html.mob .hero-top{margin-bottom:8px !important}
-html.mob .hero-saldo{text-align:left !important}
+html.mob .hero-left{width:100%}
+html.mob .hero-center{align-items:flex-start !important;width:100%}
+html.mob .hero-right{width:100%;justify-content:flex-start !important}
 html.mob .saldo-val{font-size:40px !important}
 html.mob .saldo-label{justify-content:flex-start !important}
 html.mob .sections{
@@ -675,7 +681,7 @@ html.mob .panel-overlay.show{display:block !important}
           <i class="fas fa-table-list"></i>
         </div>
         <div class="hero-brand-text">
-          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver" style="margin-left:8px">v.2.0014</span></div>
+          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver" style="margin-left:8px">v.2.0015</span></div>
           <div class="hero-sub">Trello · Sheets</div>
         </div>
       </div>
