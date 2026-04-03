@@ -741,7 +741,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0034 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0035 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -928,7 +928,7 @@ html.mob .hero-right{display:none !important}
       <div class="sec-hdr" onclick="togSec(this)" id="sec-gastos-hdr">
         <div class="sec-hdr-left">
           <div class="sec-hdr-icon green"><i class="fas fa-calendar-days"></i></div>
-          <span class="sec-hdr-title">Gastos</span>
+          <span class="sec-hdr-title">Fijos</span>
         </div>
         <div class="sec-hdr-right">
           <i class="fas fa-chevron-down sec-chevron"></i>
@@ -966,7 +966,7 @@ html.mob .hero-right{display:none !important}
       <div class="sec-hdr" onclick="togSec(this)" id="sec-anualidad-hdr">
         <div class="sec-hdr-left">
           <div class="sec-hdr-icon cyan"><i class="fas fa-receipt"></i></div>
-          <span class="sec-hdr-title">Anualidad</span>
+          <span class="sec-hdr-title">Variables</span>
         </div>
         <div class="sec-hdr-right">
           <i class="fas fa-chevron-down sec-chevron"></i>
@@ -1752,14 +1752,14 @@ function getEnteColor(ente){
 
 function initGraficas(data){
   grafData = data;
-  // Cargar Chart.js si no está
   if(!window.Chart){
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-    s.onload = ()=>{ mostrarGraficaAnual(); };
+    s.onload = ()=>{ setTimeout(mostrarGraficaAnual, 100); };
+    s.onerror = ()=>{ const l=document.getElementById('graf-loading');if(l)l.innerHTML='<span style="color:var(--err)">Error cargando Chart.js</span>'; };
     document.head.appendChild(s);
   } else {
-    mostrarGraficaAnual();
+    setTimeout(mostrarGraficaAnual, 50);
   }
 }
 
@@ -1849,10 +1849,6 @@ function mostrarGraficaAnual(){
   const data = grafData;
   if(!data||!data.meses||!window.Chart) return;
 
-  document.querySelectorAll('.graf-tab').forEach(t=>{ t.style.borderColor='var(--border)';t.style.color='var(--m)';t.style.background='transparent'; });
-  const btn = document.getElementById('graf-anual-btn');
-  btn.style.borderColor = 'var(--p)';btn.style.color='var(--p)';
-
   const entesSet = new Set();
   data.meses.forEach(mes=>{ (data.grupos[mes]||[]).forEach(e=>entesSet.add(e.ente)); });
   const entes = [...entesSet];
@@ -1884,11 +1880,12 @@ function mostrarGraficaAnual(){
 }
 
 function renderChart(labels, datasets, titulo){
-  document.getElementById('graf-loading').style.display='none';
-  const canvas = document.getElementById('graf-canvas');
+  const loading = document.getElementById('graf-loading');
+  const canvas  = document.getElementById('graf-canvas');
+  if(!canvas) return;
+  if(loading) loading.style.display='none';
   canvas.style.display='block';
-
-  if(grafChart){ grafChart.destroy(); grafChart=null; }
+  if(grafChart){ try{grafChart.destroy();}catch(e){} grafChart=null; }
 
   grafChart = new Chart(canvas, {
     type:'line',
