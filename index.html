@@ -1662,14 +1662,14 @@ function renderAnualidad(data){
     const tbody=data.grupos.map(g=>{
       const celdas=claves.map(clave=>{
         const it=idx[g.concepto][clave];
-        if(!it)return`<td style="text-align:center;color:var(--dim)">—</td>`;
+        if(!it)return`<td style="text-align:center;color:var(--dim)">✗</td>`;
         const {txt,cls}=fmtMoneda(it.monto);
         const pag=it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
         const esA=clave.toUpperCase()===mesActual.toUpperCase();
+        const tieneMonto = it.monto !== null && it.monto !== 0;
         const colorCls = pag ? 'pos' : cls;
         return `<td class="${colorCls}${esA?' mes-actual':''}" style="text-align:center">
-          <div>${txt}</div>
-          <div style="font-size:10px;color:${pag?'var(--ok)':'var(--err)'};margin-top:2px">${pag?'✓':'✗'}</div>
+          ${tieneMonto ? `<div>${txt}</div>` : `<div style="color:var(--err)">✗</div>`}
         </td>`;
       }).join('');
       return `<tr><td>${g.concepto}</td>${celdas}</tr>`;
