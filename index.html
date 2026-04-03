@@ -17,7 +17,7 @@
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
 
-  --bg:#060912;
+  --bg:#111111;
   --bg2:#111827;
   --card:#141E35;
   --card2:#1A2540;
@@ -74,7 +74,7 @@ html,body{
 
 /* ── HEADER HERO ── */
 .hero{
-  background:linear-gradient(160deg,#0A1228 0%,#060912 100%);
+  background:linear-gradient(160deg,#0A1228 0%,#0D1635 100%);
   padding:10px 20px;
   position:relative;overflow:hidden;
   flex-shrink:0;
@@ -562,8 +562,8 @@ html,body{
   }
   #sec-entrada{grid-column:1;grid-row:1}
   #sec-entes{grid-column:1;grid-row:2}
-  #sec-anualidad{grid-column:2;grid-row:1}
-  #sec-gastos{grid-column:2;grid-row:2}
+  #sec-gastos{grid-column:2;grid-row:1}
+  #sec-anualidad{grid-column:2;grid-row:2}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -680,9 +680,8 @@ html.mob .panel-overlay.show{display:block !important}
 * { scrollbar-width: thin; scrollbar-color: #3B82F6 rgba(15,23,42,.5); }
 
 /* ── Fondo y scroll global ── */
-html { background:#04060E; min-height:100vh; scroll-behavior:smooth; }
-body { background:linear-gradient(135deg,#030508 0%,#07091A 50%,#0A0F1E 100%) !important;
-  background-attachment:fixed !important; overflow-x:hidden; }
+html { background:#111111; min-height:100vh; scroll-behavior:smooth; }
+body { background:#111111 !important; overflow-x:hidden; }
 .sections { transform:translateZ(0); backface-visibility:hidden; }
 
 
@@ -742,7 +741,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0030 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0033 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -924,7 +923,47 @@ html.mob .hero-right{display:none !important}
       </div>
     </div>
 
-    <!-- ③ ANUALIDAD -->
+    <!-- ③ FIJOS -->
+    <div class="section" id="sec-gastos">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-gastos-hdr">
+        <div class="sec-hdr-left">
+          <div class="sec-hdr-icon green"><i class="fas fa-calendar-days"></i></div>
+          <span class="sec-hdr-title">Gastos</span>
+        </div>
+        <div class="sec-hdr-right">
+          <i class="fas fa-chevron-down sec-chevron"></i>
+        </div>
+      </div>
+      <div class="sec-body" id="sec-gastos-body">
+        <div id="gastos-body" style="text-align:center;padding:20px;color:var(--m)">
+          <i class="fas fa-circle-notch fa-spin" style="color:var(--p)"></i>
+        </div>
+
+        <!-- GRÁFICAS dentro de Fijos -->
+        <div id="gastos-graficas" style="border-top:1px solid var(--border)">
+          <!-- Tabs de mes + Anual -->
+          <div style="display:flex;align-items:center;gap:6px;padding:12px 14px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+            <span style="font-size:11px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0">Gráfica</span>
+            <div id="graf-mes-tabs" style="display:flex;gap:4px;flex-wrap:wrap;flex:1"></div>
+            <span id="graf-anual-btn" onclick="mostrarGraficaAnual()"
+              style="font-size:11px;color:var(--m);font-weight:700;cursor:pointer;padding:3px 10px;
+              border-radius:6px;border:1px solid var(--border);white-space:nowrap;transition:all .2s">Anual</span>
+          </div>
+          <!-- Canvas -->
+          <div style="padding:12px 14px 6px;position:relative">
+            <div id="graf-loading" style="text-align:center;padding:24px;color:var(--m);font-size:13px">
+              <i class="fas fa-circle-notch fa-spin" style="color:var(--p);font-size:16px;display:block;margin-bottom:8px"></i>
+              Cargando gráfica…
+            </div>
+            <canvas id="graf-canvas" style="display:none;width:100%"></canvas>
+          </div>
+          <!-- Leyenda -->
+          <div id="graf-leyenda" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ VARIABLES -->
     <div class="section" id="sec-anualidad">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-anualidad-hdr">
         <div class="sec-hdr-left">
@@ -942,23 +981,7 @@ html.mob .hero-right{display:none !important}
       </div>
     </div>
 
-    <!-- ④ GASTOS (Por Mes) -->
-    <div class="section" id="sec-gastos">
-      <div class="sec-hdr" onclick="togSec(this)" id="sec-gastos-hdr">
-        <div class="sec-hdr-left">
-          <div class="sec-hdr-icon green"><i class="fas fa-calendar-days"></i></div>
-          <span class="sec-hdr-title">Gastos</span>
-        </div>
-        <div class="sec-hdr-right">
-          <i class="fas fa-chevron-down sec-chevron"></i>
-        </div>
-      </div>
-      <div class="sec-body" id="sec-gastos-body">
-        <div id="gastos-body" style="text-align:center;padding:20px;color:var(--m)">
-          <i class="fas fa-circle-notch fa-spin" style="color:var(--p)"></i>
-        </div>
-      </div>
-    </div>
+
 
   </div><!-- /sections -->
 </div><!-- /app -->
@@ -1518,7 +1541,7 @@ function renderAnualidad(data){
 // ══════════════════════════════════════════
 //  GASTOS POR MES
 // ══════════════════════════════════════════
-function onDatosMes(data){datosMes=data;renderGastos();}
+function onDatosMes(data){datosMes=data;renderGastos();initGraficas(data);}
 function renderGastos(){
   const body=document.getElementById('gastos-body');
   const data=datosMes;
@@ -1705,6 +1728,219 @@ function initTooltip(){
   ['saldo-clock','saldo-clock2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
   setTimeout(tickClock,1000);
 })();
+
+
+// ══════════════════════════════════════════
+//  GRÁFICAS — Chart.js via CDN
+// ══════════════════════════════════════════
+let grafChart = null;
+let grafData  = null; // datos de datosMes
+
+const GRAF_COLORS = {
+  'Final':   { line:'#FFFFFF', width:3, z:10 },
+  'P':       { line:'#3B82F6', width:1.5 },
+  'M':       { line:'#06B6D4', width:1.5 },
+  'BW':      { line:'#8B5CF6', width:1.5 },
+  'Foodies': { line:'#F59E0B', width:1.5 },
+  'Blue':    { line:'#10B981', width:1.5 },
+  'Espiritu':{ line:'#EF4444', width:1.5 },
+  'Mercader':{ line:'#EC4899', width:1.5 },
+  '_default':{ line:'#64748B', width:1 },
+};
+
+function getEnteColor(ente){
+  return GRAF_COLORS[ente] || GRAF_COLORS['_default'];
+}
+
+function initGraficas(data){
+  grafData = data;
+  // Cargar Chart.js si no está
+  if(!window.Chart){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+    s.onload = ()=>{ buildGrafTabs(); mostrarGraficaMes(null); };
+    document.head.appendChild(s);
+  } else {
+    buildGrafTabs();
+    mostrarGraficaMes(null);
+  }
+}
+
+function buildGrafTabs(){
+  const data = grafData;
+  if(!data||!data.meses) return;
+  const mesActual = MESES_ES[new Date().getMonth()];
+  const cont = document.getElementById('graf-mes-tabs');
+  if(!cont) return;
+  cont.innerHTML = data.meses.map(m=>{
+    const esA = m === mesActual;
+    return `<span onclick="mostrarGraficaMes('${m}')"
+      style="font-size:11px;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:6px;
+      border:1px solid ${esA?'var(--p)':'var(--border)'};
+      color:${esA?'var(--p)':'var(--m)'};
+      background:${esA?'rgba(59,130,246,.1)':'transparent'};
+      transition:all .2s" class="graf-tab" data-mes="${m}">${m}</span>`;
+  }).join('');
+}
+
+function mostrarGraficaMes(mes){
+  const data = grafData;
+  if(!data||!data.meses||!window.Chart) return;
+  
+  const mesActual = MESES_ES[new Date().getMonth()];
+  const m = mes || mesActual || data.meses[0];
+  
+  // Highlight tab
+  document.querySelectorAll('.graf-tab').forEach(t=>{
+    const activo = t.dataset.mes === m;
+    t.style.borderColor = activo ? 'var(--p)' : 'var(--border)';
+    t.style.color = activo ? 'var(--p)' : 'var(--m)';
+    t.style.background = activo ? 'rgba(59,130,246,.1)' : 'transparent';
+  });
+  document.getElementById('graf-anual-btn').style.borderColor = 'var(--border)';
+  document.getElementById('graf-anual-btn').style.color = 'var(--m)';
+
+  const grupos = data.grupos[m] || [];
+  if(!grupos.length){
+    mostrarGrafVacio('Sin datos para ' + m);
+    return;
+  }
+
+  // Entes como labels del eje X, cada ente es un punto
+  const entes = grupos.map(g=>g.ente);
+  
+  // Dataset por ente — pero necesitamos series temporales
+  // Usar todos los meses disponibles como eje X, cada ente como línea
+  const entesSet = new Set();
+  data.meses.forEach(mes=>{ (data.grupos[mes]||[]).forEach(e=>entesSet.add(e.ente)); });
+  const todosEntes = [...entesSet];
+  
+  // Solo mostrar el mes seleccionado: eje X = entes, puntos = montos
+  const datasets = [];
+  
+  // Para el mes seleccionado, mostrar barras/linea por ente
+  const montos = todosEntes.map(ente=>{
+    const item = grupos.find(g=>g.ente===ente);
+    return item ? (item.monto||0) : null;
+  });
+
+  // Gráfica de línea con todos los meses, una línea por ente
+  const labels = data.meses;
+  const idx = {};
+  data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
+
+  const dsets = todosEntes.map(ente=>{
+    const cfg = getEnteColor(ente);
+    return {
+      label: ente,
+      data: data.meses.map(mes=>idx[mes]?.[ente]??null),
+      borderColor: cfg.line,
+      borderWidth: ente==='Final' ? 3 : 1.5,
+      pointRadius: ente==='Final' ? 4 : 2,
+      pointHoverRadius: 6,
+      fill: false,
+      tension: 0.3,
+      spanGaps: true,
+      order: ente==='Final' ? 0 : 1,
+    };
+  });
+
+  renderChart(labels, dsets, 'Todos los meses · '+m+' destacado');
+}
+
+function mostrarGraficaAnual(){
+  const data = grafData;
+  if(!data||!data.meses||!window.Chart) return;
+
+  document.querySelectorAll('.graf-tab').forEach(t=>{ t.style.borderColor='var(--border)';t.style.color='var(--m)';t.style.background='transparent'; });
+  const btn = document.getElementById('graf-anual-btn');
+  btn.style.borderColor = 'var(--p)';btn.style.color='var(--p)';
+
+  const entesSet = new Set();
+  data.meses.forEach(mes=>{ (data.grupos[mes]||[]).forEach(e=>entesSet.add(e.ente)); });
+  const entes = [...entesSet];
+  const idx = {};
+  data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
+
+  const dsets = entes.map(ente=>{
+    const cfg = getEnteColor(ente);
+    return {
+      label: ente,
+      data: data.meses.map(mes=>idx[mes]?.[ente]??null),
+      borderColor: cfg.line,
+      borderWidth: ente==='Final'?3:1.5,
+      pointRadius: ente==='Final'?4:2,
+      fill: false, tension:0.3, spanGaps:true,
+      order: ente==='Final'?0:1,
+    };
+  });
+
+  renderChart(data.meses, dsets, 'Vista Anual');
+}
+
+function renderChart(labels, datasets, titulo){
+  document.getElementById('graf-loading').style.display='none';
+  const canvas = document.getElementById('graf-canvas');
+  canvas.style.display='block';
+
+  if(grafChart){ grafChart.destroy(); grafChart=null; }
+
+  grafChart = new Chart(canvas, {
+    type:'line',
+    data:{ labels, datasets },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'rgba(15,23,42,.95)',
+          borderColor:'rgba(59,130,246,.3)',
+          borderWidth:1,
+          titleColor:'#fff',
+          bodyColor:'#94A3B8',
+          padding:10,
+          callbacks:{
+            label: ctx=>{
+              const v = ctx.raw;
+              if(v===null||v===undefined) return null;
+              const fmt = (v<0?'− ':'')+'$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2});
+              return ' '+ctx.dataset.label+': '+fmt;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          grid:{ color:'rgba(255,255,255,.05)' },
+          ticks:{ color:'#64748B', font:{size:11} }
+        },
+        y:{
+          grid:{ color:'rgba(255,255,255,.05)' },
+          ticks:{
+            color:'#64748B', font:{size:11},
+            callback: v=>'$'+Math.abs(v/1000).toFixed(0)+'k'
+          }
+        }
+      }
+    }
+  });
+
+  // Leyenda custom
+  const ley = document.getElementById('graf-leyenda');
+  ley.innerHTML = datasets.map(d=>`
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:${d.borderColor};font-weight:${d.label==='Final'?'700':'400'}">
+      <div style="width:16px;height:2px;background:${d.borderColor};border-radius:1px"></div>
+      ${d.label}
+    </div>`).join('');
+}
+
+function mostrarGrafVacio(msg){
+  document.getElementById('graf-loading').innerHTML='<span style="color:var(--m)">'+msg+'</span>';
+  document.getElementById('graf-loading').style.display='block';
+  document.getElementById('graf-canvas').style.display='none';
+}
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
