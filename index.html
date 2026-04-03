@@ -75,10 +75,14 @@ html,body{
 /* ── HEADER HERO ── */
 .hero{
   background:linear-gradient(160deg,#0D1635 0%,#0A0F1E 100%);
-  padding:calc(env(safe-area-inset-top) + 12px) var(--pad) 14px;
+  padding:12px var(--pad) 14px;
   position:relative;overflow:hidden;
   flex-shrink:0;
   border-bottom:1px solid var(--border);
+}
+/* PWA standalone en iOS — notch/Dynamic Island ocupa ~59px */
+@media all and (display-mode: standalone){
+  .hero{ padding-top:59px !important }
 }
 .hero::before{
   content:'';position:absolute;inset:0;
@@ -538,7 +542,6 @@ html,body{
   .hero{
     width:100%;padding:10px 24px;
     display:flex;align-items:center;justify-content:space-between;gap:24px;
-    padding-top:10px !important;
   }
   .hero-top{margin-bottom:0;flex-shrink:0}
   .hero-saldo{text-align:center;flex:1}
@@ -627,17 +630,6 @@ html.mob .panel-overlay.show{display:block !important}
 .saldo-clock{font-size:11px;color:var(--m);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:.3px}
 
 </style>
-<script>
-window.addEventListener('DOMContentLoaded',function(){
-  var d=document.createElement('div');
-  d.style.cssText='position:fixed;bottom:20px;left:10px;right:10px;z-index:9999;background:#1E293B;color:#fff;padding:10px;border-radius:10px;font-size:13px;font-family:monospace;border:1px solid #3B82F6';
-  // Leer safe-area-inset-top via CSS custom property
-  var sait = getComputedStyle(document.documentElement).getPropertyValue('--sat') || '?';
-  d.textContent = 'SAT:'+sait+' | standalone:'+(window.navigator.standalone?'YES':'NO')+' | innerH:'+window.innerHeight;
-  document.body.appendChild(d);
-  setTimeout(function(){d.remove()},10000);
-});
-</script>
 </head>
 <body>
 
@@ -688,7 +680,7 @@ window.addEventListener('DOMContentLoaded',function(){
           <div class="hero-icon-ring"></div>
         </div>
         <div class="hero-brand-text">
-          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver">v.1.0032</span></div>
+          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver">v.1.0033</span></div>
           <div class="hero-sub">Trello · Sheets</div>
         </div>
       </div>
