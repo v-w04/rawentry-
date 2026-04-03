@@ -219,7 +219,7 @@ html,body{
   transition:background .2s;
 }
 .field.active .field-bar{background:var(--p)}
-.field.done .field-bar{background:var(--p)}
+.field.done .field-bar{background:#22C55E}
 .field-lbl{
   font-size:11px;font-weight:700;text-transform:uppercase;
   letter-spacing:.5px;color:var(--m);
@@ -551,7 +551,7 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 624px;
+    grid-template-columns:300px 749px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;align-content:start;
@@ -582,37 +582,46 @@ html.mob .app{max-width:430px !important}
 html.mob body{height:auto !important;overflow-y:auto !important}
 html.mob .hero{
   padding:67px 18px 14px !important;
-  flex-direction:row !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  gap:12px !important;
-}
-/* Izquierda: icono + título + versión */
-html.mob .hero-left{
-  flex:1;
-  display:flex !important;
-  align-items:center !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
   gap:10px !important;
 }
-/* Centro: ocultar en móvil — saldo va a la derecha */
-html.mob .hero-center{
-  display:none !important;
+/* FILA 1: icono+título izq | reloj+listo+refresh der */
+html.mob .hero-left{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  gap:8px !important;
 }
-/* Derecha: saldo + fecha + refresh */
+html.mob .hero-left .hero-brand-wrap{
+  display:flex;align-items:center;gap:8px;
+}
 html.mob .hero-right{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  flex-shrink:0;
+}
+/* FILA 2: saldo a la derecha */
+html.mob .hero-center{
   display:flex !important;
   flex-direction:column !important;
   align-items:flex-end !important;
-  gap:2px !important;
+  width:100% !important;
+  padding-top:4px !important;
+  border-top:1px solid var(--border) !important;
 }
-html.mob .saldo-val{font-size:28px !important;line-height:1 !important}
-html.mob .saldo-label{font-size:11px !important;justify-content:flex-end !important;gap:4px !important}
-html.mob .hero-title{font-size:16px !important;line-height:1.2}
+html.mob .saldo-val{font-size:36px !important;line-height:1 !important}
+html.mob .saldo-label{font-size:11px !important;justify-content:flex-end !important;gap:6px !important}
+html.mob .hero-title{font-size:15px !important;line-height:1.2}
 html.mob .hero-sub{font-size:10px !important;color:var(--m)}
-html.mob .hero-icon{width:38px !important;height:38px !important;font-size:17px !important}
+html.mob .hero-icon{width:36px !important;height:36px !important;font-size:16px !important}
 html.mob .hero-chip{font-size:11px !important;padding:4px 10px !important}
 html.mob .hero-clock{font-size:11px !important;color:var(--m)}
-html.mob .btn-refresh{width:30px !important;height:30px !important;font-size:13px !important}
+html.mob .btn-refresh{width:28px !important;height:28px !important;font-size:12px !important}
+/* Ocultar el saldo duplicado de mob-saldo-wrap */
+html.mob .mob-saldo-wrap{display:none !important}
 html.mob .sections{
   display:flex !important;
   flex-direction:column !important;
@@ -681,6 +690,10 @@ body { background:linear-gradient(135deg,#030508 0%,#07091A 50%,#0A0F1E 100%) !i
 html.mob .mob-saldo-wrap{display:block !important;text-align:right}
 html.mob .hero-center{display:none !important}
 
+
+html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
+html.mob .hero-right{display:none !important}
+
 </style>
 </head>
 <body>
@@ -724,12 +737,25 @@ html.mob .hero-center{display:none !important}
 
   <!-- HERO / SALDO -->
   <div class="hero">
-    <!-- IZQUIERDA: Logo -->
+    <!-- FILA 1 MÓVIL: logo izq + estado der -->
     <div class="hero-left">
-      <div class="hero-icon"><i class="fas fa-table-list"></i></div>
-      <div>
-        <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0026 · Trello · Sheets</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="hero-icon"><i class="fas fa-table-list"></i></div>
+        <div>
+          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
+          <div class="hero-sub">v.2.0027 · Trello · Sheets</div>
+        </div>
+      </div>
+      <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
+      <div class="hero-right-mob" style="display:none">
+        <div id="saldo-clock2" class="hero-clock"></div>
+        <div class="hero-chip load" id="chip2">
+          <span class="chip-dot"></span>
+          <span id="chip-txt2">Cargando</span>
+        </div>
+        <button class="btn-refresh" onclick="refreshTodo()">
+          <i class="fas fa-arrows-rotate"></i>
+        </button>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
@@ -1095,10 +1121,14 @@ function fmtMoneda(v){
 }
 
 function setChip(t,txt){
-  const c=document.getElementById('chip');
-  c.className='hero-chip '+t;
-  const ct=document.getElementById('chip-txt');
-  if(ct)ct.textContent=txt;
+  ['chip','chip2'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(c)c.className='hero-chip '+t;
+  });
+  ['chip-txt','chip-txt2'].forEach(id=>{
+    const ct=document.getElementById(id);
+    if(ct)ct.textContent=txt;
+  });
 }
 
 function showToast(msg,ok=true){
@@ -1671,11 +1701,9 @@ function initTooltip(){
 
 // Reloj en vivo — siempre
 (function tickClock(){
-  const el=document.getElementById('saldo-clock');
-  if(el){
-    const now=new Date();
-    el.textContent=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-  }
+  const now=new Date();
+  const t=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  ['saldo-clock','saldo-clock2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
   setTimeout(tickClock,1000);
 })();
 
