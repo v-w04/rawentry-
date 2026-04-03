@@ -551,8 +551,8 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    /* ★ CAMBIO 1: columna gráfica de 380px → 475px (+25%) */
-    grid-template-columns:300px 624px 475px;
+    /* columna gráfica: 624px */
+    grid-template-columns:300px 624px 624px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:stretch;
@@ -564,7 +564,7 @@ html,body{
   }
   #sec-entrada{grid-column:1;grid-row:1;align-self:start}
   #sec-entes{grid-column:1;grid-row:2;align-self:start}
-  #sec-gastos{grid-column:2;grid-row:1;align-self:start}
+  #sec-gastos{grid-column:2;grid-row:1;align-self:start;min-height:var(--entrada-h,520px)}
   #sec-graficas{grid-column:3;grid-row:1;align-self:stretch;display:flex;flex-direction:column}
   #sec-anualidad{grid-column:2;grid-row:2;align-self:start}
   .sec-hdr{cursor:default}
@@ -756,7 +756,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0038 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0040 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1932,6 +1932,17 @@ function mostrarGrafVacio(msg){
   document.getElementById('graf-loading').style.display='block';
   document.getElementById('graf-canvas').style.display='none';
 }
+
+// Sincronizar min-height de Fijos con el alto de Nueva Entrada (solo desktop)
+function syncFijosHeight(){
+  if(window.innerWidth < 900) return;
+  const entrada = document.getElementById('sec-entrada');
+  if(!entrada) return;
+  const h = entrada.offsetHeight;
+  if(h > 0) document.documentElement.style.setProperty('--entrada-h', h + 'px');
+}
+window.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncFijosHeight, 300); });
+window.addEventListener('resize', syncFijosHeight);
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
