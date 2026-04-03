@@ -551,20 +551,21 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 624px 320px;
+    grid-template-columns:300px 624px 380px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
-    align-items:start;align-content:start;
+    align-items:stretch;
+    align-content:start;
     overflow-y:auto;flex:1;
     justify-content:center;
     width:fit-content;
     margin:0 auto;
   }
-  #sec-entrada{grid-column:1;grid-row:1}
-  #sec-entes{grid-column:1;grid-row:2}
-  #sec-gastos{grid-column:2;grid-row:1 / span 1}
-  #sec-graficas{grid-column:3;grid-row:1;align-self:start}
-  #sec-anualidad{grid-column:2;grid-row:2}
+  #sec-entrada{grid-column:1;grid-row:1;align-self:start}
+  #sec-entes{grid-column:1;grid-row:2;align-self:start}
+  #sec-gastos{grid-column:2;grid-row:1;align-self:start}
+  #sec-graficas{grid-column:3;grid-row:1;align-self:stretch;display:flex;flex-direction:column}
+  #sec-anualidad{grid-column:2;grid-row:2;align-self:start}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -694,9 +695,17 @@ html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
 html.mob .hero-right{display:none !important}
 
 
-#sec-graficas .sec-body{padding-bottom:0}
-#sec-graficas #graf-canvas{max-height:260px}
-#sec-graficas #graf-leyenda{padding:6px 14px 10px}
+#sec-graficas{height:100%}
+#sec-graficas .sec-body{
+  flex:1;display:flex;flex-direction:column;
+  padding-bottom:0;overflow:hidden;
+}
+#sec-graficas #graf-canvas{
+  flex:1;min-height:0;max-height:none !important;
+  width:100% !important;
+}
+#sec-graficas #graf-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#sec-graficas #graf-leyenda{padding:6px 14px 12px;flex-shrink:0}
 
 </style>
 </head>
@@ -747,7 +756,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0037 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0038 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
