@@ -551,7 +551,7 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 749px;
+    grid-template-columns:300px 520px 340px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;align-content:start;
@@ -563,6 +563,7 @@ html,body{
   #sec-entrada{grid-column:1;grid-row:1}
   #sec-entes{grid-column:1;grid-row:2}
   #sec-gastos{grid-column:2;grid-row:1}
+  #sec-graficas{grid-column:3;grid-row:1}
   #sec-anualidad{grid-column:2;grid-row:2}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
@@ -741,7 +742,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0035 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0036 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -939,28 +940,32 @@ html.mob .hero-right{display:none !important}
           <i class="fas fa-circle-notch fa-spin" style="color:var(--p)"></i>
         </div>
 
-        <!-- GRÁFICAS dentro de Fijos -->
-        <div id="gastos-graficas" style="border-top:1px solid var(--border)">
-          <!-- Solo título gráfica anual -->
-          <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
-            <span style="font-size:11px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.5px">
-              <i class="fas fa-chart-line" style="color:var(--p);margin-right:5px"></i>Evolución Anual
-            </span>
-          </div>
-          <!-- Canvas -->
-          <div style="padding:12px 14px 6px;position:relative">
-            <div id="graf-loading" style="text-align:center;padding:24px;color:var(--m);font-size:13px">
-              <i class="fas fa-circle-notch fa-spin" style="color:var(--p);font-size:16px;display:block;margin-bottom:8px"></i>
-              Cargando gráfica…
-            </div>
-            <canvas id="graf-canvas" style="display:none;width:100%"></canvas>
-          </div>
-          <!-- Leyenda -->
-          <div id="graf-leyenda" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px"></div>
-        </div>
       </div>
     </div>
 
+
+    <!-- GRÁFICA — columna 3 desktop, bajo Fijos en móvil -->
+    <div class="section" id="sec-graficas">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-graficas-hdr">
+        <div class="sec-hdr-left">
+          <div class="sec-hdr-icon" style="background:rgba(139,92,246,.15);color:#8B5CF6">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <span class="sec-hdr-title">Evolución Anual</span>
+        </div>
+        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
+      </div>
+      <div class="sec-body" id="sec-graficas-body">
+        <div style="padding:12px 14px 6px">
+          <div id="graf-loading" style="text-align:center;padding:24px;color:var(--m);font-size:13px">
+            <i class="fas fa-circle-notch fa-spin" style="color:var(--p);font-size:16px;display:block;margin-bottom:8px"></i>
+            Cargando gráfica…
+          </div>
+          <canvas id="graf-canvas" style="display:none;width:100%"></canvas>
+        </div>
+        <div id="graf-leyenda" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px"></div>
+      </div>
+    </div>
     <!-- ④ VARIABLES -->
     <div class="section" id="sec-anualidad">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-anualidad-hdr">
