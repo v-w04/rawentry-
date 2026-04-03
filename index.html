@@ -74,11 +74,17 @@ html,body{
 /* ── HEADER HERO ── */
 .hero{
   background:linear-gradient(160deg,#0A1228 0%,#060912 100%);
-  padding:12px var(--pad) 14px;
+  padding:10px 20px;
   position:relative;overflow:hidden;
   flex-shrink:0;
   border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  justify-content:space-between;gap:16px;
 }
+.hero-left{display:flex;align-items:center;gap:10px;flex:1}
+.hero-center{display:flex;flex-direction:column;align-items:center;flex:1}
+.hero-right{display:flex;align-items:center;gap:10px;flex:1;justify-content:flex-end}
+.hero-clock{font-size:12px;color:var(--m);font-variant-numeric:tabular-nums;white-space:nowrap}
 .hero::before{
   content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse at 70% 20%,rgba(59,130,246,.1) 0%,transparent 60%);
@@ -576,11 +582,11 @@ html.mob .hero{
   padding:67px 14px 12px !important;
   flex-direction:column !important;
   align-items:flex-start !important;
-  gap:8px !important;
+  gap:6px !important;
 }
 html.mob .hero-left{width:100%}
 html.mob .hero-center{align-items:flex-start !important;width:100%}
-html.mob .hero-right{width:100%;justify-content:flex-start !important}
+html.mob .hero-right{width:100%;justify-content:flex-start !important;flex-wrap:wrap}
 html.mob .saldo-val{font-size:40px !important}
 html.mob .saldo-label{justify-content:flex-start !important}
 html.mob .sections{
@@ -674,31 +680,16 @@ html.mob .panel-overlay.show{display:block !important}
 
   <!-- HERO / SALDO -->
   <div class="hero">
-    <div class="hero-top">
-      <!-- Logo renovado -->
-      <div class="hero-brand">
-        <div class="hero-icon">
-          <i class="fas fa-table-list"></i>
-        </div>
-        <div class="hero-brand-text">
-          <div class="hero-title">RAW <span style="color:var(--p)">Entry</span> <span class="hero-ver" style="margin-left:8px">v.2.0015</span></div>
-          <div class="hero-sub">Trello · Sheets</div>
-        </div>
-      </div>
-      <!-- Acciones -->
-      <div class="hero-actions">
-        <div id="saldo-clock" style="font-size:11px;color:var(--m);font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap;margin-right:8px"></div>
-        <div class="hero-chip load" id="chip" style="margin-left:10px">
-          <span class="chip-dot"></span>
-          <span id="chip-txt">Cargando</span>
-        </div>
-        <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar">
-          <i class="fas fa-arrows-rotate" id="rf-ico"></i>
-        </button>
+    <!-- IZQUIERDA: Logo -->
+    <div class="hero-left">
+      <div class="hero-icon"><i class="fas fa-table-list"></i></div>
+      <div>
+        <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
+        <div class="hero-sub">v.2.0016 · Trello · Sheets</div>
       </div>
     </div>
-    <!-- Saldo -->
-    <div class="hero-saldo">
+    <!-- CENTRO: Saldo -->
+    <div class="hero-center">
       <div class="saldo-label">
         <i class="fas fa-scale-balanced"></i>
         <span>SALDO</span>
@@ -706,7 +697,17 @@ html.mob .panel-overlay.show{display:block !important}
         <button onclick="consultarSaldo()" class="saldo-refresh-btn"><i class="fas fa-arrows-rotate"></i></button>
       </div>
       <div class="saldo-val ld" id="saldo-val">—</div>
-
+    </div>
+    <!-- DERECHA: Reloj + estado + refresh -->
+    <div class="hero-right">
+      <div id="saldo-clock" class="hero-clock"></div>
+      <div class="hero-chip load" id="chip">
+        <span class="chip-dot"></span>
+        <span id="chip-txt">Cargando</span>
+      </div>
+      <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar">
+        <i class="fas fa-arrows-rotate" id="rf-ico"></i>
+      </button>
     </div>
   </div>
   <div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
