@@ -664,6 +664,20 @@ html.mob .panel-overlay.show{display:block !important}
 
 
 
+
+/* ── Scrollbar personalizado ── */
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: rgba(15,23,42,.5); border-radius: 3px; }
+*::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#3B82F6,#06B6D4); border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#2563EB,#0284C7); }
+* { scrollbar-width: thin; scrollbar-color: #3B82F6 rgba(15,23,42,.5); }
+
+/* ── Fondo y scroll global ── */
+html { background:#0F172A; min-height:100vh; scroll-behavior:smooth; }
+body { background:linear-gradient(135deg,#060912 0%,#0F172A 50%,#111827 100%) !important;
+  background-attachment:fixed !important; overflow-x:hidden; }
+.sections { transform:translateZ(0); backface-visibility:hidden; }
+
 </style>
 </head>
 <body>
@@ -712,7 +726,7 @@ html.mob .panel-overlay.show{display:block !important}
       <div class="hero-icon"><i class="fas fa-table-list"></i></div>
       <div>
         <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0024 · Trello · Sheets</div>
+        <div class="hero-sub">v.2.0025 · Trello · Sheets</div>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
