@@ -353,7 +353,7 @@ html,body{
   background:linear-gradient(135deg,var(--p),var(--s));
   border:none;color:#fff;cursor:pointer;font-size:14px;
   display:flex;align-items:center;justify-content:center;
-  transition:all .17s;flex-shrink:0;
+  transition:all .17px;flex-shrink:0;
 }
 
 /* ── TARJETAS GRID (Anualidad/Gastos móvil) ── */
@@ -551,7 +551,8 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 624px 380px;
+    /* ★ CAMBIO 1: columna gráfica de 380px → 475px (+25%) */
+    grid-template-columns:300px 624px 475px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:stretch;
@@ -649,9 +650,6 @@ html.mob .panel.open{transform:translateY(0) !important}
 html.mob .panel-body{overflow-y:auto !important;-webkit-overflow-scrolling:touch !important}
 html.mob .panel-overlay.show{display:block !important}
 
-/* mob 2x removido — GitHub Pages tiene viewport real */
-
-
 .hero-sub{font-size:10px;color:var(--m);letter-spacing:.3px;margin-top:1px}
 .chip-dot{
   width:7px;height:7px;border-radius:50%;flex-shrink:0;
@@ -669,11 +667,6 @@ html.mob .panel-overlay.show{display:block !important}
 }
 .saldo-refresh-btn:hover{color:var(--p)}
 
-
-
-
-
-
 /* ── Scrollbar personalizado ── */
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: rgba(15,23,42,.5); border-radius: 3px; }
@@ -686,26 +679,33 @@ html { background:#111111; min-height:100vh; scroll-behavior:smooth; }
 body { background:#111111 !important; overflow-x:hidden; }
 .sections { transform:translateZ(0); backface-visibility:hidden; }
 
-
 .mob-saldo-wrap{display:none}
 html.mob .mob-saldo-wrap{display:block !important;text-align:right}
-
 
 html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
 html.mob .hero-right{display:none !important}
 
-
-#sec-graficas{height:100%}
+/* ★ CAMBIO 2 & 3: Gráfica ocupa todo el alto disponible de la card */
+#sec-graficas{height:100%;display:flex;flex-direction:column}
 #sec-graficas .sec-body{
   flex:1;display:flex;flex-direction:column;
   padding-bottom:0;overflow:hidden;
 }
+/* ★ CAMBIO 3: el div wrapper interno del canvas también es flex */
+#sec-graficas .sec-body > div:first-child{
+  flex:1;display:flex;flex-direction:column;
+  padding-bottom:0;min-height:0;
+}
 #sec-graficas #graf-canvas{
   flex:1;min-height:0;max-height:none !important;
   width:100% !important;
+  display:block;
 }
-#sec-graficas #graf-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#sec-graficas #graf-leyenda{padding:6px 14px 12px;flex-shrink:0}
+#sec-graficas #graf-loading{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+#sec-graficas #graf-leyenda{padding:6px 14px 10px;flex-shrink:0}
 
 </style>
 </head>
@@ -970,7 +970,8 @@ html.mob .hero-right{display:none !important}
         <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
       </div>
       <div class="sec-body" id="sec-graficas-body">
-        <div style="padding:12px 14px 6px">
+        <!-- ★ CAMBIO 3: style flex añadido aquí -->
+        <div style="padding:12px 14px 6px;flex:1;display:flex;flex-direction:column;min-height:0">
           <div id="graf-loading" style="text-align:center;padding:24px;color:var(--m);font-size:13px">
             <i class="fas fa-circle-notch fa-spin" style="color:var(--p);font-size:16px;display:block;margin-bottom:8px"></i>
             Cargando gráfica…
@@ -1028,15 +1029,11 @@ const EN_GAS = (function(){
   } catch(e){ return false; }
 })();
 
-// Si no estamos en GAS y no hay URL configurada, mostrar aviso
-// URL configurada
-
 function gasRun(fn, ...args) {
   return new Promise((resolve, reject) => {
     const runner = google.script.run
       .withSuccessHandler(resolve)
       .withFailureHandler(e => { console.error(fn, e); reject(e); });
-    // google.script.run requiere llamada directa por nombre
     if (typeof runner[fn] === 'function') {
       runner[fn](...args);
     } else {
@@ -1119,9 +1116,6 @@ function fmt12(d){return d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-
 //  INIT
 // ══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded',()=>{
-  // En GAS siempre continuar — no necesita API_URL
-  // URL configurada — continuar siempre
-  // Probar conexión a la API solo si no estamos en GAS
   if(!EN_GAS) apiGet('getCatalogos').catch(err=>{
     const d=document.createElement('div');
     d.style.cssText='position:fixed;top:60px;left:8px;right:8px;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600';
@@ -1129,7 +1123,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.body.appendChild(d);
     setTimeout(()=>d.remove(),10000);
   });
-  // En móvil todas las secciones arrancan cerradas — el usuario las abre
   const hoy=fmtD(new Date());
   document.getElementById('fecha').value=hoy;
   document.getElementById('saldo-fecha').value=hoy;
@@ -1140,7 +1133,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   api.getFijos().then(renderEntes).catch(()=>{});
   api.getDatosMes().then(onDatosMes).catch(()=>{});
   api.getGastos().then(renderAnualidad).catch(()=>{});
-  // Tooltip global
   initTooltip();
 });
 
@@ -1194,7 +1186,6 @@ function togKard(id){
   if(!el)return;
   const isOpen=el.style.display==='block';
   el.style.display=isOpen?'none':'block';
-  // Buscar el triángulo ▾/▴ en la card
   const card=el.closest?el.closest('.kard'):el.parentElement;
   if(card){
     const chev=card.querySelector('span.kard-chev');
@@ -1203,7 +1194,6 @@ function togKard(id){
 }
 
 function togSec(hdr){
-  // Solo en móvil — usar clase .mob que es confiable en GAS
   const isMob=document.documentElement.classList.contains('mob');
   if(!isMob)return;
   const bodyId=hdr.id.replace('-hdr','-body');
@@ -1483,14 +1473,12 @@ function renderAnualidad(data){
   }
   const esMob=document.documentElement.classList.contains('mob')||window.innerWidth<900;
   if(esMob){
-    // Grid de cards con desplegable por mes
     const mesActualIdx = new Date().getMonth();
     const uid = 'an'+Date.now();
     const cards = data.grupos.map((g,gi)=>{
       const isPagado = it => it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
       const pagados = g.items.filter(isPagado).length;
       const tot = g.items.filter(it=>it.monto!==null).length;
-      // Total solo hasta mes actual
       const totalHoy = g.items.reduce((s,it)=>{
         if(it.monto===null) return s;
         const claveL=(it.clave||'').toLowerCase();
@@ -1503,7 +1491,6 @@ function renderAnualidad(data){
       const pct=Math.round(pagados/12*100);
       const cardId=uid+'_'+gi;
       const border=pagados>0?'rgba(34,197,94,.3)':'var(--border)';
-      // Filas de meses desplegables
       const mesesRows=g.items.map(it=>{
         const pag=isPagado(it);
         const {txt:mtxt}=fmtMoneda(it.monto);
@@ -1528,7 +1515,6 @@ function renderAnualidad(data){
     }).join('');
     body.innerHTML=`<div class="cards-grid">${cards}</div>`;
   } else {
-    // Tabla desktop: Concepto × Clave
     const claves=[...new Set(data.grupos.flatMap(g=>g.items.map(it=>it.clave)))];
     const idx={};data.grupos.forEach(g=>{idx[g.concepto]={};g.items.forEach(it=>idx[g.concepto][it.clave]=it);});
     const mesActual=MESES_ES[new Date().getMonth()];
@@ -1569,7 +1555,6 @@ function renderGastos(){
   const mesActual=MESES_ES[new Date().getMonth()];
 
   if(esMob){
-    // Reorganizar: por ENTE, dentro los meses
     const entesSet=new Set();
     data.meses.forEach(m=>(data.grupos[m]||[]).forEach(e=>entesSet.add(e.ente)));
     const entes=[...entesSet];
@@ -1581,8 +1566,6 @@ function renderGastos(){
     const uid2 = 'gs_'+Date.now();
     const cards = entes.map((ente,ei)=>{
       const cardId = uid2+'_'+ei;
-      // Total del ente a través de todos los meses
-      // Final y P muestran solo el mes actual; el resto acumula hasta hoy
       const entesMesActual = ['Final','P'];
       let total=0;
       if(entesMesActual.includes(ente)){
@@ -1594,7 +1577,6 @@ function renderGastos(){
         });
       }
       const {txt,cls}=fmtMoneda(total||null);
-      // Meses de este ente
       const mesesHTML = data.meses.map(mes=>{
         const item=idx[mes]?.[ente];
         if(!item||item.monto===null) return '';
@@ -1621,7 +1603,6 @@ function renderGastos(){
     }).join('');
     body.innerHTML=`<div class="cards-grid">${cards}</div>`;
   } else {
-    // Tabla desktop: Ente × Mes
     const entesSet=new Set();
     data.meses.forEach(m=>(data.grupos[m]||[]).forEach(e=>entesSet.add(e.ente)));
     const entes=[...entesSet];
@@ -1751,7 +1732,7 @@ function initTooltip(){
 //  GRÁFICAS — Chart.js via CDN
 // ══════════════════════════════════════════
 let grafChart = null;
-let grafData  = null; // datos de datosMes
+let grafData  = null;
 
 const GRAF_COLORS = {
   'Final':   { line:'#FFFFFF', width:3, z:10 },
@@ -1806,7 +1787,6 @@ function mostrarGraficaMes(mes){
   const mesActual = MESES_ES[new Date().getMonth()];
   const m = mes || mesActual || data.meses[0];
   
-  // Highlight tab
   document.querySelectorAll('.graf-tab').forEach(t=>{
     const activo = t.dataset.mes === m;
     t.style.borderColor = activo ? 'var(--p)' : 'var(--border)';
@@ -1822,25 +1802,16 @@ function mostrarGraficaMes(mes){
     return;
   }
 
-  // Entes como labels del eje X, cada ente es un punto
   const entes = grupos.map(g=>g.ente);
-  
-  // Dataset por ente — pero necesitamos series temporales
-  // Usar todos los meses disponibles como eje X, cada ente como línea
   const entesSet = new Set();
   data.meses.forEach(mes=>{ (data.grupos[mes]||[]).forEach(e=>entesSet.add(e.ente)); });
   const todosEntes = [...entesSet];
-  
-  // Solo mostrar el mes seleccionado: eje X = entes, puntos = montos
   const datasets = [];
-  
-  // Para el mes seleccionado, mostrar barras/linea por ente
   const montos = todosEntes.map(ente=>{
     const item = grupos.find(g=>g.ente===ente);
     return item ? (item.monto||0) : null;
   });
 
-  // Gráfica de línea con todos los meses, una línea por ente
   const labels = data.meses;
   const idx = {};
   data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
@@ -1874,7 +1845,6 @@ function mostrarGraficaAnual(){
   const idx = {};
   data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
 
-  // Excluir BW y Final de las líneas
   const entesGraf = entes.filter(e=>e!=='BW'&&e!=='Final');
 
   const dsets = entesGraf.map(ente=>{
@@ -1884,7 +1854,7 @@ function mostrarGraficaAnual(){
       data: data.meses.map(mes=>{
         const v = idx[mes]?.[ente];
         if(v===null||v===undefined) return null;
-        return Math.abs(v); // siempre positivo — comparación visual
+        return Math.abs(v);
       }),
       borderColor: cfg.line,
       borderWidth: 1.5,
@@ -1911,7 +1881,7 @@ function renderChart(labels, datasets, titulo){
     data:{ labels, datasets },
     options:{
       responsive:true,
-      maintainAspectRatio:true,
+      maintainAspectRatio:false,
       interaction:{ mode:'index', intersect:false },
       plugins:{
         legend:{ display:false },
