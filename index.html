@@ -24,7 +24,7 @@
   --border:rgba(255,255,255,.07);
   --p:#3B82F6;
   --s:#06B6D4;
-  --ok:#3B82F6;
+  --ok:#FFFFFF;
   --err:#EF4444;
   --warn:#F59E0B;
   --t:#F1F5F9;
@@ -112,7 +112,7 @@ html,body{
   display:flex;align-items:center;gap:5px;
   padding:5px 10px;border-radius:20px;font-size:12px;font-weight:600;
 }
-.hero-chip.ok{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--ok)}
+.hero-chip.ok{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--p)}
 .hero-chip.load{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--p)}
 .hero-chip.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--err)}
 .btn-refresh{
@@ -319,7 +319,7 @@ html,body{
   font-size:13px;font-weight:600;display:none;
   align-items:center;gap:8px;
 }
-.save-res.ok{display:flex;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--ok)}
+.save-res.ok{display:flex;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--p)}
 .save-res.err{display:flex;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--err)}
 
 /* ── ENTES ── */
@@ -656,7 +656,7 @@ html.mob .panel-overlay.show{display:block !important}
   background:var(--m);
   box-shadow:0 0 0 0 var(--m);
 }
-.hero-chip.ok .chip-dot{background:var(--ok);animation:chipPulse 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(59,130,246,.4)}
+.hero-chip.ok .chip-dot{background:var(--p);animation:chipPulse 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(59,130,246,.4)}
 .hero-chip.err .chip-dot{background:var(--err)}
 .hero-chip.load .chip-dot{background:var(--p);animation:chipPulse 1s ease-in-out infinite}
 @keyframes chipPulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 0 0 5px rgba(59,130,246,0)}}
@@ -688,7 +688,6 @@ body { background:linear-gradient(135deg,#030508 0%,#07091A 50%,#0A0F1E 100%) !i
 
 .mob-saldo-wrap{display:none}
 html.mob .mob-saldo-wrap{display:block !important;text-align:right}
-html.mob .hero-center{display:none !important}
 
 
 html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
@@ -743,7 +742,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0028 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0030 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
