@@ -894,7 +894,7 @@ html.mob .prog-wrap{height:4px !important}
 //  - En GAS: usa google.script.run
 //  - En GitHub Pages: usa fetch()
 // ══════════════════════════════════════════
-const API_URL = 'TU_URL_DE_GAS_AQUI'; // reemplazar al migrar a GitHub
+const API_URL = 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec'; // reemplazar al migrar a GitHub
 
 // Detectar si estamos en GAS o en GitHub Pages
 const EN_GAS = typeof google !== 'undefined' && google.script;
@@ -975,11 +975,11 @@ function fmt12(d){return d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-
 // ══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded',()=>{
   // ── DIAGNÓSTICO TEMPORAL ──
-  if(!API_URL || API_URL === 'TU_URL_DE_GAS_AQUI'){
+  if(!API_URL || API_URL === 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec'){
     setChip('err','⚠ Falta URL de API');
     const d=document.createElement('div');
     d.style.cssText='position:fixed;top:60px;left:8px;right:8px;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999';
-    d.innerHTML='⚠ <b>Falta configurar API_URL</b><br>Abre el HTML, busca <code>TU_URL_DE_GAS_AQUI</code> y reemplázala con tu URL de GAS desplegado';
+    d.innerHTML='⚠ <b>Falta configurar API_URL</b><br>Abre el HTML, busca <code>https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec</code> y reemplázala con tu URL de GAS desplegado';
     document.body.appendChild(d);
     return;
   }
