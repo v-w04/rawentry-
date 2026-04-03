@@ -636,7 +636,7 @@ html.mob .panel.open{transform:translateY(0) !important}
       <div class="hero-brand">
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
-          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0024</span></div>
+          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0026</span></div>
           <div style="font-size:11px;color:var(--m)">Trello · Sheets</div>
         </div>
       </div>
@@ -662,7 +662,7 @@ html.mob .panel.open{transform:translateY(0) !important}
 
     <!-- ① NUEVA ENTRADA -->
     <div class="section" id="sec-entrada">
-      <div class="sec-hdr open" onclick="togSec(this)" id="sec-entrada-hdr">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-entrada-hdr">
         <div class="sec-hdr-left">
           <div class="sec-hdr-icon blue"><i class="fas fa-table-list"></i></div>
           <span class="sec-hdr-title">Nueva Entrada</span>
@@ -671,7 +671,7 @@ html.mob .panel.open{transform:translateY(0) !important}
           <i class="fas fa-chevron-down sec-chevron"></i>
         </div>
       </div>
-      <div class="sec-body open" id="sec-entrada-body">
+      <div class="sec-body" id="sec-entrada-body">
 
         <!-- Campos -->
         <div class="field active" id="cf-fecha">
@@ -948,13 +948,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.body.appendChild(d);
     setTimeout(()=>d.remove(),10000);
   });
-  // En móvil abrir todas las secciones por defecto
-  if(document.documentElement.classList.contains('mob')){
-    ['sec-entes','sec-anualidad','sec-gastos'].forEach(id=>{
-      document.getElementById(id+'-body')?.classList.add('open');
-      document.getElementById(id+'-hdr')?.classList.add('open');
-    });
-  }
+  // En móvil todas las secciones arrancan cerradas — el usuario las abre
   const hoy=fmtD(new Date());
   document.getElementById('fecha').value=hoy;
   document.getElementById('saldo-fecha').value=hoy;
@@ -1010,6 +1004,17 @@ function progDone(){const b=document.getElementById('prog');b.className='prog-ba
 // ══════════════════════════════════════════
 //  ACORDEONES
 // ══════════════════════════════════════════
+function togKard(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  // Rotar el triángulo
+  const lbl=el.previousElementSibling;
+  if(lbl){const chev=lbl.previousElementSibling?.previousElementSibling?.querySelector('span[style*="float:right"]');
+    if(chev)chev.textContent=isOpen?'▾':'▴';}
+}
+
 function togSec(hdr){
   // Solo en móvil — usar clase .mob que es confiable en GAS
   const isMob=document.documentElement.classList.contains('mob');
@@ -1341,24 +1346,45 @@ function renderGastos(){
   const mesActual=MESES_ES[new Date().getMonth()];
 
   if(esMob){
-    // Cards por mes en grid 2 cols
+    // Reorganizar: por ENTE, dentro los meses
     const entesSet=new Set();
     data.meses.forEach(m=>(data.grupos[m]||[]).forEach(e=>entesSet.add(e.ente)));
     const entes=[...entesSet];
     const idx={};
-    data.meses.forEach(mes=>{idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]={monto:e.monto});});
-
-    const cards=data.meses.map(mes=>{
-      const esActual=mes.toUpperCase()===mesActual.toUpperCase();
+    data.meses.forEach(mes=>{
+      idx[mes]={};
+      (data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]={monto:e.monto,inicio:e.inicio,fin:e.fin});
+    });
+    const uid2 = 'gs_'+Date.now();
+    const cards = entes.map((ente,ei)=>{
+      const cardId = uid2+'_'+ei;
+      // Total del ente a través de todos los meses
       let total=0;
-      entes.forEach(e=>{if(idx[mes]?.[e]?.monto!==null)total+=idx[mes]?.[e]?.monto||0;});
+      data.meses.forEach(m=>{ total+=idx[m]?.[ente]?.monto||0; });
       const {txt,cls}=fmtMoneda(total||null);
-      const border=esActual?'rgba(59,130,246,.5)':'var(--border)';
-      const bg=esActual?'rgba(59,130,246,.12)':'var(--card2)';
-      const nameColor=esActual?'var(--p)':'var(--t)';
-      return `<div class="kard" style="border-color:${border};background:${bg};${esActual?'box-shadow:0 0 16px rgba(59,130,246,.2)':''}">
-        <div class="kard-name" style="color:${nameColor}">${mes}${esActual?' 📍':''}</div>
+      // Meses de este ente
+      const mesesHTML = data.meses.map(mes=>{
+        const item=idx[mes]?.[ente];
+        if(!item||item.monto===null) return '';
+        const {txt:mtxt,cls:mcls}=fmtMoneda(item.monto);
+        const esActual=mes.toUpperCase()===mesActual.toUpperCase();
+        return `<div style="display:flex;justify-content:space-between;align-items:center;
+          padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.05);
+          ${esActual?'background:rgba(59,130,246,.08)':''}">
+          <span style="font-size:13px;font-weight:${esActual?'700':'500'};
+            color:${esActual?'var(--p)':'var(--m)'}">${mes}${esActual?' 📍':''}</span>
+          <span style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;
+            color:${mcls==='pos'?'var(--ok)':mcls==='neg'?'var(--err)':'var(--m)'}">${mtxt}</span>
+        </div>`;
+      }).filter(Boolean).join('');
+      return `<div class="kard" style="cursor:pointer;grid-column:span 1"
+          onclick="togKard('${cardId}')">
+        <div class="kard-name">${ente}
+          <span style="float:right;font-size:11px;color:var(--m);font-weight:400">▾</span>
+        </div>
         <div class="kard-val ${cls}">${txt}</div>
+        <div id="${cardId}" style="display:none;margin:8px -14px -14px;
+          border-top:1px solid rgba(255,255,255,.08)">${mesesHTML}</div>
       </div>`;
     }).join('');
     body.innerHTML=`<div class="cards-grid">${cards}</div>`;
