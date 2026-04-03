@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A0F1E">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>RAW Entry</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -711,7 +712,7 @@ html.mob .panel-overlay.show{display:block !important}
       <div class="hero-icon"><i class="fas fa-table-list"></i></div>
       <div>
         <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0023 · Trello · Sheets</div>
+        <div class="hero-sub">v.2.0024 · Trello · Sheets</div>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
@@ -1320,11 +1321,8 @@ function limpiar(rf=true){
   setSign(1);upM();ocultarRes();activarCampo('fecha');
 }
 function irASheet(){
-  if(sheetUrl){ window.open(sheetUrl,'_blank'); return; }
-  api.getSheetUrl().then(r=>{
-    sheetUrl = typeof r==='string' ? r : (r.url||'');
-    if(sheetUrl) window.open(sheetUrl,'_blank');
-  }).catch(()=>{});
+  var url = sheetUrl || 'https://docs.google.com/spreadsheets/d/15T14Hb7tvmv24ZAaC3su1NRtDwVS6-dWbJGxQYUGP1o/edit';
+  window.open(url,'_blank');
 }
 
 // ══════════════════════════════════════════
