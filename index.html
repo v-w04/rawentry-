@@ -371,11 +371,11 @@ html,body{
 .kard-meta{font-size:11px;color:var(--m)}
 
 /* Tabla desktop */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tbl{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:13px}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:fit-content;max-width:100%}
+.tbl{border-collapse:separate;border-spacing:0;width:auto;font-size:13px;table-layout:auto}
 .tbl th{
-  padding:8px 14px;font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.6px;color:var(--m);
+  padding:6px 10px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.4px;color:var(--m);
   background:var(--card);border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:2;white-space:nowrap;text-align:right;
 }
@@ -384,7 +384,7 @@ html,body{
   border-right:1px solid var(--border);
 }
 .tbl td{
-  padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04);
+  padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);
   font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;
   color:var(--m);
 }
@@ -544,12 +544,14 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:minmax(300px,380px) minmax(400px,1fr);
+    grid-template-columns:300px 520px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;align-content:start;
-    width:100%;overflow-y:auto;flex:1;
+    overflow-y:auto;flex:1;
     justify-content:center;
+    width:fit-content;
+    margin:0 auto;
   }
   #sec-entrada{grid-column:1;grid-row:1}
   #sec-entes{grid-column:1;grid-row:2}
@@ -631,19 +633,6 @@ html.mob .panel-overlay.show{display:block !important}
 
 
 
-/* Indicador de campo completado */
-.field-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;
-  background:var(--dim);border:1.5px solid rgba(255,255,255,.2);
-  transition:background .3s,border-color .3s;
-  margin-right:2px;
-}
-.field.done .field-dot{
-  background:var(--ok);
-  border-color:var(--ok);
-  box-shadow:0 0 6px rgba(34,197,94,.4);
-}
-
 </style>
 </head>
 <body>
@@ -692,7 +681,7 @@ html.mob .panel-overlay.show{display:block !important}
       <div class="hero-icon"><i class="fas fa-table-list"></i></div>
       <div>
         <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0018 · Trello · Sheets</div>
+        <div class="hero-sub">v.2.0019 · Trello · Sheets</div>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
@@ -738,7 +727,6 @@ html.mob .panel-overlay.show{display:block !important}
         <!-- Campos -->
         <div class="field active" id="cf-fecha">
           <div class="field-bar"></div>
-          <div class="field-dot"></div>
           <div class="field-lbl">Fecha</div>
           
           <input type="date" class="finput" id="fecha" onchange="onFechaChange()"
