@@ -574,16 +574,45 @@ html,body{
 html.mob .app{max-width:430px !important}
 html.mob body{height:auto !important;overflow-y:auto !important}
 html.mob .hero{
-  padding:67px 14px 12px !important;
+  padding:67px 18px 16px !important;
   flex-direction:column !important;
+  align-items:stretch !important;
+  gap:0 !important;
+}
+/* Fila 1: logo izq + estado/refresh der */
+html.mob .hero-left{
+  width:100%;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  margin-bottom:16px;
+}
+html.mob .hero-right{
+  width:100%;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--border);
+}
+/* Fila 2: saldo ocupa todo el ancho */
+html.mob .hero-center{
+  width:100%;
   align-items:flex-start !important;
+}
+html.mob .saldo-val{font-size:52px !important;line-height:1 !important}
+html.mob .saldo-label{
+  font-size:12px !important;
+  justify-content:flex-start !important;
   gap:6px !important;
 }
-html.mob .hero-left{width:100%}
-html.mob .hero-center{align-items:flex-start !important;width:100%}
-html.mob .hero-right{width:100%;justify-content:flex-start !important;flex-wrap:wrap}
-html.mob .saldo-val{font-size:40px !important}
-html.mob .saldo-label{justify-content:flex-start !important}
+html.mob .hero-title{font-size:18px !important}
+html.mob .hero-sub{font-size:11px !important}
+html.mob .hero-icon{width:44px !important;height:44px !important;font-size:20px !important}
+html.mob .hero-clock{font-size:13px !important;color:var(--m)}
+html.mob .hero-chip{font-size:13px !important;padding:6px 14px !important}
+html.mob .btn-refresh{width:38px !important;height:38px !important}
 html.mob .sections{
   display:flex !important;
   flex-direction:column !important;
@@ -681,7 +710,7 @@ html.mob .panel-overlay.show{display:block !important}
       <div class="hero-icon"><i class="fas fa-table-list"></i></div>
       <div>
         <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0019 · Trello · Sheets</div>
+        <div class="hero-sub">v.2.0020 · Trello · Sheets</div>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
