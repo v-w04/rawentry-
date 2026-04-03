@@ -562,9 +562,11 @@ html,body{
     width:fit-content;
     margin:0 auto;
   }
-  #col1-wrap{grid-column:1;grid-row:1 / span 2;align-self:start}
+  #col1-wrap{grid-column:1;grid-row:1 / span 4;align-self:start}
   #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
-  #sec-gastos{grid-column:2;grid-row:1 / span 2;align-self:start}
+  #sec-gastos{grid-column:2;grid-row:1;align-self:start}
+  #sec-flujo{grid-column:2;grid-row:2;align-self:start}
+  #sec-logros{grid-column:2;grid-row:3;align-self:start}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -736,7 +738,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0047 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0048 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1000,6 +1002,44 @@ html.mob .hero-right{display:none !important}
 
 
 
+    <!-- ⑤ FLUJO MENSUAL -->
+    <div class="section" id="sec-flujo">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-flujo-hdr">
+        <div class="sec-hdr-left">
+          <div class="sec-hdr-icon" style="background:rgba(34,197,94,.15);color:#22C55E">
+            <i class="fas fa-arrow-right-arrow-left"></i>
+          </div>
+          <span class="sec-hdr-title">Flujo Mensual</span>
+        </div>
+        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
+      </div>
+      <div class="sec-body" id="sec-flujo-body">
+        <div id="flujo-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+          <div style="text-align:center;padding:20px;color:var(--m)">
+            <i class="fas fa-circle-notch fa-spin" style="color:#22C55E"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ LOGROS -->
+    <div class="section" id="sec-logros">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-logros-hdr">
+        <div class="sec-hdr-left">
+          <div class="sec-hdr-icon" style="background:rgba(251,191,36,.15);color:#FBBF24">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <span class="sec-hdr-title">Logros</span>
+        </div>
+        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
+      </div>
+      <div class="sec-body" id="sec-logros-body">
+        <div id="logros-body" style="text-align:center;padding:20px;color:var(--m)">
+          <i class="fas fa-circle-notch fa-spin" style="color:#FBBF24"></i>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /sections -->
 </div><!-- /app -->
 
@@ -1069,6 +1109,8 @@ const api = {
   insertarEnRAW:     (d) => EN_GAS ? gasRun('insertarEnRAW', d) : apiPost('insertarEnRAW', { data: d }),
   actualizarFijo:    (fila, monto) => EN_GAS ? gasRun('actualizarFijo', fila, monto) : apiPost('actualizarFijo', { fila, monto }),
   agregarALista:     (colIndex, valor) => EN_GAS ? gasRun('agregarALista', colIndex, valor) : apiPost('agregarALista', { colIndex, valor }),
+  getLogros:         () => EN_GAS ? gasRun('getLogros') : apiGet('getLogros'),
+  getEventuales:     () => EN_GAS ? gasRun('getEventuales') : apiGet('getEventuales'),
 };
 
 // ══════════════════════════════════════════
@@ -1132,6 +1174,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   api.getFijos().then(renderEntes).catch(()=>{});
   api.getDatosMes().then(onDatosMes).catch(()=>{});
   api.getGastos().then(renderAnualidad).catch(()=>{});
+  api.getEventuales().then(renderEventuales).catch(()=>{});
+  api.getLogros().then(renderLogros).catch(()=>{});
   initTooltip();
 });
 
@@ -1545,7 +1589,7 @@ function renderAnualidad(data){
 // ══════════════════════════════════════════
 //  GASTOS POR MES
 // ══════════════════════════════════════════
-function onDatosMes(data){datosMes=data;renderGastos();initGraficas(data);}
+function onDatosMes(data){datosMes=data;renderGastos();initGraficas(data);renderFlujoMensual(data);}
 function renderGastos(){
   const body=document.getElementById('gastos-body');
   const data=datosMes;
@@ -1695,12 +1739,14 @@ function refreshTodo(){
   const btn=document.getElementById('btn-rf');
   btn.classList.add('spinning');btn.disabled=true;
   progStart();
-  let n=4,done=0;
+  let n=6,done=0;
   const tick=()=>{done++;if(done>=n){btn.classList.remove('spinning');btn.disabled=false;progDone();showToast('Datos actualizados');}};
   consultarSaldo();tick();
   api.getFijos().then(d=>{renderEntes(d);tick();}).catch(tick);
   api.getGastos().then(d=>{renderAnualidad(d);tick();}).catch(tick);
   api.getDatosMes().then(d=>{onDatosMes(d);tick();}).catch(tick);
+  api.getEventuales().then(d=>{renderEventuales(d);tick();}).catch(tick);
+  api.getLogros().then(d=>{renderLogros(d);tick();}).catch(tick);
 }
 
 // ══════════════════════════════════════════
@@ -1946,6 +1992,157 @@ window.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncFijosHeight, 30
 window.addEventListener('resize', syncFijosHeight);
 
 
+
+// ══════════════════════════════════════════
+//  FLUJO MENSUAL
+// ══════════════════════════════════════════
+function renderFlujoMensual(data){
+  const body = document.getElementById('flujo-body');
+  if(!data||!data.meses||!data.meses.length){
+    body.innerHTML='<div style="padding:16px;color:var(--m);text-align:center">Sin datos</div>';return;
+  }
+  const MESES_ORDER=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const mesActual = MESES_ES[new Date().getMonth()];
+
+  const rows = data.meses.map(mes=>{
+    const entes = data.grupos[mes]||[];
+    let ingresos=0, egresos=0, neto=null;
+    entes.forEach(e=>{
+      if(e.ente==='Final'){ neto=e.monto; return; }
+      if(e.monto===null) return;
+      if(e.monto>0) ingresos+=e.monto;
+      else egresos+=e.monto;
+    });
+    const esActual = mes===mesActual;
+    const fmtPos = v => v===0?'<span style="color:var(--m)">$ 0</span>':'<span style="color:#22C55E;font-weight:700">$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2})+'</span>';
+    const fmtNeg = v => v===0?'<span style="color:var(--m)">$ 0</span>':'<span style="color:var(--err);font-weight:700">− $ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2})+'</span>';
+    const fmtNeto = v => {
+      if(v===null) return '<span style="color:var(--m)">—</span>';
+      const cls = v>0?'color:#22C55E':v<0?'color:var(--err)':'color:var(--m)';
+      const pre = v<0?'− ':'';
+      return `<span style="${cls};font-weight:800">${pre}$ ${Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2})}</span>`;
+    };
+    return `<tr style="${esActual?'background:rgba(59,130,246,.07)':''}">
+      <td style="padding:7px 12px;font-weight:${esActual?'700':'500'};color:${esActual?'var(--p)':'var(--t)'};white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.04)">${mes}${esActual?' <span style="font-size:10px">📍</span>':''}</td>
+      <td style="padding:7px 12px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04)">${fmtPos(ingresos)}</td>
+      <td style="padding:7px 12px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04)">${fmtNeg(egresos)}</td>
+      <td style="padding:7px 14px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04)">${fmtNeto(neto)}</td>
+    </tr>`;
+  }).join('');
+
+  body.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums">
+    <thead>
+      <tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:6px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m)">Mes</th>
+        <th style="padding:6px 12px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#22C55E">Ingresos</th>
+        <th style="padding:6px 12px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--err)">Egresos</th>
+        <th style="padding:6px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m)">Neto (Final)</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+// ══════════════════════════════════════════
+//  EVENTUALES (cols R-Z de Pagos)
+// ══════════════════════════════════════════
+function renderEventuales(data){
+  // Los eventuales se muestran dentro de Logros si no hay hoja Logros
+  // Por ahora solo guardamos los datos para usarlos en renderLogros
+  window._eventualesData = data;
+  // Si logros ya cargó, re-renderizar
+  if(window._logrosData !== undefined) renderLogros(window._logrosData);
+}
+
+// ══════════════════════════════════════════
+//  LOGROS
+// ══════════════════════════════════════════
+function renderLogros(data){
+  window._logrosData = data;
+  const body = document.getElementById('logros-body');
+  
+  // Combinar logros del sheet Logros + Eventuales de Pagos
+  const eventuales = window._eventualesData || [];
+  const logrosSheet = (data && data.items) ? data.items : [];
+  const todos = [...logrosSheet, ...eventuales];
+
+  if(!todos.length){
+    body.innerHTML=`<div style="padding:24px;text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">🏆</div>
+      <div style="color:var(--m);font-size:13px">Sin logros registrados aún.<br>Agrégalos desde tu Sheet.</div>
+    </div>`;
+    return;
+  }
+
+  // Agrupar por Proyecto
+  const grupos = {};
+  todos.forEach(it=>{
+    const proj = it.proyecto||it.tema||'Sin proyecto';
+    if(!grupos[proj]) grupos[proj]=[];
+    grupos[proj].push(it);
+  });
+
+  const ICON_MAP = {
+    'Salud':'fa-heart-pulse','Hogar':'fa-house','Ropa':'fa-shirt',
+    'Educación':'fa-graduation-cap','Futuro':'fa-rocket','Movies':'fa-film',
+    'Accesorios':'fa-mobile-screen','∴':'fa-infinity','default':'fa-star'
+  };
+  const COLOR_MAP = {
+    'Salud':'#EF4444','Hogar':'#3B82F6','Ropa':'#EC4899',
+    'Educación':'#8B5CF6','Futuro':'#06B6D4','Movies':'#F59E0B',
+    'Accesorios':'#10B981','∴':'#FBBF24','default':'#64748B'
+  };
+
+  const html = Object.entries(grupos).map(([proj, items])=>{
+    const ico   = ICON_MAP[proj]  || ICON_MAP['default'];
+    const color = COLOR_MAP[proj] || COLOR_MAP['default'];
+    const completados = items.filter(it=>it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí'||it.ie==='E').length;
+    const pct = items.length ? Math.round(completados/items.length*100) : 0;
+
+    const filas = items.map(it=>{
+      const desc  = it.descripcion||it.subtema||it.concepto||'—';
+      const monto = it.montoAprox||it.monto;
+      const done  = it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
+      const {txt} = monto ? fmtMoneda(monto) : {txt:'—'};
+      return `<div style="display:flex;align-items:flex-start;gap:10px;
+        padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04)">
+        <div style="width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:1px;
+          background:${done?'rgba(34,197,94,.15)':'rgba(255,255,255,.06)'};
+          border:1px solid ${done?'rgba(34,197,94,.4)':'rgba(255,255,255,.12)'};
+          display:flex;align-items:center;justify-content:center;font-size:10px">
+          ${done?'<i class="fas fa-check" style="color:#22C55E"></i>':''}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:${done?'var(--m)':'var(--t)'};
+            text-decoration:${done?'line-through':'none'};line-height:1.3">${desc}</div>
+          ${it.fecha||it.fechaPropuesta?`<div style="font-size:11px;color:var(--m);margin-top:2px">${it.fecha||it.fechaPropuesta||''}</div>`:''}
+        </div>
+        ${monto?`<div style="font-size:12px;font-weight:700;color:var(--m);font-variant-numeric:tabular-nums;flex-shrink:0">${txt}</div>`:''}
+      </div>`;
+    }).join('');
+
+    return `<div style="margin:0 0 0 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:26px;height:26px;border-radius:8px;background:${color}22;
+            display:flex;align-items:center;justify-content:center;font-size:12px;color:${color}">
+            <i class="fas ${ico}"></i>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--t)">${proj}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--m)">${completados}/${items.length}</span>
+          <div style="width:60px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div>
+          </div>
+        </div>
+      </div>
+      ${filas}
+    </div>`;
+  }).join('');
+
+  body.innerHTML = html || `<div style="padding:24px;text-align:center;color:var(--m)">Sin datos</div>`;
+}
 // ══════════════════════════════════════════
 //  GRÁFICA FIJOS
 // ══════════════════════════════════════════
