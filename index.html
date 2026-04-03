@@ -354,6 +354,7 @@ html,body{
 .cards-grid{
   display:grid;grid-template-columns:1fr 1fr;
   gap:8px;padding:12px;
+  text-align:left;
 }
 .kard{
   background:var(--card2);
@@ -377,7 +378,7 @@ html,body{
   padding:6px 10px;font-size:11px;font-weight:700;
   text-transform:uppercase;letter-spacing:.4px;color:var(--m);
   background:var(--card);border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:2;white-space:nowrap;text-align:right;
+  position:sticky;top:0;z-index:2;white-space:nowrap;text-align:left;
 }
 .tbl th:first-child{
   text-align:left;position:sticky;left:0;z-index:4;
@@ -385,7 +386,7 @@ html,body{
 }
 .tbl td{
   padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);
-  font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left;
   color:var(--m);
 }
 .tbl td:first-child{
@@ -544,7 +545,7 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    grid-template-columns:300px 520px;
+    grid-template-columns:300px 624px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;align-content:start;
@@ -710,7 +711,7 @@ html.mob .panel-overlay.show{display:block !important}
       <div class="hero-icon"><i class="fas fa-table-list"></i></div>
       <div>
         <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-        <div class="hero-sub">v.2.0020 · Trello · Sheets</div>
+        <div class="hero-sub">v.2.0022 · Trello · Sheets</div>
       </div>
     </div>
     <!-- CENTRO: Saldo -->
