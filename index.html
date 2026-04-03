@@ -741,7 +741,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0033 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0034 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -941,13 +941,11 @@ html.mob .hero-right{display:none !important}
 
         <!-- GRÁFICAS dentro de Fijos -->
         <div id="gastos-graficas" style="border-top:1px solid var(--border)">
-          <!-- Tabs de mes + Anual -->
-          <div style="display:flex;align-items:center;gap:6px;padding:12px 14px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
-            <span style="font-size:11px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0">Gráfica</span>
-            <div id="graf-mes-tabs" style="display:flex;gap:4px;flex-wrap:wrap;flex:1"></div>
-            <span id="graf-anual-btn" onclick="mostrarGraficaAnual()"
-              style="font-size:11px;color:var(--m);font-weight:700;cursor:pointer;padding:3px 10px;
-              border-radius:6px;border:1px solid var(--border);white-space:nowrap;transition:all .2s">Anual</span>
+          <!-- Solo título gráfica anual -->
+          <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+            <span style="font-size:11px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.5px">
+              <i class="fas fa-chart-line" style="color:var(--p);margin-right:5px"></i>Evolución Anual
+            </span>
           </div>
           <!-- Canvas -->
           <div style="padding:12px 14px 6px;position:relative">
@@ -1758,11 +1756,10 @@ function initGraficas(data){
   if(!window.Chart){
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-    s.onload = ()=>{ buildGrafTabs(); mostrarGraficaMes(null); };
+    s.onload = ()=>{ mostrarGraficaAnual(); };
     document.head.appendChild(s);
   } else {
-    buildGrafTabs();
-    mostrarGraficaMes(null);
+    mostrarGraficaAnual();
   }
 }
 
@@ -1862,16 +1859,24 @@ function mostrarGraficaAnual(){
   const idx = {};
   data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
 
-  const dsets = entes.map(ente=>{
+  // Excluir BW y Final de las líneas
+  const entesGraf = entes.filter(e=>e!=='BW'&&e!=='Final');
+
+  const dsets = entesGraf.map(ente=>{
     const cfg = getEnteColor(ente);
     return {
       label: ente,
-      data: data.meses.map(mes=>idx[mes]?.[ente]??null),
+      data: data.meses.map(mes=>{
+        const v = idx[mes]?.[ente];
+        if(v===null||v===undefined) return null;
+        return Math.abs(v); // siempre positivo — comparación visual
+      }),
       borderColor: cfg.line,
-      borderWidth: ente==='Final'?3:1.5,
-      pointRadius: ente==='Final'?4:2,
+      borderWidth: 1.5,
+      pointRadius: 3,
+      pointHoverRadius: 6,
       fill: false, tension:0.3, spanGaps:true,
-      order: ente==='Final'?0:1,
+      order: 1,
     };
   });
 
