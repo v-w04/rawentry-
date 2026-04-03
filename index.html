@@ -687,7 +687,7 @@ html.mob .prog-wrap{height:4px !important}
       <div class="hero-brand">
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
-          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0016</span></div>
+          <div class="hero-title">RAW Entry <span class="hero-ver">v.1.0019</span></div>
           <div style="font-size:11px;color:var(--m)">Trello · Sheets</div>
         </div>
       </div>
@@ -894,17 +894,32 @@ html.mob .prog-wrap{height:4px !important}
 //  - En GAS: usa google.script.run
 //  - En GitHub Pages: usa fetch()
 // ══════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec'; // reemplazar al migrar a GitHub
+const API_URL = 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec';
 
 // Detectar si estamos en GAS o en GitHub Pages
-const EN_GAS = typeof google !== 'undefined' && google.script;
+// Detectar GAS de forma robusta
+const EN_GAS = (function(){
+  try {
+    return typeof google !== 'undefined' 
+      && typeof google.script !== 'undefined'
+      && typeof google.script.run !== 'undefined';
+  } catch(e){ return false; }
+})();
+
+// Si no estamos en GAS y no hay URL configurada, mostrar aviso
+// URL configurada
 
 function gasRun(fn, ...args) {
   return new Promise((resolve, reject) => {
-    let runner = google.script.run
+    const runner = google.script.run
       .withSuccessHandler(resolve)
-      .withFailureHandler(reject);
-    runner[fn](...args);
+      .withFailureHandler(e => { console.error(fn, e); reject(e); });
+    // google.script.run requiere llamada directa por nombre
+    if (typeof runner[fn] === 'function') {
+      runner[fn](...args);
+    } else {
+      reject(new Error('Función no encontrada: ' + fn));
+    }
   });
 }
 
@@ -927,7 +942,7 @@ async function apiPost(action, data={}) {
 // Wrapper unificado — funciona en GAS y GitHub
 const api = {
   getCatalogos:      () => EN_GAS ? gasRun('getCatalogos') : apiGet('getCatalogos'),
-  getSheetUrl:       () => EN_GAS ? gasRun('getSheetUrl').then(u=>({url:u})) : apiGet('getSheetUrl'),
+  getSheetUrl:       () => EN_GAS ? gasRun('getSheetUrl').then(u=>({url: typeof u==='string'?u:u.url})) : apiGet('getSheetUrl'),
   getFijos:          () => EN_GAS ? gasRun('getFijos') : apiGet('getFijos'),
   getDatosMes:       () => EN_GAS ? gasRun('getDatosMes') : apiGet('getDatosMes'),
   getGastos:         () => EN_GAS ? gasRun('getGastos') : apiGet('getGastos'),
@@ -974,17 +989,10 @@ function fmt12(d){return d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-
 //  INIT
 // ══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded',()=>{
-  // ── DIAGNÓSTICO TEMPORAL ──
-  if(!API_URL || API_URL === 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec'){
-    setChip('err','⚠ Falta URL de API');
-    const d=document.createElement('div');
-    d.style.cssText='position:fixed;top:60px;left:8px;right:8px;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999';
-    d.innerHTML='⚠ <b>Falta configurar API_URL</b><br>Abre el HTML, busca <code>https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec</code> y reemplázala con tu URL de GAS desplegado';
-    document.body.appendChild(d);
-    return;
-  }
-  // Probar conexión a la API
-  apiGet('getCatalogos').catch(err=>{
+  // En GAS siempre continuar — no necesita API_URL
+  // URL configurada — continuar siempre
+  // Probar conexión a la API solo si no estamos en GAS
+  if(!EN_GAS) apiGet('getCatalogos').catch(err=>{
     const d=document.createElement('div');
     d.style.cssText='position:fixed;top:60px;left:8px;right:8px;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600';
     d.innerHTML='⚠ <b>Error de conexión:</b> '+err.message+'<br><small>Verifica que la URL de GAS es correcta y está desplegada como web app pública</small>';
