@@ -667,6 +667,84 @@ html.mob .panel-overlay.show{display:block !important}
 }
 .saldo-refresh-btn:hover{color:var(--p)}
 
+/* ── FLIP BOARD ── */
+.board-wrap{
+  position:relative;
+  width:100%;
+  flex:1;
+  overflow:hidden;
+}
+.board-face{
+  width:100%;
+  height:100%;
+  transition:transform .55s cubic-bezier(.4,0,.2,1), opacity .55s;
+  backface-visibility:hidden;
+}
+.board-face.anverso{
+  transform:translateX(0);
+  opacity:1;
+}
+.board-face.anverso.flipped{
+  transform:translateX(-110%);
+  opacity:0;
+  pointer-events:none;
+}
+.board-face.reverso{
+  position:absolute;
+  top:0;left:0;width:100%;
+  transform:translateX(110%);
+  opacity:0;
+  pointer-events:none;
+  overflow-y:auto;
+  padding:12px 20px 24px;
+}
+.board-face.reverso.flipped{
+  transform:translateX(0);
+  opacity:1;
+  pointer-events:all;
+}
+
+/* Botón flip */
+.btn-flip{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;
+  background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);
+  color:#FBBF24;cursor:pointer;font-family:inherit;
+  transition:all .2s;white-space:nowrap;
+}
+.btn-flip:hover{background:rgba(251,191,36,.2);box-shadow:0 0 12px rgba(251,191,36,.2)}
+.btn-flip.active{
+  background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--p);
+}
+
+/* Board reverso — logros full width */
+.reverso-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.reverso-title{font-size:18px;font-weight:800;color:var(--t)}
+.reverso-filtros{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.reverso-filtros select{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  color:var(--m);font-family:inherit;font-size:12px;padding:5px 10px;
+  outline:none;cursor:pointer;
+}
+#inv-grid-full{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+  gap:10px;
+}
+
+/* Flujo Mensual — unificar con el resto */
+#flujo-body table{font-size:13px;font-variant-numeric:tabular-nums}
+#flujo-body th{
+  padding:6px 14px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);
+}
+#flujo-body td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+
 /* ── Scrollbar personalizado ── */
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: rgba(15,23,42,.5); border-radius: 3px; }
@@ -836,6 +914,9 @@ html.mob .hero-right{display:none !important}
         <span class="chip-dot"></span>
         <span id="chip-txt">Cargando</span>
       </div>
+      <button class="btn-flip" id="btn-flip" onclick="flipBoard()" title="Ver Logros">
+        <i class="fas fa-trophy"></i> Logros
+      </button>
       <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar">
         <i class="fas fa-arrows-rotate" id="rf-ico"></i>
       </button>
@@ -843,6 +924,11 @@ html.mob .hero-right{display:none !important}
   </div>
   <div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
 
+  <!-- BOARD WRAP -->
+  <div class="board-wrap">
+
+  <!-- ANVERSO: dashboard normal -->
+  <div class="board-face anverso" id="board-anverso">
   <!-- SECCIONES -->
   <div class="sections">
 
@@ -1134,6 +1220,58 @@ html.mob .hero-right{display:none !important}
     </div>
 
   </div><!-- /sections -->
+  </div><!-- /board-anverso -->
+
+  <!-- REVERSO: board de logros -->
+  <div class="board-face reverso" id="board-reverso">
+    <div class="reverso-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(251,191,36,.15);
+          display:flex;align-items:center;justify-content:center;font-size:16px;color:#FBBF24">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:var(--t)">Logros</div>
+          <div style="font-size:11px;color:var(--m)" id="reverso-count"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <select id="reverso-fil-proyecto" onchange="filtrarReverso()"
+          style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+          color:var(--m);font-family:inherit;font-size:12px;padding:5px 10px;outline:none;cursor:pointer">
+          <option value="">Proyecto</option>
+        </select>
+        <select id="reverso-fil-grupo" onchange="filtrarReverso()"
+          style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+          color:var(--m);font-family:inherit;font-size:12px;padding:5px 10px;outline:none;cursor:pointer">
+          <option value="">Contacto</option>
+        </select>
+        <select id="reverso-fil-orden" onchange="filtrarReverso()"
+          style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+          color:var(--m);font-family:inherit;font-size:12px;padding:5px 10px;outline:none;cursor:pointer">
+          <option value="az">A–Z</option>
+          <option value="monto-desc">Monto ↓</option>
+          <option value="monto">Monto ↑</option>
+        </select>
+        <button id="reverso-tog-done" onclick="toggleReversoMostrarDone()"
+          style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;
+          color:#22C55E;font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit;font-weight:600">
+          <i class="fas fa-eye-slash"></i> Completados
+        </button>
+        <button onclick="resetReverso()"
+          style="background:none;border:1px solid var(--border);border-radius:8px;
+          color:var(--m);font-size:11px;padding:5px 10px;cursor:pointer;font-family:inherit">
+          <i class="fas fa-rotate-left"></i>
+        </button>
+        <button class="btn-flip active" onclick="flipBoard()">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+      </div>
+    </div>
+    <div id="inv-grid-full"></div>
+  </div><!-- /board-reverso -->
+
+  </div><!-- /board-wrap -->
 </div><!-- /app -->
 
 <script>
@@ -1844,6 +1982,144 @@ function refreshTodo(){
 }
 
 // ══════════════════════════════════════════
+//  FLIP BOARD
+// ══════════════════════════════════════════
+let _boardFlipped = false;
+let _reversoMostrarDone = false;
+
+function flipBoard(){
+  _boardFlipped = !_boardFlipped;
+  const anv = document.getElementById('board-anverso');
+  const rev = document.getElementById('board-reverso');
+  const btn = document.getElementById('btn-flip');
+  anv.classList.toggle('flipped', _boardFlipped);
+  rev.classList.toggle('flipped', _boardFlipped);
+  if(btn){
+    btn.innerHTML = _boardFlipped
+      ? '<i class="fas fa-arrow-left"></i> Dashboard'
+      : '<i class="fas fa-trophy"></i> Logros';
+    btn.classList.toggle('active', _boardFlipped);
+  }
+  if(_boardFlipped) pintarReverso();
+}
+
+function poblarFiltrosReverso(){
+  const proyectos = [...new Set(_logrosRaw.map(it=>it.proyecto))].sort();
+  const grupos    = [...new Set(_logrosRaw.map(it=>it.grupo))].sort();
+  const selP = document.getElementById('reverso-fil-proyecto');
+  const selG = document.getElementById('reverso-fil-grupo');
+  if(selP) selP.innerHTML = '<option value="">Proyecto</option>' + proyectos.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(selG) selG.innerHTML = '<option value="">Contacto</option>' + grupos.map(g=>`<option value="${g}">${g}</option>`).join('');
+}
+
+function filtrarReverso(){ pintarReverso(); }
+
+function toggleReversoMostrarDone(){
+  _reversoMostrarDone = !_reversoMostrarDone;
+  const btn = document.getElementById('reverso-tog-done');
+  if(btn){
+    btn.innerHTML = _reversoMostrarDone
+      ? '<i class="fas fa-eye"></i> Completados'
+      : '<i class="fas fa-eye-slash"></i> Completados';
+    btn.style.background = _reversoMostrarDone ? 'rgba(34,197,94,.2)' : 'rgba(34,197,94,.08)';
+  }
+  pintarReverso();
+}
+
+function resetReverso(){
+  ['reverso-fil-proyecto','reverso-fil-grupo'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const sel=document.getElementById('reverso-fil-orden');
+  if(sel)sel.value='az';
+  if(_reversoMostrarDone) toggleReversoMostrarDone();
+  else pintarReverso();
+}
+
+function pintarReverso(){
+  poblarFiltrosReverso();
+  const filP  = document.getElementById('reverso-fil-proyecto')?.value||'';
+  const filG  = document.getElementById('reverso-fil-grupo')?.value||'';
+  const orden = document.getElementById('reverso-fil-orden')?.value||'az';
+
+  let items = _logrosRaw.filter(it=>{
+    if(!_reversoMostrarDone && it.completado) return false;
+    if(filP && it.proyecto!==filP) return false;
+    if(filG && it.grupo!==filG) return false;
+    return true;
+  });
+
+  if(orden==='az') items.sort((a,b)=>a.concepto.localeCompare(b.concepto,'es'));
+  else if(orden==='monto') items.sort((a,b)=>(Math.abs(a.monto||0))-(Math.abs(b.monto||0)));
+  else if(orden==='monto-desc') items.sort((a,b)=>(Math.abs(b.monto||0))-(Math.abs(a.monto||0)));
+
+  const total = _logrosRaw.length;
+  const done  = _logrosRaw.filter(it=>it.completado).length;
+  const cnt   = document.getElementById('reverso-count');
+  if(cnt) cnt.textContent = `${done} completados · ${total-done} pendientes`;
+
+  const grid = document.getElementById('inv-grid-full');
+  if(!grid) return;
+
+  if(!items.length){
+    grid.innerHTML=`<div style="text-align:center;padding:48px;color:var(--m);grid-column:1/-1">
+      <div style="font-size:48px;margin-bottom:12px">🏆</div>
+      <div style="font-size:14px">${done===total&&total>0?'¡Todos completados! 🎉':'Sin logros aún — agrega desde tu Sheet.'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map((it,i)=>{
+    const icon   = getLogroIcon(it);
+    const label  = it.concepto;
+    const monto  = it.monto?'$ '+Math.abs(it.monto).toLocaleString('es-MX',{minimumFractionDigits:0}):'';
+    const tag    = it.grupo!==it.proyecto?it.grupo:'';
+    const tooltip= [label,monto,it.proyecto,it.fecha].filter(Boolean).join(' · ');
+    const isDone = it.completado;
+    const isInc  = it.incompleto;
+    return `<div class="inv-item${isDone?' done':''}${isInc?' inc':''}"
+      title="${tooltip}" onclick="toggleLogroReverso(${i})">
+      <div class="inv-corner ${isDone?'done':isInc?'warn':'pend'}">
+        <i class="fas fa-${isDone?'check':isInc?'exclamation':'lock'}"></i>
+      </div>
+      <div class="inv-icon" style="opacity:${isDone?.5:1}">${icon}</div>
+      <div class="inv-label" style="color:${isDone?'var(--m)':isInc?'var(--warn)':'var(--t)'};
+        text-decoration:${isDone?'line-through':'none'}">
+        ${label.length>20?label.slice(0,19)+'…':label}
+      </div>
+      ${monto?`<div class="inv-monto" style="opacity:${isDone?.5:1}">${monto}</div>`:''}
+      ${tag?`<div class="inv-tag">${tag}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function toggleLogroReverso(idx){
+  // Mapear idx relativo al array filtrado → índice en _logrosRaw
+  const filP  = document.getElementById('reverso-fil-proyecto')?.value||'';
+  const filG  = document.getElementById('reverso-fil-grupo')?.value||'';
+  let visibles = _logrosRaw.filter(it=>{
+    if(!_reversoMostrarDone && it.completado) return false;
+    if(filP && it.proyecto!==filP) return false;
+    if(filG && it.grupo!==filG) return false;
+    return true;
+  });
+  const item = visibles[idx];
+  if(!item) return;
+  if(item.incompleto){ showToast('⚠ Completa todos los campos en el Sheet primero', false); return; }
+  const nuevoVal = item.completado ? 'No' : 'Sí';
+  item.completado = !item.completado;
+  pintarReverso();
+  if(item.fila){
+    api.marcarLogro(item.fila, nuevoVal)
+      .then(r=>{ if(!r.ok){item.completado=!item.completado;pintarReverso();showToast('Error al guardar',false);}
+                 else showToast(nuevoVal==='Sí'?'✓ Logro completado':'Logro desmarcado',nuevoVal==='Sí'); })
+      .catch(()=>{item.completado=!item.completado;pintarReverso();});
+  } else {
+    showToast(nuevoVal==='Sí'?'✓ Marcado':'Desmarcado', true);
+  }
+}
+
+// ══════════════════════════════════════════
 //  TOOLTIP GLOBAL
 // ══════════════════════════════════════════
 function initTooltip(){
@@ -2162,6 +2438,7 @@ function renderLogros(data) {
 
   _logrosRaw = [...normalizados, ...eventuales];
   poblarFiltrosLogros();
+  poblarFiltrosReverso();
   filtrarLogros();
 }
 
@@ -2324,11 +2601,11 @@ function renderFlujoMensual(data){
 
   body.innerHTML=`<table style="width:max-content;min-width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap">
     <thead>
-      <tr style="border-bottom:1px solid var(--border)">
-        <th style="padding:6px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m)">Mes</th>
-        <th style="padding:6px 12px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#22C55E">Ingresos</th>
-        <th style="padding:6px 12px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--err)">Egresos</th>
-        <th style="padding:6px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m)">Neto (Final)</th>
+      <tr>
+        <th style="padding:6px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m);background:var(--card);border-bottom:1px solid var(--border)">Mes</th>
+        <th style="padding:6px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#22C55E;background:var(--card);border-bottom:1px solid var(--border)">Ingresos</th>
+        <th style="padding:6px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--err);background:var(--card);border-bottom:1px solid var(--border)">Egresos</th>
+        <th style="padding:6px 14px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m);background:var(--card);border-bottom:1px solid var(--border)">Neto (Final)</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
