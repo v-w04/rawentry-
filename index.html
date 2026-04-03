@@ -552,7 +552,7 @@ html,body{
   .sections{
     display:grid;
     /* columna gráfica: 624px */
-    grid-template-columns:300px 624px 624px;
+    grid-template-columns:300px 624px 624px 340px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;
@@ -562,11 +562,11 @@ html,body{
     width:fit-content;
     margin:0 auto;
   }
-  #col1-wrap{grid-column:1;grid-row:1 / span 4;align-self:start}
+  #col1-wrap{grid-column:1;grid-row:1 / span 3;align-self:start}
   #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
   #sec-gastos{grid-column:2;grid-row:1;align-self:start}
-  #sec-flujo{grid-column:2;grid-row:2;align-self:start}
-  #sec-logros{grid-column:2;grid-row:3;align-self:start}
+  #sec-logros{grid-column:2;grid-row:2;align-self:start}
+  #sec-flujo{grid-column:4;grid-row:1;align-self:start}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -689,6 +689,63 @@ html.mob .hero-right{display:none !important}
 /* gráfica incrustada en card Variables */
 #graf-canvas{width:100% !important;display:block;}
 
+/* ── Inventario Logros ── */
+.inv-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(88px,1fr));
+  gap:8px;
+}
+.inv-item{
+  position:relative;border-radius:10px;
+  background:linear-gradient(145deg,#1a2235,#111827);
+  border:1px solid rgba(255,255,255,.12);
+  padding:10px 6px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;transition:all .18s;
+  user-select:none;
+}
+.inv-item:hover{
+  border-color:rgba(251,191,36,.5);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,.4),0 0 12px rgba(251,191,36,.15);
+}
+.inv-item.done{
+  border-color:rgba(34,197,94,.4);
+  background:linear-gradient(145deg,#0f2a1a,#0d1f15);
+}
+.inv-item.done .inv-icon{filter:none}
+.inv-item:not(.done) .inv-icon{filter:grayscale(40%) brightness(.8)}
+.inv-item:not(.done){opacity:.75}
+.inv-corner{
+  position:absolute;top:4px;right:4px;
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:8px;
+}
+.inv-corner.done{background:rgba(34,197,94,.2);color:#22C55E}
+.inv-corner.pend{background:rgba(255,255,255,.06);color:var(--dim)}
+.inv-icon{
+  font-size:28px;line-height:1;margin-bottom:2px;
+  transition:filter .2s;
+}
+.inv-label{
+  font-size:10px;font-weight:700;text-align:center;
+  color:var(--t);line-height:1.2;
+  max-width:80px;word-break:break-word;
+}
+.inv-monto{
+  font-size:10px;font-weight:800;font-variant-numeric:tabular-nums;
+  color:#FBBF24;letter-spacing:-.02em;
+}
+.inv-tag{
+  font-size:9px;padding:1px 6px;border-radius:10px;font-weight:600;
+  background:rgba(255,255,255,.06);color:var(--m);
+}
+.inv-item.inc{
+  border-color:rgba(245,158,11,.3);
+  opacity:.6;
+}
+.inv-corner.warn{background:rgba(245,158,11,.15);color:var(--warn)}
+
 </style>
 </head>
 <body>
@@ -738,7 +795,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0048 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0051 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1022,7 +1079,7 @@ html.mob .hero-right{display:none !important}
       </div>
     </div>
 
-    <!-- ⑥ LOGROS -->
+    <!-- ⑥ LOGROS — inventario RPG -->
     <div class="section" id="sec-logros">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-logros-hdr">
         <div class="sec-hdr-left">
@@ -1031,11 +1088,47 @@ html.mob .hero-right{display:none !important}
           </div>
           <span class="sec-hdr-title">Logros</span>
         </div>
-        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
+        <div class="sec-hdr-right">
+          <span id="logros-count" style="font-size:11px;color:var(--m);font-weight:600"></span>
+          <i class="fas fa-chevron-down sec-chevron"></i>
+        </div>
       </div>
       <div class="sec-body" id="sec-logros-body">
-        <div id="logros-body" style="text-align:center;padding:20px;color:var(--m)">
-          <i class="fas fa-circle-notch fa-spin" style="color:#FBBF24"></i>
+        <!-- Filtros -->
+        <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+          <select id="logros-fil-proyecto" onchange="filtrarLogros()"
+            style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+            color:var(--m);font-family:inherit;font-size:11px;padding:4px 8px;outline:none;cursor:pointer">
+            <option value="">Proyecto</option>
+          </select>
+          <select id="logros-fil-grupo" onchange="filtrarLogros()"
+            style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+            color:var(--m);font-family:inherit;font-size:11px;padding:4px 8px;outline:none;cursor:pointer">
+            <option value="">Contacto</option>
+          </select>
+          <select id="logros-fil-orden" onchange="filtrarLogros()"
+            style="background:var(--card2);border:1px solid var(--border);border-radius:8px;
+            color:var(--m);font-family:inherit;font-size:11px;padding:4px 8px;outline:none;cursor:pointer">
+            <option value="az">A–Z</option>
+            <option value="monto-desc">Monto ↓</option>
+            <option value="monto">Monto ↑</option>
+          </select>
+          <button id="logros-tog-done" onclick="toggleMostrarDone()"
+            style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;
+            color:#22C55E;font-size:10px;padding:4px 8px;cursor:pointer;font-family:inherit;font-weight:600">
+            <i class="fas fa-eye-slash"></i> Completados
+          </button>
+          <button onclick="resetLogros()"
+            style="background:none;border:1px solid var(--border);border-radius:8px;
+            color:var(--m);font-size:10px;padding:4px 8px;cursor:pointer;font-family:inherit">
+            <i class="fas fa-rotate-left"></i>
+          </button>
+        </div>
+        <!-- Grid inventario -->
+        <div id="logros-body" style="padding:12px">
+          <div style="text-align:center;padding:24px;color:var(--m)">
+            <i class="fas fa-circle-notch fa-spin" style="color:#FBBF24;font-size:18px"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -1111,6 +1204,7 @@ const api = {
   agregarALista:     (colIndex, valor) => EN_GAS ? gasRun('agregarALista', colIndex, valor) : apiPost('agregarALista', { colIndex, valor }),
   getLogros:         () => EN_GAS ? gasRun('getLogros') : apiGet('getLogros'),
   getEventuales:     () => EN_GAS ? gasRun('getEventuales') : apiGet('getEventuales'),
+  marcarLogro:       (fila, val) => EN_GAS ? gasRun('marcarLogro', fila, val) : apiPost('marcarLogro', { fila, val }),
 };
 
 // ══════════════════════════════════════════
@@ -1994,6 +2088,204 @@ window.addEventListener('resize', syncFijosHeight);
 
 
 // ══════════════════════════════════════════
+//  LOGROS — inventario RPG
+// ══════════════════════════════════════════
+let _logrosRaw = [];
+let _mostrarDone = false; // por defecto completados ocultos
+
+const LOGROS_ICON_MAP = {
+  'Salud':'🏥','Casa':'🏠','Hogar':'🏠','Ropa':'👕','Educación':'📚',
+  'Futuro':'🚀','Movies':'🎬','Accesorios':'📱','Work':'💼','Foodies':'🍽️',
+  'Servicios':'⚙️','∴':'♾️','Rectificación':'🔄','Lectura':'📖','ITIT':'💻',
+  'Dentista':'🦷','Médico':'🩺','Ojos':'👁️','Botiquín':'💊',
+  'Cerradura':'🔑','Puerta':'🚪','Pantalla':'📺','Proyector':'📽️',
+  'Alfombra':'🪣','Muebles':'🪑','Closet':'🗄️','Baño':'🚿',
+  'iWatch':'⌚','iPhone':'📱','Tintorería':'👔',
+  'Cumpleaños':'🎂','Certificado':'📄','Báscula':'⚖️',
+  'default':'⭐'
+};
+
+function getLogroIcon(it) {
+  const keys  = Object.keys(LOGROS_ICON_MAP);
+  const conc  = String(it.concepto||'').toLowerCase();
+  const grupo = String(it.grupo||'').toLowerCase();
+  const proj  = String(it.proyecto||'').toLowerCase();
+  for(const k of keys){
+    if(k==='default') continue;
+    const kl = k.toLowerCase();
+    if(conc.includes(kl)||grupo.includes(kl)||proj.includes(kl)) return LOGROS_ICON_MAP[k];
+  }
+  if(conc.includes('serie')||conc.includes('anime')||conc.includes('leveling')||conc.includes('hero')||conc.includes('jujutsu')||conc.includes('berserk')||conc.includes('dandadan')||conc.includes('hazbin')||conc.includes('alchemist')||conc.includes('what if')||conc.includes('comida')) return '🎬';
+  if(conc.includes('leer')||conc.includes('lectura')||conc.includes('vero')||conc.includes('pmp')) return '📖';
+  if(conc.includes('calcet')||conc.includes('cinturón')) return '🧦';
+  if(conc.includes('playera')) return '👕';
+  if(conc.includes('mochila')||conc.includes('cierre')) return '🎒';
+  if(conc.includes('shampoo')||conc.includes('cera')||conc.includes('limpieza')) return '🧴';
+  if(conc.includes('cumple')) return '🎂';
+  if(conc.includes('moho')||conc.includes('laminar')||conc.includes('vinil')) return '🏠';
+  if(conc.includes('borgia')||conc.includes('terminar')||conc.includes('itit')) return '💻';
+  if(grupo.includes('movies')) return '🎬';
+  if(grupo.includes('hogar')) return '🏠';
+  if(grupo.includes('ropa')) return '👕';
+  if(grupo.includes('lectura')) return '📖';
+  return LOGROS_ICON_MAP[proj] || LOGROS_ICON_MAP['default'];
+}
+
+function renderLogros(data) {
+  window._logrosData = data;
+  const fromSheet = (data && data.items) ? data.items : [];
+
+  // Cada fila es independiente — sin herencia. Campos vacíos = "Sin X"
+  const normalizados = fromSheet.map((it, i) => {
+    const proyecto   = (it.proyecto && it.proyecto.trim()) ? it.proyecto.trim() : 'Sin Proyecto';
+    const grupo      = (it.contacto && it.contacto.trim()) ? it.contacto.trim() : 'Sin Contacto';
+    const concepto   = (it.concepto && it.concepto.trim()) ? it.concepto.trim() : 'Sin Concepto';
+    const monto      = (typeof it.ie === 'number') ? it.ie : null;
+    const fecha      = (it.recurrencia && it.recurrencia !== '-' && it.recurrencia !== 'null') ? it.recurrencia : '';
+    const desc       = (it.descripcion && it.descripcion.trim()) ? it.descripcion.trim() : '';
+    const completado = (it.completado === 'Sí' || it.completado === 'Si' || it.completado === 'sí');
+    const incompleto = proyecto==='Sin Proyecto'||grupo==='Sin Contacto'||concepto==='Sin Concepto';
+    return { proyecto, grupo, concepto, monto, fecha, desc, completado, incompleto, fila: it.fila };
+  });
+
+  const eventuales = (window._eventualesData || []).map(e=>({
+    proyecto:   (e.proyecto && e.proyecto.trim()) ? e.proyecto.trim() : 'Sin Proyecto',
+    grupo:      (e.tema && e.tema.trim())         ? e.tema.trim()     : 'Sin Contacto',
+    concepto:   (e.subtema && e.subtema.trim())   ? e.subtema.trim()  : 'Sin Concepto',
+    monto:      e.montoAprox||null,
+    fecha:      e.fechaPropuesta||'',
+    desc:       e.descripcion||'',
+    completado: false,
+    incompleto: !e.proyecto||!e.tema||!e.subtema,
+    fila:       null
+  }));
+
+  _logrosRaw = [...normalizados, ...eventuales];
+  poblarFiltrosLogros();
+  filtrarLogros();
+}
+
+function renderEventuales(data) {
+  window._eventualesData = data;
+  if(window._logrosData !== undefined) renderLogros(window._logrosData);
+}
+
+function poblarFiltrosLogros() {
+  const proyectos = [...new Set(_logrosRaw.map(it=>it.proyecto))].sort();
+  const grupos    = [...new Set(_logrosRaw.map(it=>it.grupo))].sort();
+  const selP = document.getElementById('logros-fil-proyecto');
+  const selG = document.getElementById('logros-fil-grupo');
+  if(selP) selP.innerHTML = '<option value="">Proyecto</option>' + proyectos.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(selG) selG.innerHTML = '<option value="">Contacto</option>' + grupos.map(g=>`<option value="${g}">${g}</option>`).join('');
+}
+
+function toggleMostrarDone(){
+  _mostrarDone = !_mostrarDone;
+  const btn = document.getElementById('logros-tog-done');
+  if(btn){
+    btn.innerHTML = _mostrarDone
+      ? '<i class="fas fa-eye"></i> Completados'
+      : '<i class="fas fa-eye-slash"></i> Completados';
+    btn.style.background = _mostrarDone ? 'rgba(34,197,94,.2)' : 'rgba(34,197,94,.08)';
+  }
+  filtrarLogros();
+}
+
+function filtrarLogros() {
+  const filP  = document.getElementById('logros-fil-proyecto')?.value || '';
+  const filG  = document.getElementById('logros-fil-grupo')?.value || '';
+  const orden = document.getElementById('logros-fil-orden')?.value || 'az';
+
+  let items = _logrosRaw.filter(it => {
+    if(!_mostrarDone && it.completado) return false;
+    if(filP && it.proyecto !== filP) return false;
+    if(filG && it.grupo !== filG) return false;
+    return true;
+  });
+
+  if(orden==='az') items.sort((a,b)=>a.concepto.localeCompare(b.concepto,'es'));
+  else if(orden==='monto') items.sort((a,b)=>(Math.abs(a.monto||0))-(Math.abs(b.monto||0)));
+  else if(orden==='monto-desc') items.sort((a,b)=>(Math.abs(b.monto||0))-(Math.abs(a.monto||0)));
+
+  pintarInventario(items);
+}
+
+function esDone(it){ return it.completado; }
+
+function resetLogros(){
+  ['logros-fil-proyecto','logros-fil-grupo'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('logros-fil-orden').value='az';
+  if(_mostrarDone) toggleMostrarDone();
+  else filtrarLogros();
+}
+
+function pintarInventario(items){
+  const body = document.getElementById('logros-body');
+  const cnt  = document.getElementById('logros-count');
+  if(!body) return;
+  const total = _logrosRaw.length;
+  const done  = _logrosRaw.filter(it=>it.completado).length;
+  if(cnt) cnt.textContent = `${done}/${total}`;
+
+  if(!items.length){
+    body.innerHTML=`<div style="text-align:center;padding:32px 16px">
+      <div style="font-size:36px;margin-bottom:8px">🏆</div>
+      <div style="color:var(--m);font-size:13px">${_mostrarDone||!done?'Sin logros aún —<br>agrega desde tu Sheet.':'Todos los pendientes completados 🎉'}</div>
+    </div>`;
+    return;
+  }
+
+  const cards = items.map((it,i)=>{
+    const icon    = getLogroIcon(it);
+    const label   = it.concepto;
+    const monto   = it.monto ? '$ '+Math.abs(it.monto).toLocaleString('es-MX',{minimumFractionDigits:0}) : '';
+    const tag     = it.grupo !== it.proyecto ? it.grupo : '';
+    const tooltip = [label, monto, it.proyecto, it.fecha].filter(Boolean).join(' · ');
+    const isDone  = it.completado;
+    const isInc   = it.incompleto; // faltan campos
+
+    return `<div class="inv-item${isDone?' done':''}${isInc?' inc':''}"
+      title="${tooltip}" onclick="toggleLogro(${i},event)">
+      <div class="inv-corner ${isDone?'done':isInc?'warn':'pend'}">
+        <i class="fas fa-${isDone?'check':isInc?'exclamation':'lock'}"></i>
+      </div>
+      <div class="inv-icon" style="opacity:${isDone?.5:1}">${icon}</div>
+      <div class="inv-label" style="color:${isDone?'var(--m)':isInc?'var(--warn)':'var(--t)'};
+        text-decoration:${isDone?'line-through':'none'}">
+        ${label.length>18?label.slice(0,17)+'…':label}
+      </div>
+      ${monto?`<div class="inv-monto" style="opacity:${isDone?.5:1}">${monto}</div>`:''}
+      ${tag?`<div class="inv-tag">${tag}</div>`:''}
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `<div class="inv-grid">${cards}</div>`;
+}
+
+function toggleLogro(idx, event){
+  if(event) event.stopPropagation();
+  const item = _logrosRaw[idx];
+  if(!item) return;
+  if(item.incompleto){
+    showToast('⚠ Completa todos los campos en el Sheet primero', false);
+    return;
+  }
+  const nuevoVal = item.completado ? 'No' : 'Sí';
+  item.completado = !item.completado;
+  filtrarLogros(); // re-pintar inmediato
+  if(item.fila){
+    api.marcarLogro(item.fila, nuevoVal)
+      .then(r=>{ if(!r.ok) { item.completado=!item.completado; filtrarLogros(); showToast('Error al guardar', false); }
+                 else showToast(nuevoVal==='Sí'?'✓ Logro completado':'Logro desmarcado', nuevoVal==='Sí'); })
+      .catch(()=>{ item.completado=!item.completado; filtrarLogros(); });
+  } else {
+    showToast(nuevoVal==='Sí'?'✓ Marcado (solo visual — sin fila en Sheet)':'Desmarcado', true);
+  }
+}
+
+// ══════════════════════════════════════════
 //  FLUJO MENSUAL
 // ══════════════════════════════════════════
 function renderFlujoMensual(data){
@@ -2043,106 +2335,7 @@ function renderFlujoMensual(data){
   </table>`;
 }
 
-// ══════════════════════════════════════════
-//  EVENTUALES (cols R-Z de Pagos)
-// ══════════════════════════════════════════
-function renderEventuales(data){
-  // Los eventuales se muestran dentro de Logros si no hay hoja Logros
-  // Por ahora solo guardamos los datos para usarlos en renderLogros
-  window._eventualesData = data;
-  // Si logros ya cargó, re-renderizar
-  if(window._logrosData !== undefined) renderLogros(window._logrosData);
-}
-
-// ══════════════════════════════════════════
-//  LOGROS
-// ══════════════════════════════════════════
-function renderLogros(data){
-  window._logrosData = data;
-  const body = document.getElementById('logros-body');
-  
-  // Combinar logros del sheet Logros + Eventuales de Pagos
-  const eventuales = window._eventualesData || [];
-  const logrosSheet = (data && data.items) ? data.items : [];
-  const todos = [...logrosSheet, ...eventuales];
-
-  if(!todos.length){
-    body.innerHTML=`<div style="padding:24px;text-align:center">
-      <div style="font-size:28px;margin-bottom:8px">🏆</div>
-      <div style="color:var(--m);font-size:13px">Sin logros registrados aún.<br>Agrégalos desde tu Sheet.</div>
-    </div>`;
-    return;
-  }
-
-  // Agrupar por Proyecto
-  const grupos = {};
-  todos.forEach(it=>{
-    const proj = it.proyecto||it.tema||'Sin proyecto';
-    if(!grupos[proj]) grupos[proj]=[];
-    grupos[proj].push(it);
-  });
-
-  const ICON_MAP = {
-    'Salud':'fa-heart-pulse','Hogar':'fa-house','Ropa':'fa-shirt',
-    'Educación':'fa-graduation-cap','Futuro':'fa-rocket','Movies':'fa-film',
-    'Accesorios':'fa-mobile-screen','∴':'fa-infinity','default':'fa-star'
-  };
-  const COLOR_MAP = {
-    'Salud':'#EF4444','Hogar':'#3B82F6','Ropa':'#EC4899',
-    'Educación':'#8B5CF6','Futuro':'#06B6D4','Movies':'#F59E0B',
-    'Accesorios':'#10B981','∴':'#FBBF24','default':'#64748B'
-  };
-
-  const html = Object.entries(grupos).map(([proj, items])=>{
-    const ico   = ICON_MAP[proj]  || ICON_MAP['default'];
-    const color = COLOR_MAP[proj] || COLOR_MAP['default'];
-    const completados = items.filter(it=>it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí'||it.ie==='E').length;
-    const pct = items.length ? Math.round(completados/items.length*100) : 0;
-
-    const filas = items.map(it=>{
-      const desc  = it.descripcion||it.subtema||it.concepto||'—';
-      const monto = it.montoAprox||it.monto;
-      const done  = it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
-      const {txt} = monto ? fmtMoneda(monto) : {txt:'—'};
-      return `<div style="display:flex;align-items:flex-start;gap:10px;
-        padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04)">
-        <div style="width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:1px;
-          background:${done?'rgba(34,197,94,.15)':'rgba(255,255,255,.06)'};
-          border:1px solid ${done?'rgba(34,197,94,.4)':'rgba(255,255,255,.12)'};
-          display:flex;align-items:center;justify-content:center;font-size:10px">
-          ${done?'<i class="fas fa-check" style="color:#22C55E"></i>':''}
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:${done?'var(--m)':'var(--t)'};
-            text-decoration:${done?'line-through':'none'};line-height:1.3">${desc}</div>
-          ${it.fecha||it.fechaPropuesta?`<div style="font-size:11px;color:var(--m);margin-top:2px">${it.fecha||it.fechaPropuesta||''}</div>`:''}
-        </div>
-        ${monto?`<div style="font-size:12px;font-weight:700;color:var(--m);font-variant-numeric:tabular-nums;flex-shrink:0">${txt}</div>`:''}
-      </div>`;
-    }).join('');
-
-    return `<div style="margin:0 0 0 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:26px;height:26px;border-radius:8px;background:${color}22;
-            display:flex;align-items:center;justify-content:center;font-size:12px;color:${color}">
-            <i class="fas ${ico}"></i>
-          </div>
-          <span style="font-size:13px;font-weight:700;color:var(--t)">${proj}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--m)">${completados}/${items.length}</span>
-          <div style="width:60px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div>
-          </div>
-        </div>
-      </div>
-      ${filas}
-    </div>`;
-  }).join('');
-
-  body.innerHTML = html || `<div style="padding:24px;text-align:center;color:var(--m)">Sin datos</div>`;
-}
+// renderLogros y renderEventuales definidos arriba
 // ══════════════════════════════════════════
 //  GRÁFICA FIJOS
 // ══════════════════════════════════════════
