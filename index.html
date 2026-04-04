@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0011 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0012 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2903,12 +2903,14 @@ function resetFiltrosMes(){
 }
 
 function calcularNivelesFiltrados(){
-  if(!_necData || !_necData.rawPorMes) return _necData ? _necData.niveles : [];
-  const mesesActivos = _necMesesSeleccionados.size > 0
-    ? [..._necMesesSeleccionados]
-    : Object.keys(_necData.rawPorMes);
+  if(!_necData) return [];
+  // Si no hay rawPorMes (GAS viejo) o no hay filtros activos → usar niveles directos
+  if(!_necData.rawPorMes || _necMesesSeleccionados.size === 0) {
+    return _necData.niveles || [];
+  }
+  // Con filtros de mes → recalcular desde rawPorMes
   const sumas = {};
-  mesesActivos.forEach(mes=>{
+  [..._necMesesSeleccionados].forEach(mes=>{
     (_necData.rawPorMes[mes]||[]).forEach(({key,monto,concepto})=>{
       if(!sumas[key]) sumas[key]={total:0,conceptos:[]};
       sumas[key].total += monto;
@@ -2940,12 +2942,10 @@ function switchVistaNec(vista){
 function dibujarNecesidades(){
   const cont = document.getElementById('nec-container');
   if(!cont) return;
-  if(!_necData){
-    cont.innerHTML='<div style="padding:40px;text-align:center;color:var(--m);font-size:13px">Cargando…</div>';
+  if(!_necData || (!_necData.niveles && !_necData.rawPorMes)){
+    cont.innerHTML='<div style="padding:40px;text-align:center;color:var(--m);font-size:13px">Cargando datos de necesidades…</div>';
     return;
   }
-  // _necData puede tener niveles todos en 0 si no hay datos en col K aún
-  // pero seguimos mostrando la estructura vacía
   // Calcular niveles según filtro activo
   const nivelesFiltrados = calcularNivelesFiltrados();
   // Periodo en el label
