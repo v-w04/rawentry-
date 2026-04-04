@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0013 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0014 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2869,6 +2869,15 @@ let _necMesesSeleccionados = new Set();
 
 function renderNecesidades(data){
   _necData = data;
+  // Debug — quitar después
+  console.log('[NEC response]', JSON.stringify({
+    ok: data.ok,
+    error: data.error,
+    nivelesCount: data.niveles ? data.niveles.length : 'undefined',
+    niveles: data.niveles,
+    mesesDisponibles: data.mesesDisponibles,
+    periodo: data.periodo
+  }));
   if(_boardFlipped){
     poblarFiltrosMes();
     dibujarNecesidades();
