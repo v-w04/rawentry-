@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0007 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0009 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1385,6 +1385,7 @@ const api = {
   getEventuales:     () => EN_GAS ? gasRun('getEventuales') : apiGet('getEventuales'),
   marcarLogro:       (fila, val) => EN_GAS ? gasRun('marcarLogro', fila, val) : apiPost('marcarLogro', { fila, val }),
   getNecesidades:    () => EN_GAS ? gasRun('getNecesidades') : apiGet('getNecesidades'),
+  getFlujoPorMes:    () => EN_GAS ? gasRun('getFlujoPorMes') : apiGet('getFlujoPorMes'),
 };
 
 // ══════════════════════════════════════════
@@ -1451,6 +1452,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   api.getEventuales().then(renderEventuales).catch(()=>{});
   api.getLogros().then(renderLogros).catch(()=>{});
   api.getNecesidades().then(renderNecesidades).catch(()=>{});
+  api.getFlujoPorMes().then(renderFlujoMensual).catch(()=>{});
   initTooltip();
 });
 
@@ -1886,7 +1888,7 @@ function renderAnualidad(data){
 // ══════════════════════════════════════════
 //  GASTOS POR MES
 // ══════════════════════════════════════════
-function onDatosMes(data){datosMes=data;renderGastos();initGraficas(data);renderFlujoMensual(data);}
+function onDatosMes(data){datosMes=data;renderGastos();initGraficas(data);}
 function renderGastos(){
   const body=document.getElementById('gastos-body');
   const data=datosMes;
@@ -2036,7 +2038,7 @@ function refreshTodo(){
   const btn=document.getElementById('btn-rf');
   btn.classList.add('spinning');btn.disabled=true;
   progStart();
-  let n=7,done=0;
+  let n=8,done=0;
   const tick=()=>{done++;if(done>=n){btn.classList.remove('spinning');btn.disabled=false;progDone();showToast('Datos actualizados');}};
   consultarSaldo();tick();
   api.getFijos().then(d=>{renderEntes(d);tick();}).catch(tick);
@@ -2045,6 +2047,7 @@ function refreshTodo(){
   api.getEventuales().then(d=>{renderEventuales(d);tick();}).catch(tick);
   api.getLogros().then(d=>{renderLogros(d);tick();}).catch(tick);
   api.getNecesidades().then(d=>{renderNecesidades(d);tick();}).catch(tick);
+  api.getFlujoPorMes().then(d=>{renderFlujoMensual(d);tick();}).catch(tick);
 }
 
 // ══════════════════════════════════════════
@@ -2106,7 +2109,7 @@ function pintarReverso(){
   poblarFiltrosReverso();
   const filP  = document.getElementById('reverso-fil-proyecto')?.value||'';
   const filG  = document.getElementById('reverso-fil-grupo')?.value||'';
-  const orden = document.getElementById('reverso-fil-orden')?.value||'az';
+  const orden = _ordenLogros || 'az';
 
   let items = _logrosRaw.filter(it=>{
     if(!_reversoMostrarDone && it.completado) return false;
@@ -2687,47 +2690,35 @@ function renderFlujoMensual(data){
   if(!data||!data.meses||!data.meses.length){
     body.innerHTML='<div style="padding:16px;color:var(--m);text-align:center">Sin datos</div>';return;
   }
-  const MESES_ORDER=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const mesActual = MESES_ES[new Date().getMonth()];
-
-  // Usar la misma clase .tbl para consistencia visual
   const TH = (txt,align,color) =>
-    `<th class="${color?'':''}` +
-    `" style="padding:6px 10px;font-size:11px;font-weight:700;text-transform:uppercase;` +
-    `letter-spacing:.4px;color:${color||'var(--m)'};background:var(--card);` +
-    `border-bottom:1px solid var(--border);white-space:nowrap;text-align:${align}">${txt}</th>`;
+    `<th style="padding:6px 10px;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.4px;color:${color||'var(--m)'};background:var(--card);
+    border-bottom:1px solid var(--border);white-space:nowrap;text-align:${align}">${txt}</th>`;
 
   const rows = data.meses.map(mes=>{
-    const entes = data.grupos[mes]||[];
-    let ingresos=0, egresos=0, neto=null;
-    entes.forEach(e=>{
-      if(e.ente==='Final'){ neto=e.monto; return; }
-      if(e.monto===null) return;
-      if(e.monto>0) ingresos+=e.monto;
-      else egresos+=e.monto;
-    });
-    const esActual = mes===mesActual;
-    const fmtMXN = v => '$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2});
-    const tdStyle = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right`;
-    const mesCol  = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:${esActual?'700':'500'};color:${esActual?'var(--p)':'var(--t)'};white-space:nowrap`;
+    const g = data.grupos[mes]||{ingresos:0,egresos:0,excedente:null};
+    const ingresos   = g.ingresos||0;
+    const egresos    = g.egresos||0;
+    const excedente  = g.excedente!==undefined ? g.excedente : (ingresos+egresos);
+    const esActual   = mes===mesActual;
+    const fmtMXN = v=>'$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2});
+    const td = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right`;
+    const mc = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:${esActual?'700':'500'};color:${esActual?'var(--p)':'var(--t)'};white-space:nowrap`;
 
-    const ingCell  = ingresos===0
-      ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
-      : `<td style="${tdStyle};color:var(--ok);font-weight:600">${fmtMXN(ingresos)}</td>`;
-
-    const egrCell  = egresos===0
-      ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
-      : `<td style="${tdStyle};color:var(--err);font-weight:600">− ${fmtMXN(egresos)}</td>`;
-
-    const netoCell = neto===null
-      ? `<td style="${tdStyle};color:var(--m)">—</td>`
-      : neto===0
-        ? `<td style="${tdStyle};color:var(--m)">$ 0</td>`
-        : `<td style="${tdStyle};color:${neto>0?'var(--ok)':'var(--err)'};font-weight:700">${neto<0?'− ':''}${fmtMXN(neto)}</td>`;
+    const ingCell = ingresos===0
+      ? `<td style="${td};color:var(--m)">$ 0</td>`
+      : `<td style="${td};color:var(--ok);font-weight:600">${fmtMXN(ingresos)}</td>`;
+    const egrCell = egresos===0
+      ? `<td style="${td};color:var(--m)">$ 0</td>`
+      : `<td style="${td};color:var(--err);font-weight:600">− ${fmtMXN(Math.abs(egresos))}</td>`;
+    const excCell = excedente===0
+      ? `<td style="${td};color:var(--m)">$ 0</td>`
+      : `<td style="${td};color:${excedente>0?'#A78BFA':'var(--err)'};font-weight:700">${excedente<0?'− ':''}${fmtMXN(excedente)}</td>`;
 
     return `<tr style="${esActual?'background:rgba(59,130,246,.07)':''}">
-      <td style="${mesCol}">${mes}${esActual?' 📍':''}</td>
-      ${ingCell}${egrCell}${netoCell}
+      <td style="${mc}">${mes}${esActual?' 📍':''}</td>
+      ${ingCell}${egrCell}${excCell}
     </tr>`;
   }).join('');
 
@@ -2736,7 +2727,7 @@ function renderFlujoMensual(data){
       ${TH('Mes','left','')}
       ${TH('Ingresos','right','var(--ok)')}
       ${TH('Egresos','right','var(--err)')}
-      ${TH('Neto (Final)','right','')}
+      ${TH('Excedente','right','#A78BFA')}
     </tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
