@@ -772,50 +772,59 @@ html.mob .hero-right{display:none !important}
   grid-template-columns:repeat(auto-fill,minmax(88px,1fr));
   gap:8px;
 }
+/* Grid del reverso: fijo 5 columnas */
+#inv-grid-full{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
 .inv-item{
-  position:relative;border-radius:10px;
+  position:relative;border-radius:12px;
   background:linear-gradient(145deg,#1a2235,#111827);
   border:1px solid rgba(255,255,255,.12);
-  padding:10px 6px 8px;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:14px 8px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
   cursor:pointer;transition:all .18s;
-  user-select:none;
+  user-select:none;min-height:110px;
 }
 .inv-item:hover{
   border-color:rgba(251,191,36,.5);
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(0,0,0,.4),0 0 12px rgba(251,191,36,.15);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 16px rgba(251,191,36,.15);
 }
 .inv-item.done{
-  border-color:rgba(74,222,128,.3);
-  background:linear-gradient(145deg,#0f2a1a,#0d1f15);
+  border-color:rgba(74,222,128,.35);
+  background:linear-gradient(145deg,#0d2218,#0a1a11);
+  box-shadow:0 0 12px rgba(74,222,128,.1);
 }
-.inv-item.done .inv-icon{filter:none}
-.inv-item:not(.done) .inv-icon{filter:grayscale(40%) brightness(.8)}
-.inv-item:not(.done){opacity:.75}
+.inv-item.done .inv-icon{filter:none;opacity:1}
+.inv-item:not(.done) .inv-icon{filter:grayscale(30%) brightness(.85)}
+.inv-item:not(.done){opacity:.8}
 .inv-corner{
-  position:absolute;top:4px;right:4px;
-  width:16px;height:16px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:8px;
+  position:absolute;top:5px;right:5px;
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:9px;
 }
-.inv-corner.done{background:rgba(34,197,94,.2);color:var(--ok)}
-.inv-corner.pend{background:rgba(255,255,255,.06);color:var(--dim)}
+.inv-corner.done{background:rgba(74,222,128,.25);color:var(--ok)}
+.inv-corner.pend{background:rgba(255,255,255,.07);color:var(--dim)}
 .inv-icon{
-  font-size:28px;line-height:1;margin-bottom:2px;
-  transition:filter .2s;
+  width:32px;height:32px;margin-bottom:3px;
+  display:flex;align-items:center;justify-content:center;
+  transition:filter .2s,opacity .2s;
 }
+.inv-icon svg{width:28px;height:28px}
 .inv-label{
   font-size:10px;font-weight:700;text-align:center;
-  color:var(--t);line-height:1.2;
-  max-width:80px;word-break:break-word;
+  color:var(--t);line-height:1.3;
+  max-width:90px;word-break:break-word;
 }
 .inv-monto{
   font-size:10px;font-weight:800;font-variant-numeric:tabular-nums;
   color:#FBBF24;letter-spacing:-.02em;
 }
 .inv-tag{
-  font-size:9px;padding:1px 6px;border-radius:10px;font-weight:600;
-  background:rgba(255,255,255,.06);color:var(--m);
+  font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;
+  background:rgba(255,255,255,.07);color:var(--m);
 }
 .inv-item.inc{
   border-color:rgba(245,158,11,.3);
@@ -872,7 +881,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0003 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0004 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2406,15 +2415,40 @@ let _logrosRaw = [];
 let _mostrarDone = false; // por defecto completados ocultos
 
 const LOGROS_ICON_MAP = {
-  'Salud':'🏥','Casa':'🏠','Hogar':'🏠','Ropa':'👕','Educación':'📚',
-  'Futuro':'🚀','Movies':'🎬','Accesorios':'📱','Work':'💼','Foodies':'🍽️',
-  'Servicios':'⚙️','∴':'♾️','Rectificación':'🔄','Lectura':'📖','ITIT':'💻',
-  'Dentista':'🦷','Médico':'🩺','Ojos':'👁️','Botiquín':'💊',
-  'Cerradura':'🔑','Puerta':'🚪','Pantalla':'📺','Proyector':'📽️',
-  'Alfombra':'🪣','Muebles':'🪑','Closet':'🗄️','Baño':'🚿',
-  'iWatch':'⌚','iPhone':'📱','Tintorería':'👔',
-  'Cumpleaños':'🎂','Certificado':'📄','Báscula':'⚖️',
-  'default':'⭐'
+  'Salud':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+  'Casa':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  'Hogar':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  'Ropa':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>`,
+  'Educación':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+  'Futuro':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+  'Movies':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>`,
+  'Accesorios':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  'Work':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+  'Foodies':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>`,
+  'Servicios':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M20 12h-2M17.66 17.66l-1.41-1.41M12 20v-2M6.34 17.66l1.41-1.41M4 12h2M6.34 6.34l1.41 1.41"/></svg>`,
+  '∴':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+  'Rectificación':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.96"/></svg>`,
+  'Lectura':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
+  'ITIT':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  'Dentista':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 1-.3 2.1-.8 3L14 22h-4L7.8 10A5.07 5.07 0 0 1 7 7a5 5 0 0 1 5-5z"/></svg>`,
+  'Médico':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+  'Ojos':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  'Botiquín':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+  'Cerradura':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  'Puerta':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M14 12h.01"/></svg>`,
+  'Pantalla':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  'Proyector':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7 L19 7 L19 17 L5 17 Z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+  'Alfombra':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>`,
+  'Muebles':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0z"/></svg>`,
+  'Closet':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="7.5" y1="12" x2="7.5" y2="12.01"/><line x1="16.5" y1="12" x2="16.5" y2="12.01"/></svg>`,
+  'Baño':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 Q9 2 12 2 Q15 2 15 6"/><ellipse cx="12" cy="14" rx="7" ry="5"/><line x1="12" y1="19" x2="12" y2="22"/></svg>`,
+  'iWatch':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="7" ry="7"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  'iPhone':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  'Tintorería':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>`,
+  'Cumpleaños':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  'Certificado':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+  'Báscula':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 L8 9 M13 3 L16 9"/></svg>`,
+  'default':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
 };
 
 function getLogroIcon(it) {
@@ -2427,19 +2461,21 @@ function getLogroIcon(it) {
     const kl = k.toLowerCase();
     if(conc.includes(kl)||grupo.includes(kl)||proj.includes(kl)) return LOGROS_ICON_MAP[k];
   }
-  if(conc.includes('serie')||conc.includes('anime')||conc.includes('leveling')||conc.includes('hero')||conc.includes('jujutsu')||conc.includes('berserk')||conc.includes('dandadan')||conc.includes('hazbin')||conc.includes('alchemist')||conc.includes('what if')||conc.includes('comida')) return '🎬';
-  if(conc.includes('leer')||conc.includes('lectura')||conc.includes('vero')||conc.includes('pmp')) return '📖';
-  if(conc.includes('calcet')||conc.includes('cinturón')) return '🧦';
-  if(conc.includes('playera')) return '👕';
-  if(conc.includes('mochila')||conc.includes('cierre')) return '🎒';
-  if(conc.includes('shampoo')||conc.includes('cera')||conc.includes('limpieza')) return '🧴';
-  if(conc.includes('cumple')) return '🎂';
-  if(conc.includes('moho')||conc.includes('laminar')||conc.includes('vinil')) return '🏠';
-  if(conc.includes('borgia')||conc.includes('terminar')||conc.includes('itit')) return '💻';
-  if(grupo.includes('movies')) return '🎬';
-  if(grupo.includes('hogar')) return '🏠';
-  if(grupo.includes('ropa')) return '👕';
-  if(grupo.includes('lectura')) return '📖';
+  if(conc.includes('serie')||conc.includes('anime')||conc.includes('leveling')||
+     conc.includes('hero')||conc.includes('jujutsu')||conc.includes('berserk')||
+     conc.includes('dandadan')||conc.includes('hazbin')||conc.includes('alchemist')||
+     conc.includes('what if')||conc.includes('comida')) return LOGROS_ICON_MAP['Movies'];
+  if(conc.includes('leer')||conc.includes('lectura')||conc.includes('vero')||conc.includes('pmp')) return LOGROS_ICON_MAP['Lectura'];
+  if(conc.includes('calcet')||conc.includes('cinturón')||conc.includes('playera')||conc.includes('cierre')) return LOGROS_ICON_MAP['Ropa'];
+  if(conc.includes('mochila')) return LOGROS_ICON_MAP['Accesorios'];
+  if(conc.includes('shampoo')||conc.includes('cera')||conc.includes('limpieza')) return LOGROS_ICON_MAP['Servicios'];
+  if(conc.includes('cumple')) return LOGROS_ICON_MAP['Cumpleaños'];
+  if(conc.includes('moho')||conc.includes('laminar')||conc.includes('vinil')||conc.includes('baño')) return LOGROS_ICON_MAP['Hogar'];
+  if(conc.includes('borgia')||conc.includes('terminar')||conc.includes('itit')) return LOGROS_ICON_MAP['ITIT'];
+  if(grupo.includes('movies')) return LOGROS_ICON_MAP['Movies'];
+  if(grupo.includes('hogar')) return LOGROS_ICON_MAP['Hogar'];
+  if(grupo.includes('ropa')) return LOGROS_ICON_MAP['Ropa'];
+  if(grupo.includes('lectura')) return LOGROS_ICON_MAP['Lectura'];
   return LOGROS_ICON_MAP[proj] || LOGROS_ICON_MAP['default'];
 }
 
@@ -2834,14 +2870,16 @@ function dibujarPiramide(cont){
   // Renderizar de 5 (cima) a 1 (base) — pirámide visual top→bottom
   const pisos = [...NEC_NIVELES].reverse(); // 5,4,3,2,1
 
+  const totalSum = pisos.reduce((s,t)=>s+Math.abs(dataNivel(t.key).total||0),0);
   const html = pisos.map((niv,i)=>{
     const d    = dataNivel(niv.key);
     const abs  = Math.abs(d.total||0);
-    const pct  = abs/maxAbs;
-    // Ancho: nivel5=35%, nivel4=50%, nivel3=65%, nivel2=80%, nivel1=100%
-    const ancho = 35 + (parseInt(niv.key)-1)*16.25;
+    // Ancho proporcional al monto: base 20% mínimo, crece hasta 100% según gasto real
+    const pctMonto = abs/maxAbs;
+    const ancho = abs===0 ? 20 : Math.max(22, 20 + 80*pctMonto);
+    const pct   = totalSum>0 ? abs/totalSum : 0;
     const vacio = abs===0;
-    const monto = vacio?'Sin registros':'$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
+    const monto = vacio?'—':'$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
     const tops  = (d.conceptos||[]).slice(0,3).join(' · ');
 
     return `<div style="width:${ancho}%;margin:0 auto 6px;transition:width .5s cubic-bezier(.4,0,.2,1)">
@@ -2849,7 +2887,7 @@ function dibujarPiramide(cont){
         background:${vacio?'rgba(255,255,255,.03)':'linear-gradient(135deg,'+niv.color+'18,'+niv.color+'08)'};
         border:1px solid ${vacio?'rgba(255,255,255,.06)':niv.color+'55'};
         border-radius:10px;padding:12px 16px;
-        box-shadow:${vacio?'none':'0 0 20px '+niv.glow};
+        box-shadow:${vacio?'none':`inset 0 1px 0 ${niv.color}30, 0 4px 20px ${niv.glow}`};
         transition:all .3s">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <div style="display:flex;align-items:center;gap:10px;min-width:0">
@@ -2867,7 +2905,7 @@ function dibujarPiramide(cont){
             <div style="font-size:14px;font-weight:800;color:${vacio?'var(--dim)':niv.color};font-variant-numeric:tabular-nums">
               ${vacio?'—':monto}
             </div>
-            ${vacio?'<div style="font-size:9px;color:var(--warn);font-weight:700;margin-top:2px">⚠ Descuidado</div>':'<div style="font-size:9px;color:var(--m);margin-top:2px">'+Math.round(pct*100)+'% del total</div>'}
+            ${vacio?'<div style="font-size:9px;color:var(--warn);font-weight:700;margin-top:2px">⚠ Descuidado</div>':`<div style='font-size:9px;color:var(--m);margin-top:2px'>${Math.round(pct*100)}% del total</div>`}
           </div>
         </div>
         <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:10px;overflow:hidden">
@@ -2918,6 +2956,7 @@ function dibujarRadar(cont){
     options:{
       responsive:true,
       maintainAspectRatio:true,
+      aspectRatio:1.2,
       plugins:{
         legend:{display:false},
         tooltip:{
