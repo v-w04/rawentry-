@@ -692,34 +692,76 @@ html.mob .panel-overlay.show{display:block !important}
   flex:1;
   overflow:hidden;
 }
+
+/* ── Edge zones de navegación ── */
+.edge-zone{
+  position:absolute;top:0;bottom:0;width:48px;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .25s ease;
+  pointer-events:all;
+}
+.edge-zone.left { left:0;
+  background:linear-gradient(90deg,rgba(59,130,246,.18),transparent);
+  border-radius:0 12px 12px 0;
+}
+.edge-zone.right{ right:0;
+  background:linear-gradient(-90deg,rgba(139,92,246,.18),transparent);
+  border-radius:12px 0 0 12px;
+}
+.edge-zone:hover{ opacity:1 }
+.edge-zone .edge-arrow{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:rgba(255,255,255,.6);
+  backdrop-filter:blur(8px);
+  transition:background .2s,transform .2s;
+}
+.edge-zone:hover .edge-arrow{
+  background:rgba(255,255,255,.15);
+  transform:scale(1.1);
+}
+/* Ocultar edge zones en anverso si no hay destino */
+.edge-zone.disabled{pointer-events:none;opacity:0 !important}
+/* ── Carrusel 3 pantallas: Logros ←→ Anverso ←→ Maslow ── */
 .board-face{
-  width:100%;
-  height:100%;
-  transition:transform .55s cubic-bezier(.4,0,.2,1), opacity .55s;
-  backface-visibility:hidden;
-}
-.board-face.anverso{
-  transform:translateX(0);
-  opacity:1;
-}
-.board-face.anverso.flipped{
-  transform:translateX(-110%);
-  opacity:0;
-  pointer-events:none;
-}
-.board-face.reverso{
   position:absolute;
-  top:0;left:0;width:100%;
-  transform:translateX(110%);
-  opacity:0;
-  pointer-events:none;
+  top:0;left:0;width:100%;height:100%;
+  transition:transform .52s cubic-bezier(.4,0,.2,1), opacity .52s;
+  backface-visibility:hidden;
   overflow-y:auto;
+}
+/* Anverso — siempre centrado por defecto */
+.board-face.anverso{
+  transform:translateX(0);opacity:1;pointer-events:all;
+  padding:0;
+}
+/* Cuando va a la derecha (se mueve el anverso para ver Logros a la izq) */
+.board-face.anverso.slide-right{
+  transform:translateX(110%);opacity:0;pointer-events:none;
+}
+/* Cuando va a la izquierda (se mueve el anverso para ver Maslow a la der) */
+.board-face.anverso.slide-left{
+  transform:translateX(-110%);opacity:0;pointer-events:none;
+}
+/* Logros — empieza a la izquierda */
+.board-face.panel-logros{
+  transform:translateX(-110%);opacity:0;pointer-events:none;
   padding:12px 20px 24px;
 }
-.board-face.reverso.flipped{
-  transform:translateX(0);
-  opacity:1;
-  pointer-events:all;
+.board-face.panel-logros.active{
+  transform:translateX(0);opacity:1;pointer-events:all;
+}
+/* Maslow — empieza a la derecha */
+.board-face.panel-maslow{
+  transform:translateX(110%);opacity:0;pointer-events:none;
+  padding:12px 20px 24px;
+}
+.board-face.panel-maslow.active{
+  transform:translateX(0);opacity:1;pointer-events:all;
 }
 
 /* Botón flip */
@@ -736,11 +778,7 @@ html.mob .panel-overlay.show{display:block !important}
 }
 
 /* ══ BOARD REVERSO — Bento Glassmorphism Premium ══ */
-.board-face.reverso{
-  background:radial-gradient(ellipse at 20% 10%,rgba(139,92,246,.06) 0%,transparent 50%),
-             radial-gradient(ellipse at 80% 80%,rgba(59,130,246,.05) 0%,transparent 50%),
-             var(--bg);
-}
+/* reverso sin fondo propio — usa el fondo global con partículas */
 .reverso-header{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:20px;padding-bottom:0;
@@ -1064,7 +1102,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0022 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0025 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1105,8 +1143,11 @@ html.mob .hero-right{display:none !important}
         <span class="chip-dot"></span>
         <span id="chip-txt">Cargando</span>
       </div>
-      <button class="btn-flip" id="btn-flip" onclick="flipBoard()" title="Ver Logros">
-        <i class="fas fa-trophy"></i> Logros
+      <button class="btn-flip" id="btn-logros" onclick="irALogros()" title="Ver Logros">
+        🏆 Logros
+      </button>
+      <button class="btn-flip" id="btn-maslow" onclick="irAMaslow()" title="Ver Maslow">
+        🧠 Maslow
       </button>
       <button class="btn-refresh" id="btn-rf" onclick="refreshTodo()" title="Actualizar">
         <i class="fas fa-arrows-rotate" id="rf-ico"></i>
@@ -1371,7 +1412,7 @@ html.mob .hero-right{display:none !important}
   </div><!-- /board-anverso -->
 
   <!-- REVERSO: board de logros -->
-  <div class="board-face reverso" id="board-reverso">
+  <div class="board-face panel-logros" id="board-logros">
     <div class="reverso-header">
       <!-- Izq: título + contador -->
       <div style="display:flex;align-items:center;gap:10px">
@@ -1405,76 +1446,61 @@ html.mob .hero-right{display:none !important}
           <i class="fas fa-rotate-left" style="font-size:10px"></i>
         </button>
         <!-- Volver -->
-        <button class="btn-flip active" onclick="flipBoard()">
+        <button class="btn-flip active" onclick="volverAlAnverso()">
           <i class="fas fa-chevron-left" style="font-size:10px"></i> Volver
         </button>
       </div>
     </div>
-    <!-- Layout bento: izq=necesidades, der=logros -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+    <!-- Solo logros -->
+    <div id="inv-grid-full"></div>
+  </div><!-- /board-logros -->
 
-      <!-- IZQUIERDA: Mapa de Necesidades — panel glass -->
-      <div style="display:flex;flex-direction:column;gap:14px">
-
-        <!-- Panel de controles -->
-        <div style="background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-          border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px 16px;
-          backdrop-filter:blur(12px)">
-          <!-- Título -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <div style="display:flex;align-items:center;gap:8px">
-              <div style="width:28px;height:28px;border-radius:9px;
-                background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(139,92,246,.08));
-                border:1px solid rgba(139,92,246,.3);
-                display:flex;align-items:center;justify-content:center;font-size:13px">🧠</div>
-              <div>
-                <div style="font-size:13px;font-weight:700;color:var(--t);letter-spacing:-.01em">Necesidades</div>
-                <div style="font-size:9px;color:var(--m);font-weight:500">Pirámide de Maslow</div>
-              </div>
-            </div>
-            <span id="nec-periodo" style="font-size:10px;color:var(--m);font-variant-numeric:tabular-nums"></span>
-          </div>
-          <!-- Toggle vista -->
-          <div style="display:flex;gap:6px;margin-bottom:10px">
-            <div style="display:flex;gap:3px;background:rgba(0,0,0,.3);border-radius:20px;padding:3px;border:1px solid rgba(255,255,255,.06);flex:1">
-              <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
-                style="flex:1;padding:5px 0;border-radius:16px;font-size:11px;font-weight:700;
-                background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.4);color:#C4B5FD;
-                cursor:pointer;font-family:inherit;transition:all .2s">▲ Pirámide</button>
-              <button id="nec-btn-radar" onclick="switchVistaNec('radar')"
-                style="flex:1;padding:5px 0;border-radius:16px;font-size:11px;font-weight:500;
-                background:none;border:none;color:var(--m);
-                cursor:pointer;font-family:inherit;transition:all .2s">◈ Radar</button>
-            </div>
-          </div>
-          <!-- Filtros mes -->
-          <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-            <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--m)">Periodo</span>
-            <div id="nec-filtros-mes" style="display:flex;flex-wrap:wrap;gap:4px"></div>
-            <button onclick="resetFiltrosMes()"
-              style="padding:2px 8px;border-radius:20px;font-size:9px;font-weight:600;
-              background:none;border:1px solid rgba(255,255,255,.08);color:var(--m);
-              cursor:pointer;font-family:inherit">Todo</button>
-          </div>
-        </div>
-
-        <!-- Visualización principal -->
-        <div id="nec-container"></div>
-
-        <!-- Tabla de análisis -->
-        <div id="nec-tabla"
-          style="background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
-          border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;
-          backdrop-filter:blur(12px)">
+  <!-- PANEL MASLOW (desliza desde la derecha) -->
+  <div class="board-face panel-maslow" id="board-maslow">
+    <!-- Header sticky -->
+    <div class="reverso-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:10px;
+          background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(139,92,246,.08));
+          border:1px solid rgba(139,92,246,.3);
+          display:flex;align-items:center;justify-content:center;font-size:14px">🧠</div>
+        <div>
+          <div class="reverso-title">Necesidades</div>
+          <div style="font-size:10px;color:var(--m)">Pirámide de Maslow</div>
         </div>
       </div>
-
-      <!-- DERECHA: Logros -->
-      <div>
-        <div id="inv-grid-full"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <!-- Toggle vista -->
+        <div style="display:flex;gap:3px;background:rgba(0,0,0,.4);border-radius:20px;padding:3px;border:1px solid rgba(255,255,255,.06)">
+          <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
+            style="padding:4px 14px;border-radius:16px;font-size:11px;font-weight:700;
+            background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.4);color:#C4B5FD;
+            cursor:pointer;font-family:inherit;transition:all .2s">▲ Pirámide</button>
+          <button id="nec-btn-radar" onclick="switchVistaNec('radar')"
+            style="padding:4px 14px;border-radius:16px;font-size:11px;font-weight:500;
+            background:none;border:none;color:var(--m);
+            cursor:pointer;font-family:inherit;transition:all .2s">◈ Radar</button>
+        </div>
+        <!-- Filtros mes -->
+        <div id="nec-filtros-mes" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"></div>
+        <button onclick="resetFiltrosMes()" class="rev-pill" style="font-size:9px">Todo</button>
+        <span id="nec-periodo" style="font-size:10px;color:var(--m);margin:0 4px"></span>
+        <!-- Volver -->
+        <button class="btn-flip active" onclick="volverAlAnverso()">
+          <i class="fas fa-chevron-left" style="font-size:10px"></i> Volver
+        </button>
       </div>
     </div>
-  </div><!-- /board-reverso -->
+    <!-- Contenido en dos columnas -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+      <div id="nec-container"></div>
+      <div id="nec-tabla"
+        style="background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+        border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;
+        backdrop-filter:blur(12px)">
+      </div>
+    </div>
+  </div><!-- /board-maslow -->
 
   </div><!-- /board-wrap -->
 </div><!-- /app -->
@@ -2217,24 +2243,99 @@ function refreshTodo(){
 // ══════════════════════════════════════════
 //  FLIP BOARD
 // ══════════════════════════════════════════
-let _boardFlipped = false;
+// ── Carrusel 3 pantallas ──────────────────────────────────
+// 'anverso' | 'logros' | 'maslow'
+let _pantalla = 'anverso';
+let _boardFlipped = false; // compatibilidad — true cuando NO está en anverso
 let _reversoMostrarDone = false;
 let _ordenLogros = 'az';
 
-function flipBoard(){
-  _boardFlipped = !_boardFlipped;
-  const anv = document.getElementById('board-anverso');
-  const rev = document.getElementById('board-reverso');
-  const btn = document.getElementById('btn-flip');
-  anv.classList.toggle('flipped', _boardFlipped);
-  rev.classList.toggle('flipped', _boardFlipped);
-  if(btn){
-    btn.innerHTML = _boardFlipped
-      ? '<i class="fas fa-arrow-left"></i> Dashboard'
-      : '<i class="fas fa-trophy"></i> Logros';
-    btn.classList.toggle('active', _boardFlipped);
+function _setPantalla(p){
+  _pantalla = p;
+  _boardFlipped = (p !== 'anverso');
+
+  const anv    = document.getElementById('board-anverso');
+  const logros = document.getElementById('board-logros');
+  const maslow = document.getElementById('board-maslow');
+
+  // Limpiar todas las clases de estado
+  anv.classList.remove('slide-left','slide-right');
+  if(logros) logros.classList.remove('active');
+  if(maslow) maslow.classList.remove('active');
+
+  if(p === 'logros'){
+    anv.classList.add('slide-left');      // anverso sale a la derecha
+    if(logros) logros.classList.add('active');
+  } else if(p === 'maslow'){
+    anv.classList.add('slide-right');     // anverso sale a la izquierda
+    if(maslow) maslow.classList.add('active');
   }
-  if(_boardFlipped){ pintarReverso(); }
+  // Actualizar botones del hero
+  const bL = document.getElementById('btn-logros');
+  const bM = document.getElementById('btn-maslow');
+  if(bL) bL.classList.toggle('active', p==='logros');
+  if(bM) bM.classList.toggle('active', p==='maslow');
+  _actualizarEdges();
+}
+
+function irALogros(){
+  if(_pantalla==='logros'){ volverAlAnverso(); return; }
+  _setPantalla('logros');
+  pintarReverso();
+}
+
+function irAMaslow(){
+  if(_pantalla==='maslow'){ volverAlAnverso(); return; }
+  _setPantalla('maslow');
+  poblarFiltrosMes();
+  dibujarNecesidades();
+}
+
+function volverAlAnverso(){
+  _setPantalla('anverso');
+}
+
+function navEdge(dir){
+  // dir: 'left' o 'right'
+  // left  = ir hacia Logros (está a la izquierda)
+  // right = ir hacia Maslow (está a la derecha)
+  if(_pantalla==='anverso'){
+    if(dir==='left')  irALogros();
+    else              irAMaslow();
+  } else if(_pantalla==='logros'){
+    if(dir==='right') volverAlAnverso();
+    // no hay nada más a la izquierda de logros
+  } else if(_pantalla==='maslow'){
+    if(dir==='left')  volverAlAnverso();
+    // no hay nada más a la derecha de maslow
+  }
+}
+
+function _actualizarEdges(){
+  const eL = document.getElementById('edge-left');
+  const eR = document.getElementById('edge-right');
+  if(!eL||!eR) return;
+  // En anverso: ambas activas
+  // En logros: solo derecha (para volver)
+  // En maslow: solo izquierda (para volver)
+  eL.classList.toggle('disabled', _pantalla==='logros');
+  eR.classList.toggle('disabled', _pantalla==='maslow');
+  // Labels
+  eL.title = _pantalla==='anverso' ? '🏆 Logros' : '← Volver';
+  eR.title = _pantalla==='anverso' ? '🧠 Maslow' : 'Volver →';
+  // Colores según destino
+  eL.style.background = _pantalla==='logros'
+    ? 'linear-gradient(90deg,rgba(59,130,246,.15),transparent)'
+    : 'linear-gradient(90deg,rgba(251,191,36,.18),transparent)';
+  eR.style.background = _pantalla==='maslow'
+    ? 'linear-gradient(-90deg,rgba(59,130,246,.15),transparent)'
+    : 'linear-gradient(-90deg,rgba(139,92,246,.18),transparent)';
+}
+
+// Compatibilidad con código que llama flipBoard()
+function flipBoard(){
+  if(_pantalla==='anverso') irALogros();
+  else volverAlAnverso();
 }
 
 function poblarFiltrosReverso(){
@@ -2778,8 +2879,8 @@ function pintarInventario(items){
   // Esta función ahora también actualiza el contador del btn-flip
   const total = _logrosRaw.length;
   const done  = _logrosRaw.filter(it=>it.completado).length;
-  const btnFlip = document.getElementById('btn-flip');
-  if(btnFlip && !_boardFlipped){
+  const btnFlip = document.getElementById('btn-logros');
+  if(btnFlip && _pantalla==='anverso'){
     btnFlip.innerHTML = `<i class="fas fa-trophy"></i> Logros <span style="font-size:10px;opacity:.7">${done}/${total}</span>`;
   }
   // Si el reverso está visible, pintarlo también
