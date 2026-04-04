@@ -693,39 +693,6 @@ html.mob .panel-overlay.show{display:block !important}
   overflow:hidden;
 }
 
-/* ── Edge zones de navegación ── */
-.edge-zone{
-  position:absolute;top:0;bottom:0;width:48px;z-index:50;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  opacity:0;
-  transition:opacity .25s ease;
-  pointer-events:all;
-}
-.edge-zone.left { left:0;
-  background:linear-gradient(90deg,rgba(59,130,246,.18),transparent);
-  border-radius:0 12px 12px 0;
-}
-.edge-zone.right{ right:0;
-  background:linear-gradient(-90deg,rgba(139,92,246,.18),transparent);
-  border-radius:12px 0 0 12px;
-}
-.edge-zone:hover{ opacity:1 }
-.edge-zone .edge-arrow{
-  width:28px;height:28px;border-radius:50%;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;color:rgba(255,255,255,.6);
-  backdrop-filter:blur(8px);
-  transition:background .2s,transform .2s;
-}
-.edge-zone:hover .edge-arrow{
-  background:rgba(255,255,255,.15);
-  transform:scale(1.1);
-}
-/* Ocultar edge zones en anverso si no hay destino */
-.edge-zone.disabled{pointer-events:none;opacity:0 !important}
 /* ── Carrusel 3 pantallas: Logros ←→ Anverso ←→ Maslow ── */
 .board-face{
   position:absolute;
@@ -1102,7 +1069,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0025 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0026 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2275,7 +2242,6 @@ function _setPantalla(p){
   const bM = document.getElementById('btn-maslow');
   if(bL) bL.classList.toggle('active', p==='logros');
   if(bM) bM.classList.toggle('active', p==='maslow');
-  _actualizarEdges();
 }
 
 function irALogros(){
@@ -2295,42 +2261,6 @@ function volverAlAnverso(){
   _setPantalla('anverso');
 }
 
-function navEdge(dir){
-  // dir: 'left' o 'right'
-  // left  = ir hacia Logros (está a la izquierda)
-  // right = ir hacia Maslow (está a la derecha)
-  if(_pantalla==='anverso'){
-    if(dir==='left')  irALogros();
-    else              irAMaslow();
-  } else if(_pantalla==='logros'){
-    if(dir==='right') volverAlAnverso();
-    // no hay nada más a la izquierda de logros
-  } else if(_pantalla==='maslow'){
-    if(dir==='left')  volverAlAnverso();
-    // no hay nada más a la derecha de maslow
-  }
-}
-
-function _actualizarEdges(){
-  const eL = document.getElementById('edge-left');
-  const eR = document.getElementById('edge-right');
-  if(!eL||!eR) return;
-  // En anverso: ambas activas
-  // En logros: solo derecha (para volver)
-  // En maslow: solo izquierda (para volver)
-  eL.classList.toggle('disabled', _pantalla==='logros');
-  eR.classList.toggle('disabled', _pantalla==='maslow');
-  // Labels
-  eL.title = _pantalla==='anverso' ? '🏆 Logros' : '← Volver';
-  eR.title = _pantalla==='anverso' ? '🧠 Maslow' : 'Volver →';
-  // Colores según destino
-  eL.style.background = _pantalla==='logros'
-    ? 'linear-gradient(90deg,rgba(59,130,246,.15),transparent)'
-    : 'linear-gradient(90deg,rgba(251,191,36,.18),transparent)';
-  eR.style.background = _pantalla==='maslow'
-    ? 'linear-gradient(-90deg,rgba(59,130,246,.15),transparent)'
-    : 'linear-gradient(-90deg,rgba(139,92,246,.18),transparent)';
-}
 
 // Compatibilidad con código que llama flipBoard()
 function flipBoard(){
