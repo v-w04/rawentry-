@@ -543,7 +543,6 @@ html,body{
 /* ═══════════════════════════════════════════
    DESKTOP (≥900px) — 2 columnas
 ═══════════════════════════════════════════ */
-/* Desktop >= 900px */
 @media(min-width:900px){
   body{height:100vh;overflow:hidden}
   .app{max-width:100%;flex-direction:column;min-height:100vh}
@@ -555,7 +554,6 @@ html,body{
   .saldo-val{font-size:32px}
   .sections{
     display:grid;
-    /* columna gráfica: 624px */
     grid-template-columns:420px 749px 749px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
@@ -580,7 +578,6 @@ html,body{
 @media(max-width:899px){
   .tbl-wrap{display:none!important}
   .cards-grid{display:grid!important}
-  /* Grid anverso: una columna en móvil */
   .sections{
     grid-template-columns:1fr !important;
   }
@@ -588,17 +585,15 @@ html,body{
     grid-column:1 !important;
     grid-row:auto !important;
   }
-  /* Reverso: una columna en móvil */
   .reverso > div[style*="grid-template-columns:1fr 1fr"]{
     grid-template-columns:1fr !important;
   }
-  /* Grid logros: 2 cols en móvil */
   #inv-grid-full{
     grid-template-columns:repeat(2,1fr) !important;
   }
 }
 
-/* MÓVIL REAL — clase .mob aplicada por JS cuando detecta iPhone/Android */
+/* MÓVIL REAL */
 html.mob .app{max-width:430px !important}
 html.mob body{height:auto !important;overflow-y:auto !important}
 html.mob .hero{
@@ -607,7 +602,6 @@ html.mob .hero{
   align-items:stretch !important;
   gap:10px !important;
 }
-/* FILA 1: icono+título izq | reloj+listo+refresh der */
 html.mob .hero-left{
   display:flex !important;
   align-items:center !important;
@@ -624,7 +618,6 @@ html.mob .hero-right{
   gap:8px !important;
   flex-shrink:0;
 }
-/* FILA 2: saldo a la derecha */
 html.mob .hero-center{
   display:flex !important;
   flex-direction:column !important;
@@ -641,7 +634,6 @@ html.mob .hero-icon{width:36px !important;height:36px !important;font-size:16px 
 html.mob .hero-chip{font-size:11px !important;padding:4px 10px !important}
 html.mob .hero-clock{font-size:11px !important;color:var(--m)}
 html.mob .btn-refresh{width:28px !important;height:28px !important;font-size:12px !important}
-/* Ocultar el saldo duplicado de mob-saldo-wrap */
 html.mob .mob-saldo-wrap{display:none !important}
 html.mob .sections{
   display:flex !important;
@@ -693,7 +685,6 @@ html.mob .panel-overlay.show{display:block !important}
   overflow:hidden;
 }
 
-/* ── Carrusel 3 pantallas: Logros ←→ Anverso ←→ Maslow ── */
 .board-face{
   position:absolute;
   top:0;left:0;width:100%;height:100%;
@@ -701,20 +692,16 @@ html.mob .panel-overlay.show{display:block !important}
   backface-visibility:hidden;
   overflow-y:auto;
 }
-/* Anverso — siempre centrado por defecto */
 .board-face.anverso{
   transform:translateX(0);opacity:1;pointer-events:all;
   padding:0;
 }
-/* Cuando va a la derecha (se mueve el anverso para ver Logros a la izq) */
 .board-face.anverso.slide-right{
   transform:translateX(110%);opacity:0;pointer-events:none;
 }
-/* Cuando va a la izquierda (se mueve el anverso para ver Maslow a la der) */
 .board-face.anverso.slide-left{
   transform:translateX(-110%);opacity:0;pointer-events:none;
 }
-/* Logros — empieza a la izquierda */
 .board-face.panel-logros{
   transform:translateX(-110%);opacity:0;pointer-events:none;
   padding:12px 20px 24px;
@@ -722,7 +709,6 @@ html.mob .panel-overlay.show{display:block !important}
 .board-face.panel-logros.active{
   transform:translateX(0);opacity:1;pointer-events:all;
 }
-/* Maslow — empieza a la derecha */
 .board-face.panel-maslow{
   transform:translateX(110%);opacity:0;pointer-events:none;
   padding:12px 20px 24px;
@@ -744,8 +730,7 @@ html.mob .panel-overlay.show{display:block !important}
   background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--p);
 }
 
-/* ══ BOARD REVERSO — Bento Glassmorphism Premium ══ */
-/* reverso sin fondo propio — usa el fondo global con partículas */
+/* ══ BOARD REVERSO ══ */
 .reverso-header{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:20px;padding-bottom:0;
@@ -793,196 +778,6 @@ html.mob .panel-overlay.show{display:block !important}
 
 /* ── Inv items premium ── */
 .inv-item{
-  position:relative;
-  border-radius:20px;
-  background:linear-gradient(145deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 100%);
-  border:1px solid rgba(255,255,255,.08);
-  padding:18px 12px 14px;
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  cursor:pointer;
-  transition:transform .2s cubic-bezier(.34,1.56,.64,1),
-             box-shadow .2s ease,border-color .2s;
-  user-select:none;
-  backdrop-filter:blur(12px);
-  overflow:hidden;
-}
-/* Gradiente sutil de fondo en hover */
-.inv-item::after{
-  content:'';position:absolute;inset:0;border-radius:20px;
-  background:radial-gradient(circle at 50% 0%,rgba(251,191,36,.1),transparent 65%);
-  opacity:0;transition:opacity .3s;
-}
-.inv-item:hover::after{opacity:1}
-.inv-item:hover{
-  transform:translateY(-5px) scale(1.02);
-  border-color:rgba(251,191,36,.25);
-  box-shadow:0 12px 32px rgba(0,0,0,.4),
-             0 0 0 1px rgba(251,191,36,.1),
-             0 0 24px rgba(251,191,36,.08);
-}
-.inv-item:active{transform:translateY(-1px) scale(.99)}
-.inv-item.done{
-  background:linear-gradient(145deg,rgba(74,222,128,.1) 0%,rgba(74,222,128,.03) 100%);
-  border-color:rgba(74,222,128,.2);
-}
-.inv-item.done::after{
-  background:radial-gradient(circle at 50% 0%,rgba(74,222,128,.12),transparent 65%);
-  opacity:1;
-}
-.inv-item.done:hover{
-  border-color:rgba(74,222,128,.4);
-  box-shadow:0 12px 32px rgba(0,0,0,.4),0 0 24px rgba(74,222,128,.1);
-}
-.inv-item:not(.done){opacity:.85}
-.inv-item:hover{opacity:1}
-.inv-item.inc{border-color:rgba(245,158,11,.2);opacity:.65}
-
-/* Corner badge */
-.inv-corner{
-  position:absolute;top:8px;right:8px;
-  width:18px;height:18px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:8px;
-  font-weight:700;
-}
-.inv-corner.done{background:rgba(74,222,128,.2);color:var(--ok);border:1px solid rgba(74,222,128,.3)}
-.inv-corner.pend{background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
-.inv-corner.warn{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
-
-/* Icono */
-.inv-icon{
-  width:48px;height:48px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.06);
-  border-radius:14px;border:1px solid rgba(255,255,255,.08);
-  transition:transform .2s;margin-bottom:2px;
-}
-.inv-item:hover .inv-icon{transform:scale(1.08)}
-.inv-item:not(.done) .inv-icon{filter:grayscale(15%) brightness(.85)}
-.inv-item:hover .inv-icon{filter:none !important}
-.inv-icon svg{width:22px;height:22px;opacity:.9}
-
-/* Texto */
-.inv-label{
-  font-size:11px;font-weight:600;text-align:center;
-  color:rgba(255,255,255,.8);line-height:1.35;max-width:120px;
-  letter-spacing:-.01em;
-}
-.inv-item.done .inv-label{color:rgba(255,255,255,.5);text-decoration:line-through}
-.inv-monto{
-  font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;
-  color:rgba(251,191,36,.9);letter-spacing:-.02em;
-}
-.inv-tag{
-  font-size:9px;padding:2px 8px;border-radius:20px;font-weight:600;
-  background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);
-  border:1px solid rgba(255,255,255,.06);letter-spacing:.2px;
-}
-
-/* Flujo Mensual — unificar con el resto */
-#flujo-body{overflow-x:auto;-webkit-overflow-scrolling:touch}
-#flujo-body table{
-  font-size:13px;font-variant-numeric:tabular-nums;
-  width:100%;border-collapse:collapse;table-layout:fixed;
-}
-#flujo-body col.c-mes  { width:30% }
-#flujo-body col.c-num  { width:23.33% }
-#flujo-body th{
-  padding:7px 12px;font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.6px;color:var(--m);
-  border-bottom:2px solid var(--border);white-space:nowrap;
-}
-#flujo-body th.r{text-align:right}
-#flujo-body td{
-  padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);
-  font-variant-numeric:tabular-nums;white-space:nowrap;
-}
-#flujo-body td.r{text-align:right}
-#flujo-body tr:last-child td{border-bottom:none}
-#flujo-body tr:hover td{background:rgba(255,255,255,.02)}
-
-/* ── Tab Bar Móvil ── */
-.mob-tabbar{
-  display:none; /* solo visible en móvil */
-}
-@media(max-width:899px){
-  .mob-tabbar{
-    display:flex;
-    position:fixed;
-    bottom:0;left:0;right:0;
-    z-index:200;
-    background:rgba(13,18,30,.92);
-    backdrop-filter:blur(20px) saturate(1.5);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5);
-    border-top:1px solid rgba(255,255,255,.08);
-    padding:8px 4px max(12px,env(safe-area-inset-bottom)) 4px;
-    gap:0;
-  }
-  .mob-tab{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:6px 2px 2px;border:none;background:none;cursor:pointer;
-    font-family:inherit;color:rgba(255,255,255,.4);
-    transition:color .18s,transform .15s;
-    border-radius:12px;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .mob-tab:active{transform:scale(.92)}
-  .mob-tab.active{color:#fff}
-  .mob-tab-icon{
-    font-size:20px;line-height:1;
-    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
-  }
-  .mob-tab.active .mob-tab-icon{transform:scale(1.15)}
-  .mob-tab-label{
-    font-size:9px;font-weight:600;letter-spacing:.3px;
-    text-transform:uppercase;line-height:1;
-  }
-  /* Colores activos por tab */
-  .mob-tab[data-tab="entrada"].active  { color:#3B82F6 }
-  .mob-tab[data-tab="bancos"].active   { color:#FBBF24 }
-  .mob-tab[data-tab="flujo"].active    { color:#4ADE80 }
-  .mob-tab[data-tab="logros"].active   { color:#FBBF24 }
-  .mob-tab[data-tab="maslow"].active   { color:#A78BFA }
-  /* Empujar contenido para que no tape el tab bar */
-  .board-wrap{ padding-bottom:72px }
-  html.mob .sections{ padding-bottom:80px !important }
-}
-
-/* ── Scrollbar personalizado ── */
-*::-webkit-scrollbar { width: 6px; height: 6px; }
-*::-webkit-scrollbar-track { background: rgba(15,23,42,.5); border-radius: 3px; }
-*::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#3B82F6,#06B6D4); border-radius: 3px; }
-*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#2563EB,#0284C7); }
-* { scrollbar-width: thin; scrollbar-color: #3B82F6 rgba(15,23,42,.5); }
-
-/* ── Fondo y scroll global ── */
-html { background:#111111; min-height:100vh; scroll-behavior:smooth; }
-body { background:#111111 !important; overflow-x:hidden; }
-.sections { transform:translateZ(0); backface-visibility:hidden; }
-
-.mob-saldo-wrap{display:none}
-html.mob .mob-saldo-wrap{display:block !important;text-align:right}
-
-html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
-html.mob .hero-right{display:none !important}
-
-/* ★ CAMBIO 2 & 3: Gráfica ocupa todo el alto disponible de la card */
-/* gráfica incrustada en card Variables */
-#graf-canvas{width:100% !important;display:block;}
-
-/* ── Inventario Logros ── */
-.inv-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-  gap:14px;
-}
-/* Grid del reverso: masonry-feel con auto-fill */
-#inv-grid-full{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:16px;
-  padding:4px 2px;
-}
-.inv-item{
   position:relative;border-radius:18px;
   background:linear-gradient(160deg,#1c2640 0%,#111827 100%);
   border:1px solid rgba(255,255,255,.08);
@@ -996,7 +791,6 @@ html.mob .hero-right{display:none !important}
   user-select:none;
   overflow:hidden;
 }
-/* Brillo en hover desde arriba */
 .inv-item::before{
   content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse at 50% -20%,rgba(251,191,36,.12) 0%,transparent 65%);
@@ -1035,7 +829,7 @@ html.mob .hero-right{display:none !important}
 }
 .inv-corner.done{background:rgba(74,222,128,.2);color:var(--ok);border:1px solid rgba(74,222,128,.3)}
 .inv-corner.pend{background:rgba(255,255,255,.06);color:var(--dim);border:1px solid rgba(255,255,255,.08)}
-/* Icono con halo */
+.inv-corner.warn{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
 .inv-icon{
   width:52px;height:52px;
   display:flex;align-items:center;justify-content:center;
@@ -1052,6 +846,7 @@ html.mob .hero-right{display:none !important}
   color:var(--t);line-height:1.4;
   max-width:130px;
 }
+.inv-item.done .inv-label{color:rgba(255,255,255,.5);text-decoration:line-through}
 .inv-monto{
   font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;
   color:#FBBF24;letter-spacing:-.02em;
@@ -1065,25 +860,117 @@ html.mob .hero-right{display:none !important}
   border-color:rgba(245,158,11,.25);
   opacity:.6;
 }
-.inv-corner.warn{background:rgba(245,158,11,.15);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
 
-/* ── Nueva Entrada — móvil ───────────────────────── */
+/* Flujo Mensual */
+#flujo-body{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#flujo-body table{
+  font-size:13px;font-variant-numeric:tabular-nums;
+  width:100%;border-collapse:collapse;table-layout:fixed;
+}
+#flujo-body col.c-mes  { width:30% }
+#flujo-body col.c-num  { width:23.33% }
+#flujo-body th{
+  padding:7px 12px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.6px;color:var(--m);
+  border-bottom:2px solid var(--border);white-space:nowrap;
+}
+#flujo-body th.r{text-align:right}
+#flujo-body td{
+  padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+#flujo-body td.r{text-align:right}
+#flujo-body tr:last-child td{border-bottom:none}
+#flujo-body tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── Tab Bar Móvil ── */
+.mob-tabbar{
+  display:none;
+}
 @media(max-width:899px){
+  .mob-tabbar{
+    display:flex;
+    position:fixed;
+    bottom:0;left:0;right:0;
+    z-index:200;
+    background:rgba(13,18,30,.92);
+    backdrop-filter:blur(20px) saturate(1.5);
+    -webkit-backdrop-filter:blur(20px) saturate(1.5);
+    border-top:1px solid rgba(255,255,255,.08);
+    padding:8px 4px max(12px,env(safe-area-inset-bottom)) 4px;
+    gap:0;
+  }
+  .mob-tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:6px 2px 2px;border:none;background:none;cursor:pointer;
+    font-family:inherit;color:rgba(255,255,255,.4);
+    transition:color .18s,transform .15s;
+    border-radius:12px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mob-tab:active{transform:scale(.92)}
+  .mob-tab.active{color:#fff}
+  .mob-tab-icon{
+    font-size:20px;line-height:1;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .mob-tab.active .mob-tab-icon{transform:scale(1.15)}
+  .mob-tab-label{
+    font-size:9px;font-weight:600;letter-spacing:.3px;
+    text-transform:uppercase;line-height:1;
+  }
+  .mob-tab[data-tab="entrada"].active  { color:#3B82F6 }
+  .mob-tab[data-tab="bancos"].active   { color:#FBBF24 }
+  .mob-tab[data-tab="flujo"].active    { color:#4ADE80 }
+  .mob-tab[data-tab="logros"].active   { color:#FBBF24 }
+  .mob-tab[data-tab="maslow"].active   { color:#A78BFA }
+  .board-wrap{ padding-bottom:72px }
+  html.mob .sections{ padding-bottom:80px !important }
+}
 
-  /* Card completa full-width sin radio exagerado */
+/* ── Scrollbar ── */
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: rgba(15,23,42,.5); border-radius: 3px; }
+*::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#3B82F6,#06B6D4); border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#2563EB,#0284C7); }
+* { scrollbar-width: thin; scrollbar-color: #3B82F6 rgba(15,23,42,.5); }
+
+html { background:#111111; min-height:100vh; scroll-behavior:smooth; }
+body { background:#111111 !important; overflow-x:hidden; }
+.sections { transform:translateZ(0); backface-visibility:hidden; }
+
+.mob-saldo-wrap{display:none}
+html.mob .mob-saldo-wrap{display:block !important;text-align:right}
+
+html.mob .hero-right-mob{display:flex !important;align-items:center;gap:8px}
+html.mob .hero-right{display:none !important}
+
+#graf-canvas{width:100% !important;display:block;}
+
+.inv-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:14px;
+}
+#inv-grid-full{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
+  padding:4px 2px;
+}
+
+/* ── Nueva Entrada — móvil ── */
+@media(max-width:899px){
   #col1-wrap .section{
     border-radius:16px;
     overflow:hidden;
   }
-
-  /* Campos: layout vertical en lugar de horizontal */
   .field{
     flex-direction:column;
     align-items:stretch;
     gap:6px;
     padding:14px 16px;
   }
-  /* Label arriba, valor abajo */
   .field-bar{
     top:0;bottom:auto;left:0;right:0;height:2px;width:100%;
     border-radius:0 0 2px 2px;
@@ -1096,11 +983,9 @@ html.mob .hero-right{display:none !important}
   .field-val{
     font-size:15px;font-weight:600;padding:0;
   }
-  /* Chevron dentro del label en móvil */
   .field-chev{
-    display:none; /* lo ponemos en el label vía pseudo */
+    display:none;
   }
-  /* Opciones: scroll horizontal en lugar de wrap */
   .opts{
     flex-wrap:nowrap;
     overflow-x:auto;
@@ -1116,8 +1001,6 @@ html.mob .hero-right{display:none !important}
     border-radius:20px;
     font-size:13px;
   }
-
-  /* Monto: más prominente */
   .monto-wrap .finput{
     font-size:28px;
     padding-left:80px;
@@ -1128,8 +1011,6 @@ html.mob .hero-right{display:none !important}
     font-size:20px;
     padding:6px 12px;
   }
-
-  /* Acciones: todos los botones igual de altos */
   .form-actions{
     padding:14px 16px;
     gap:10px;
@@ -1147,7 +1028,6 @@ html.mob .hero-right{display:none !important}
     flex-shrink:0;
   }
 }
-
 </style>
 </head>
 <body>
@@ -1191,16 +1071,15 @@ html.mob .hero-right{display:none !important}
 
   <!-- HERO / SALDO -->
   <div class="hero">
-    <!-- FILA 1 MÓVIL: logo izq + estado der -->
     <div class="hero-left">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
+          <!-- FIX 1: versión actualizada a v.3.0032 -->
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0028 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0032 · Trello · Sheets</div>
         </div>
       </div>
-      <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
       <div class="hero-right-mob" style="display:none">
         <div id="saldo-clock2" class="hero-clock"></div>
         <div class="hero-chip load" id="chip2">
@@ -1212,7 +1091,6 @@ html.mob .hero-right{display:none !important}
         </button>
       </div>
     </div>
-    <!-- CENTRO: Saldo -->
     <div class="hero-center">
       <div class="saldo-label">
         <i class="fas fa-scale-balanced"></i>
@@ -1222,9 +1100,7 @@ html.mob .hero-right{display:none !important}
       </div>
       <div class="saldo-val ld" id="saldo-val">—</div>
     </div>
-    <!-- DERECHA: Reloj + estado + refresh (desktop) / Saldo + estado (móvil) -->
     <div class="hero-right">
-      <!-- Saldo visible solo en móvil -->
       <div class="mob-saldo-wrap">
         <div class="saldo-label" style="justify-content:flex-end">
           <i class="fas fa-scale-balanced"></i>
@@ -1254,12 +1130,10 @@ html.mob .hero-right{display:none !important}
   <!-- BOARD WRAP -->
   <div class="board-wrap">
 
-  <!-- ANVERSO: dashboard normal -->
+  <!-- ANVERSO -->
   <div class="board-face anverso" id="board-anverso">
-  <!-- SECCIONES -->
   <div class="sections">
 
-    <!-- COL 1: Nueva Entrada + Bancos en contenedor flex independiente -->
     <div id="col1-wrap" style="display:flex;flex-direction:column;gap:12px;align-self:start">
     <!-- ① NUEVA ENTRADA -->
     <div class="section" id="sec-entrada">
@@ -1274,11 +1148,9 @@ html.mob .hero-right{display:none !important}
       </div>
       <div class="sec-body" id="sec-entrada-body">
 
-        <!-- Campos -->
         <div class="field active" id="cf-fecha">
           <div class="field-bar"></div>
           <div class="field-lbl">Fecha</div>
-          
           <input type="date" class="finput" id="fecha" onchange="onFechaChange()"
             style="max-width:140px;font-size:13px;padding:6px 8px;flex-shrink:0;cursor:pointer"
             onclick="event.stopPropagation()">
@@ -1424,7 +1296,7 @@ html.mob .hero-right{display:none !important}
     </div>
     </div><!-- /col1-wrap -->
 
-    <!-- ③ VARIABLES (tabla + gráfica fusionadas) -->
+    <!-- ③ VARIABLES -->
     <div class="section" id="sec-gastos">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-gastos-hdr">
         <div class="sec-hdr-left">
@@ -1436,11 +1308,9 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
       <div class="sec-body" id="sec-gastos-body" style="display:flex;flex-direction:column">
-        <!-- Tabla de datos -->
         <div id="gastos-body" style="text-align:center;padding:20px;color:var(--m)">
           <i class="fas fa-circle-notch fa-spin" style="color:var(--p)"></i>
         </div>
-        <!-- Separador + Gráfica incrustada -->
         <div style="border-top:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;padding:10px 14px 6px">
             <div style="width:24px;height:24px;border-radius:7px;background:rgba(139,92,246,.15);
@@ -1462,7 +1332,7 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
     </div>
-    <!-- ④ VARIABLES -->
+    <!-- ④ FIJOS -->
     <div class="section" id="sec-anualidad">
       <div class="sec-hdr" onclick="togSec(this)" id="sec-anualidad-hdr">
         <div class="sec-hdr-left">
@@ -1474,11 +1344,9 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
       <div class="sec-body" id="sec-anualidad-body" style="display:flex;flex-direction:column">
-        <!-- Tabla de datos -->
         <div id="anualidad-body" style="text-align:center;padding:20px;color:var(--m)">
           <i class="fas fa-circle-notch fa-spin" style="color:var(--p)"></i>
         </div>
-        <!-- Separador + Gráfica Fijos incrustada -->
         <div style="border-top:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:8px;padding:10px 14px 6px">
             <div style="width:24px;height:24px;border-radius:7px;background:rgba(6,182,212,.15);
@@ -1501,15 +1369,12 @@ html.mob .hero-right{display:none !important}
       </div>
     </div>
 
-
-
   </div><!-- /sections -->
   </div><!-- /board-anverso -->
 
-  <!-- REVERSO: board de logros -->
+  <!-- REVERSO: logros -->
   <div class="board-face panel-logros" id="board-logros">
     <div class="reverso-header">
-      <!-- Izq: título + contador -->
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:32px;height:32px;border-radius:10px;
           background:linear-gradient(135deg,rgba(251,191,36,.2),rgba(251,191,36,.05));
@@ -1520,10 +1385,9 @@ html.mob .hero-right{display:none !important}
           <div style="font-size:10px;color:var(--m);font-weight:500" id="reverso-count"></div>
         </div>
       </div>
-      <!-- Der: controles -->
       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <!-- Orden -->
         <div style="display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:20px;padding:3px;border:1px solid rgba(255,255,255,.06)">
+          <!-- FIX 2: setOrdenLogros ahora existe como función definida -->
           <button onclick="setOrdenLogros('az')" id="lord-az"
             class="rev-pill on" style="border:none;border-radius:16px;padding:3px 10px">A–Z</button>
           <button onclick="setOrdenLogros('monto-desc')" id="lord-desc"
@@ -1531,28 +1395,23 @@ html.mob .hero-right{display:none !important}
           <button onclick="setOrdenLogros('monto')" id="lord-asc"
             class="rev-pill" style="border:none;border-radius:16px;padding:3px 10px">$ ↑</button>
         </div>
-        <!-- Toggle completados -->
         <button id="reverso-tog-done" onclick="toggleReversoMostrarDone()"
           class="rev-pill">
           <i class="fas fa-eye-slash" style="font-size:10px"></i> Completados
         </button>
-        <!-- Reset -->
         <button onclick="resetReverso()" class="rev-pill" title="Resetear filtros">
           <i class="fas fa-rotate-left" style="font-size:10px"></i>
         </button>
-        <!-- Volver -->
         <button class="btn-flip active" onclick="volverAlAnverso()">
           <i class="fas fa-chevron-left" style="font-size:10px"></i> Volver
         </button>
       </div>
     </div>
-    <!-- Solo logros -->
     <div id="inv-grid-full"></div>
   </div><!-- /board-logros -->
 
-  <!-- PANEL MASLOW (desliza desde la derecha) -->
+  <!-- PANEL MASLOW -->
   <div class="board-face panel-maslow" id="board-maslow">
-    <!-- Header sticky -->
     <div class="reverso-header">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:32px;height:32px;border-radius:10px;
@@ -1565,7 +1424,6 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
-        <!-- Toggle vista -->
         <div style="display:flex;gap:3px;background:rgba(0,0,0,.4);border-radius:20px;padding:3px;border:1px solid rgba(255,255,255,.06)">
           <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
             style="padding:4px 14px;border-radius:16px;font-size:11px;font-weight:700;
@@ -1576,17 +1434,14 @@ html.mob .hero-right{display:none !important}
             background:none;border:none;color:var(--m);
             cursor:pointer;font-family:inherit;transition:all .2s">◈ Radar</button>
         </div>
-        <!-- Filtros mes -->
         <div id="nec-filtros-mes" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"></div>
         <button onclick="resetFiltrosMes()" class="rev-pill" style="font-size:9px">Todo</button>
         <span id="nec-periodo" style="font-size:10px;color:var(--m);margin:0 4px"></span>
-        <!-- Volver -->
         <button class="btn-flip active" onclick="volverAlAnverso()">
           <i class="fas fa-chevron-left" style="font-size:10px"></i> Volver
         </button>
       </div>
     </div>
-    <!-- Contenido en dos columnas -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
       <div id="nec-container"></div>
       <div id="nec-tabla"
@@ -1601,7 +1456,7 @@ html.mob .hero-right{display:none !important}
 </div><!-- /app -->
 
 <script>
-// Detectar móvil y aplicar .mob ANTES de render
+// Detectar móvil
 (function(){
   if(/iPhone|iPad|iPod|Android.*Mobile/.test(navigator.userAgent)){
     document.documentElement.classList.add('mob');
@@ -1610,16 +1465,12 @@ html.mob .hero-right{display:none !important}
 
 // ══════════════════════════════════════════
 //  API HÍBRIDA
-//  - En GAS: usa google.script.run
-//  - En GitHub Pages: usa fetch()
 // ══════════════════════════════════════════
 const API_URL = 'https://script.google.com/macros/s/AKfycbytz5U_TaaE61H85pBdAsk_UUpMIfuKYopYH0kTzANJmCy8YYEfYO36uDRHhL6wI0maxw/exec';
 
-// Detectar si estamos en GAS o en GitHub Pages
-// Detectar GAS de forma robusta
 const EN_GAS = (function(){
   try {
-    return typeof google !== 'undefined' 
+    return typeof google !== 'undefined'
       && typeof google.script !== 'undefined'
       && typeof google.script.run !== 'undefined';
   } catch(e){ return false; }
@@ -1654,7 +1505,6 @@ async function apiPost(action, data={}) {
   return r.json();
 }
 
-// Wrapper unificado — funciona en GAS y GitHub
 const api = {
   getCatalogos:      () => EN_GAS ? gasRun('getCatalogos') : apiGet('getCatalogos'),
   getSheetUrl:       () => EN_GAS ? gasRun('getSheetUrl').then(u=>({url: typeof u==='string'?u:u.url})) : apiGet('getSheetUrl'),
@@ -1667,6 +1517,7 @@ const api = {
   actualizarFijo:    (fila, monto) => EN_GAS ? gasRun('actualizarFijo', fila, monto) : apiPost('actualizarFijo', { fila, monto }),
   agregarALista:     (colIndex, valor) => EN_GAS ? gasRun('agregarALista', colIndex, valor) : apiPost('agregarALista', { colIndex, valor }),
   getLogros:         () => EN_GAS ? gasRun('getLogros') : apiGet('getLogros'),
+  // FIX 3: getEventuales se mantiene en la API pero renderEventuales ya no mezcla con logros
   getEventuales:     () => EN_GAS ? gasRun('getEventuales') : apiGet('getEventuales'),
   marcarLogro:       (fila, val) => EN_GAS ? gasRun('marcarLogro', fila, val) : apiPost('marcarLogro', { fila, val }),
   getNecesidades:    () => EN_GAS ? gasRun('getNecesidades') : apiGet('getNecesidades'),
@@ -1709,11 +1560,6 @@ let _toast=null;
 })();
 
 // ══════════════════════════════════════════
-//  RELOJ
-// ══════════════════════════════════════════
-function fmt12(d){return d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',hour12:true})}
-
-// ══════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════
 window.addEventListener('DOMContentLoaded',()=>{
@@ -1734,10 +1580,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   api.getFijos().then(renderEntes).catch(()=>{});
   api.getDatosMes().then(onDatosMes).catch(()=>{});
   api.getGastos().then(renderAnualidad).catch(()=>{});
-  api.getEventuales().then(renderEventuales).catch(()=>{});
   api.getLogros().then(renderLogros).catch(()=>{});
   api.getNecesidades().then(renderNecesidades).catch(()=>{});
   api.getFlujoPorMes().then(renderFlujoMensual).catch(()=>{});
+  // FIX 3: getEventuales ya no se llama en init — eventuales ya viven en hoja Logros
   initTooltip();
 });
 
@@ -1777,9 +1623,6 @@ function showToast(msg,ok=true){
   _toast=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ══════════════════════════════════════════
-//  PROGRESS BAR
-// ══════════════════════════════════════════
 function progStart(){const b=document.getElementById('prog');b.className='prog-bar ind';}
 function progDone(){const b=document.getElementById('prog');b.className='prog-bar';b.style.width='100%';setTimeout(()=>{b.style.width='0%';},400);}
 
@@ -1861,7 +1704,6 @@ function onCats(d){
   buildOpts('sw-proyecto',d.proyectos,v=>{proxSel=v;setFieldVal('proyecto',v);marcarDone('proyecto');avanzarA('proyecto');});
   buildOpts('sw-contacto',d.contactos,v=>{contactoSel=v;setFieldVal('contacto',v);marcarDone('contacto');avanzarA('contacto');});
   buildOpts('sw-recurrencia',d.recurrencias,v=>{recSel=v;setFieldVal('recurrencia',v);marcarDone('recurrencia');avanzarA('recurrencia');});
-  // Necesidades vienen del catálogo
   if(d.necesidades && d.necesidades.length){
     buildOptsNecesidad('sw-necesidad', d.necesidades, v=>{necesidadSel=v;setFieldVal('necesidad',v.slice(0,30)+'…');marcarDone('necesidad');avanzarA('necesidad');});
   }
@@ -1873,7 +1715,6 @@ function buildOptsNecesidad(id,items,cb){
   const COLORES=['#3B82F6','#4ADE80','#F59E0B','#EC4899','#8B5CF6'];
   items.forEach((it,i)=>{
     const b=document.createElement('button');b.className='opt';
-    // Label corto: solo el número y primera palabra
     const m = it.match(/^(\d+)\.\s+(\w+)/);
     b.textContent = m ? m[1]+'. '+m[2] : it.slice(0,20);
     b.title = it;
@@ -2090,7 +1931,7 @@ function guardarEnte(fila){
 }
 
 // ══════════════════════════════════════════
-//  ANUALIDAD (Gastos K:P)
+//  ANUALIDAD (Fijos — tabla K:P)
 // ══════════════════════════════════════════
 function renderAnualidad(data){
   const body=document.getElementById('anualidad-body');
@@ -2104,7 +1945,6 @@ function renderAnualidad(data){
     const cards = data.grupos.map((g,gi)=>{
       const isPagado = it => it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
       const pagados = g.items.filter(isPagado).length;
-      const tot = g.items.filter(it=>it.monto!==null).length;
       const totalHoy = g.items.reduce((s,it)=>{
         if(it.monto===null) return s;
         const claveL=(it.clave||'').toLowerCase();
@@ -2156,7 +1996,6 @@ function renderAnualidad(data){
         const pag=it.pagado==='Sí'||it.pagado==='Si'||it.pagado==='sí';
         const esA=clave.toUpperCase()===mesActual.toUpperCase();
         const tieneMonto = it.monto !== null && it.monto !== 0;
-        // Si tiene monto: color por pag/cls. Si no tiene monto: siempre rojo
         const colorCls = tieneMonto ? (pag ? 'pos' : cls) : '';
         return `<td class="${colorCls}${esA?' mes-actual':''}" style="text-align:center">
           ${tieneMonto ? `<div>${txt}</div>` : `<div style="color:var(--err);font-size:13px">✗</div>`}
@@ -2166,7 +2005,6 @@ function renderAnualidad(data){
     }).join('');
     body.innerHTML=`<div class="tbl-wrap"><table class="tbl"><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
   }
-  // Renderizar gráfica de Fijos
   initGraficaFijos(data);
 }
 
@@ -2323,27 +2161,40 @@ function refreshTodo(){
   const btn=document.getElementById('btn-rf');
   btn.classList.add('spinning');btn.disabled=true;
   progStart();
-  let n=8,done=0;
+  // FIX 3: ya no refresca eventuales por separado
+  let n=7,done=0;
   const tick=()=>{done++;if(done>=n){btn.classList.remove('spinning');btn.disabled=false;progDone();showToast('Datos actualizados');}};
   consultarSaldo();tick();
   api.getFijos().then(d=>{renderEntes(d);tick();}).catch(tick);
   api.getGastos().then(d=>{renderAnualidad(d);tick();}).catch(tick);
   api.getDatosMes().then(d=>{onDatosMes(d);tick();}).catch(tick);
-  api.getEventuales().then(d=>{renderEventuales(d);tick();}).catch(tick);
   api.getLogros().then(d=>{renderLogros(d);tick();}).catch(tick);
   api.getNecesidades().then(d=>{renderNecesidades(d);tick();}).catch(tick);
   api.getFlujoPorMes().then(d=>{renderFlujoMensual(d);tick();}).catch(tick);
 }
 
 // ══════════════════════════════════════════
-//  FLIP BOARD
+//  FLIP BOARD — carrusel 3 pantallas
 // ══════════════════════════════════════════
-// ── Carrusel 3 pantallas ──────────────────────────────────
-// 'anverso' | 'logros' | 'maslow'
 let _pantalla = 'anverso';
-let _boardFlipped = false; // compatibilidad — true cuando NO está en anverso
+let _boardFlipped = false;
 let _reversoMostrarDone = false;
 let _ordenLogros = 'az';
+
+// FIX 2: setOrdenLogros ahora está definida como función real
+function setOrdenLogros(orden) {
+  _ordenLogros = orden;
+  // Actualizar estilos de botones
+  ['az','desc','asc'].forEach(k => {
+    const btn = document.getElementById('lord-' + k);
+    if (btn) btn.classList.remove('on');
+  });
+  const map = { 'az': 'az', 'monto-desc': 'desc', 'monto': 'asc' };
+  const btnId = 'lord-' + (map[orden] || 'az');
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('on');
+  pintarReverso();
+}
 
 function _setPantalla(p){
   _pantalla = p;
@@ -2353,19 +2204,17 @@ function _setPantalla(p){
   const logros = document.getElementById('board-logros');
   const maslow = document.getElementById('board-maslow');
 
-  // Limpiar todas las clases de estado
   anv.classList.remove('slide-left','slide-right');
   if(logros) logros.classList.remove('active');
   if(maslow) maslow.classList.remove('active');
 
   if(p === 'logros'){
-    anv.classList.add('slide-left');      // anverso sale a la derecha
+    anv.classList.add('slide-left');
     if(logros) logros.classList.add('active');
   } else if(p === 'maslow'){
-    anv.classList.add('slide-right');     // anverso sale a la izquierda
+    anv.classList.add('slide-right');
     if(maslow) maslow.classList.add('active');
   }
-  // Actualizar botones del hero
   const bL = document.getElementById('btn-logros');
   const bM = document.getElementById('btn-maslow');
   if(bL) bL.classList.toggle('active', p==='logros');
@@ -2390,8 +2239,6 @@ function volverAlAnverso(){
   _setPantalla('anverso');
 }
 
-
-// Compatibilidad con código que llama flipBoard()
 function flipBoard(){
   if(_pantalla==='anverso') irALogros();
   else volverAlAnverso();
@@ -2424,14 +2271,11 @@ function resetReverso(){
   ['reverso-fil-proyecto','reverso-fil-grupo'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.value='';
   });
-  const sel=document.getElementById('reverso-fil-orden');
-  if(sel)sel.value='az';
-  if(_reversoMostrarDone) toggleReversoMostrarDone();
-  else pintarReverso();
+  _ordenLogros = 'az';
+  setOrdenLogros('az');
 }
 
 function pintarReverso(){
-  // Guard: poblarFiltrosMes solo si existe y hay datos
   if(typeof poblarFiltrosMes === 'function') poblarFiltrosMes();
   poblarFiltrosReverso();
   const filP  = document.getElementById('reverso-fil-proyecto')?.value||'';
@@ -2487,12 +2331,10 @@ function pintarReverso(){
       ${tag?`<div class="inv-tag">${tag}</div>`:''}
     </div>`;
   }).join('');
-  // Dibujar necesidades
   dibujarNecesidades();
 }
 
 function toggleLogroReverso(idx){
-  // Mapear idx relativo al array filtrado → índice en _logrosRaw
   const filP  = document.getElementById('reverso-fil-proyecto')?.value||'';
   const filG  = document.getElementById('reverso-fil-grupo')?.value||'';
   let visibles = _logrosRaw.filter(it=>{
@@ -2503,7 +2345,7 @@ function toggleLogroReverso(idx){
   });
   const item = visibles[idx];
   if(!item) return;
-  if(item.incompleto){ showToast('⚠ Completa todos los campos en el Sheet primero', false); return; }
+  if(item.incompleto){ showToast('⚠ Completa el Concepto en el Sheet primero', false); return; }
   const nuevoVal = item.completado ? 'No' : 'Sí';
   item.completado = !item.completado;
   pintarReverso();
@@ -2522,7 +2364,6 @@ function toggleLogroReverso(idx){
 // ══════════════════════════════════════════
 function initTooltip(){
   const tip=document.getElementById('gtip');
-  let _t=null;
   document.addEventListener('mouseover',e=>{
     const el=e.target.closest('[title]');
     if(!el||!el.title)return;
@@ -2534,7 +2375,7 @@ function initTooltip(){
   document.addEventListener('mouseout',()=>tip.classList.remove('show'));
 }
 
-// Reloj en vivo — siempre
+// Reloj en vivo
 (function tickClock(){
   const now=new Date();
   const t=now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
@@ -2565,7 +2406,6 @@ const GRAF_COLORS = {
   '∴':           { line:'#67E8F9', width:1.5 },
 };
 
-// Paleta rotativa amplia — nunca queda gris
 const PALETA_ROTATIVA = [
   '#3B82F6','#06B6D4','#8B5CF6','#F59E0B','#4ADE80','#EF4444',
   '#EC4899','#FB923C','#A78BFA','#34D399','#67E8F9','#FBBF24',
@@ -2574,11 +2414,10 @@ const PALETA_ROTATIVA = [
   '#A3E635','#FB7185','#818CF8','#34D399','#FDBA74','#E2E8F0'
 ];
 let _paletaIdx = 0;
-const _colorCache = {}; // nombre → color asignado dinámicamente
+const _colorCache = {};
 
 function getEnteColor(ente){
   if(GRAF_COLORS[ente]) return GRAF_COLORS[ente];
-  // Asignar color rotativo y cachear para consistencia entre renders
   if(!_colorCache[ente]){
     _colorCache[ente] = { line: PALETA_ROTATIVA[_paletaIdx % PALETA_ROTATIVA.length], width:1.5 };
     _paletaIdx++;
@@ -2597,78 +2436,6 @@ function initGraficas(data){
   } else {
     setTimeout(mostrarGraficaAnual, 50);
   }
-}
-
-function buildGrafTabs(){
-  const data = grafData;
-  if(!data||!data.meses) return;
-  const mesActual = MESES_ES[new Date().getMonth()];
-  const cont = document.getElementById('graf-mes-tabs');
-  if(!cont) return;
-  cont.innerHTML = data.meses.map(m=>{
-    const esA = m === mesActual;
-    return `<span onclick="mostrarGraficaMes('${m}')"
-      style="font-size:11px;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:6px;
-      border:1px solid ${esA?'var(--p)':'var(--border)'};
-      color:${esA?'var(--p)':'var(--m)'};
-      background:${esA?'rgba(59,130,246,.1)':'transparent'};
-      transition:all .2s" class="graf-tab" data-mes="${m}">${m}</span>`;
-  }).join('');
-}
-
-function mostrarGraficaMes(mes){
-  const data = grafData;
-  if(!data||!data.meses||!window.Chart) return;
-  
-  const mesActual = MESES_ES[new Date().getMonth()];
-  const m = mes || mesActual || data.meses[0];
-  
-  document.querySelectorAll('.graf-tab').forEach(t=>{
-    const activo = t.dataset.mes === m;
-    t.style.borderColor = activo ? 'var(--p)' : 'var(--border)';
-    t.style.color = activo ? 'var(--p)' : 'var(--m)';
-    t.style.background = activo ? 'rgba(59,130,246,.1)' : 'transparent';
-  });
-  document.getElementById('graf-anual-btn').style.borderColor = 'var(--border)';
-  document.getElementById('graf-anual-btn').style.color = 'var(--m)';
-
-  const grupos = data.grupos[m] || [];
-  if(!grupos.length){
-    mostrarGrafVacio('Sin datos para ' + m);
-    return;
-  }
-
-  const entes = grupos.map(g=>g.ente);
-  const entesSet = new Set();
-  data.meses.forEach(mes=>{ (data.grupos[mes]||[]).forEach(e=>entesSet.add(e.ente)); });
-  const todosEntes = [...entesSet];
-  const datasets = [];
-  const montos = todosEntes.map(ente=>{
-    const item = grupos.find(g=>g.ente===ente);
-    return item ? (item.monto||0) : null;
-  });
-
-  const labels = data.meses;
-  const idx = {};
-  data.meses.forEach(mes=>{ idx[mes]={};(data.grupos[mes]||[]).forEach(e=>idx[mes][e.ente]=e.monto); });
-
-  const dsets = todosEntes.map(ente=>{
-    const cfg = getEnteColor(ente);
-    return {
-      label: ente,
-      data: data.meses.map(mes=>idx[mes]?.[ente]??null),
-      borderColor: cfg.line,
-      borderWidth: ente==='Final' ? 3 : 1.5,
-      pointRadius: ente==='Final' ? 4 : 2,
-      pointHoverRadius: 6,
-      fill: false,
-      tension: 0.3,
-      spanGaps: true,
-      order: ente==='Final' ? 0 : 1,
-    };
-  });
-
-  renderChart(labels, dsets, 'Todos los meses · '+m+' destacado');
 }
 
 function mostrarGraficaAnual(){
@@ -2754,7 +2521,6 @@ function renderChart(labels, datasets, titulo){
     }
   });
 
-  // Leyenda custom
   const ley = document.getElementById('graf-leyenda');
   ley.innerHTML = datasets.map(d=>`
     <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:${d.borderColor};font-weight:${d.label==='Final'?'700':'400'}">
@@ -2763,13 +2529,6 @@ function renderChart(labels, datasets, titulo){
     </div>`).join('');
 }
 
-function mostrarGrafVacio(msg){
-  document.getElementById('graf-loading').innerHTML='<span style="color:var(--m)">'+msg+'</span>';
-  document.getElementById('graf-loading').style.display='block';
-  document.getElementById('graf-canvas').style.display='none';
-}
-
-// Sincronizar min-height de Fijos con el alto de Nueva Entrada (solo desktop)
 function syncFijosHeight(){
   if(window.innerWidth < 900) return;
   const entrada = document.getElementById('sec-entrada');
@@ -2781,12 +2540,11 @@ window.addEventListener('DOMContentLoaded', ()=>{ setTimeout(syncFijosHeight, 30
 window.addEventListener('resize', syncFijosHeight);
 
 
-
 // ══════════════════════════════════════════
 //  LOGROS — inventario RPG
 // ══════════════════════════════════════════
 let _logrosRaw = [];
-let _mostrarDone = false; // por defecto completados ocultos
+let _mostrarDone = false;
 
 const LOGROS_ICON_MAP = {
   'Salud':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
@@ -2822,6 +2580,11 @@ const LOGROS_ICON_MAP = {
   'Cumpleaños':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
   'Certificado':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
   'Báscula':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 L8 9 M13 3 L16 9"/></svg>`,
+  // FIX 5: íconos nuevos para Audio, Computación, Consumible, Ejercicio
+  'Audio':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  'Computación':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><polyline points="9 8 12 11 15 8"/></svg>`,
+  'Consumible':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+  'Ejercicio':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5v14M18 5v14M3 9h3M18 9h3M3 15h3M18 15h3M9 5h6M9 19h6"/></svg>`,
   'default':`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
 };
 
@@ -2850,14 +2613,18 @@ function getLogroIcon(it) {
   if(grupo.includes('hogar')) return LOGROS_ICON_MAP['Hogar'];
   if(grupo.includes('ropa')) return LOGROS_ICON_MAP['Ropa'];
   if(grupo.includes('lectura')) return LOGROS_ICON_MAP['Lectura'];
+  if(grupo.includes('audio')) return LOGROS_ICON_MAP['Audio'];
+  if(grupo.includes('computación')||grupo.includes('computacion')) return LOGROS_ICON_MAP['Computación'];
+  if(grupo.includes('consumible')) return LOGROS_ICON_MAP['Consumible'];
+  if(grupo.includes('ejercicio')) return LOGROS_ICON_MAP['Ejercicio'];
   return LOGROS_ICON_MAP[proj] || LOGROS_ICON_MAP['default'];
 }
 
+// FIX 3: renderLogros solo usa la hoja Logros, sin mezclar eventuales
 function renderLogros(data) {
   window._logrosData = data;
   const fromSheet = (data && data.items) ? data.items : [];
 
-  // Cada fila es independiente — sin herencia. Campos vacíos = "Sin X"
   const normalizados = fromSheet.map((it, i) => {
     const proyecto   = (it.proyecto && it.proyecto.trim()) ? it.proyecto.trim() : 'Sin Proyecto';
     const grupo      = (it.contacto && it.contacto.trim()) ? it.contacto.trim() : 'Sin Contacto';
@@ -2866,31 +2633,21 @@ function renderLogros(data) {
     const fecha      = (it.recurrencia && it.recurrencia !== '-' && it.recurrencia !== 'null') ? it.recurrencia : '';
     const desc       = (it.descripcion && it.descripcion.trim()) ? it.descripcion.trim() : '';
     const completado = (it.completado === 'Sí' || it.completado === 'Si' || it.completado === 'sí');
-    const incompleto = proyecto==='Sin Proyecto'||grupo==='Sin Contacto'||concepto==='Sin Concepto';
+    // FIX 4: solo flag incompleto cuando falta Concepto
+    const incompleto = concepto === 'Sin Concepto';
     return { proyecto, grupo, concepto, monto, fecha, desc, completado, incompleto, fila: it.fila };
   });
 
-  const eventuales = (window._eventualesData || []).map(e=>({
-    proyecto:   (e.proyecto && e.proyecto.trim()) ? e.proyecto.trim() : 'Sin Proyecto',
-    grupo:      (e.tema && e.tema.trim())         ? e.tema.trim()     : 'Sin Contacto',
-    concepto:   (e.subtema && e.subtema.trim())   ? e.subtema.trim()  : 'Sin Concepto',
-    monto:      e.montoAprox||null,
-    fecha:      e.fechaPropuesta||'',
-    desc:       e.descripcion||'',
-    completado: false,
-    incompleto: !e.proyecto||!e.tema||!e.subtema,
-    fila:       null
-  }));
-
-  _logrosRaw = [...normalizados, ...eventuales];
-  poblarFiltrosLogros();
+  // FIX 3: ya NO se mezclan eventuales — _logrosRaw solo contiene normalizados
+  _logrosRaw = normalizados;
   poblarFiltrosReverso();
-  filtrarLogros();
+  pintarInventario([]);
 }
 
+// FIX 3: renderEventuales se mantiene por compatibilidad pero ya no alimenta _logrosRaw
 function renderEventuales(data) {
   window._eventualesData = data;
-  if(window._logrosData !== undefined) renderLogros(window._logrosData);
+  // No hace nada más — eventuales ya viven en hoja Logros en v18
 }
 
 function poblarFiltrosLogros() {
@@ -2904,7 +2661,6 @@ function poblarFiltrosLogros() {
 
 function toggleMostrarDone(){
   _mostrarDone = !_mostrarDone;
-  // Actualizar botón en reverso también
   ['logros-tog-done','reverso-tog-done'].forEach(id=>{
     const btn = document.getElementById(id);
     if(!btn) return;
@@ -2918,11 +2674,9 @@ function toggleMostrarDone(){
 }
 
 function filtrarLogros() {
-  pintarInventario([]); // actualiza contador en btn-flip
+  pintarInventario([]);
   if(_boardFlipped) pintarReverso();
 }
-
-function esDone(it){ return it.completado; }
 
 function resetLogros(){
   ['logros-fil-proyecto','logros-fil-grupo'].forEach(id=>{
@@ -2934,59 +2688,13 @@ function resetLogros(){
 }
 
 function pintarInventario(items){
-  // Logros solo en reverso — pintarReverso es el renderer principal
-  // Esta función ahora también actualiza el contador del btn-flip
   const total = _logrosRaw.length;
   const done  = _logrosRaw.filter(it=>it.completado).length;
   const btnFlip = document.getElementById('btn-logros');
   if(btnFlip && _pantalla==='anverso'){
     btnFlip.innerHTML = `<i class="fas fa-trophy"></i> Logros <span style="font-size:10px;opacity:.7">${done}/${total}</span>`;
   }
-  // Si el reverso está visible, pintarlo también
   if(_boardFlipped) pintarReverso();
-}
-
-function _pintarInventarioGrid(items, bodyId, cntId){
-  const body = document.getElementById(bodyId);
-  const cnt  = document.getElementById(cntId);
-  if(!body) return;
-  const total = _logrosRaw.length;
-  const done  = _logrosRaw.filter(it=>it.completado).length;
-  if(cnt) cnt.textContent = `${done}/${total}`;
-
-  if(!items.length){
-    body.innerHTML=`<div style="text-align:center;padding:32px 16px">
-      <div style="font-size:36px;margin-bottom:8px">🏆</div>
-      <div style="color:var(--m);font-size:13px">${_mostrarDone||!done?'Sin logros aún —<br>agrega desde tu Sheet.':'Todos los pendientes completados 🎉'}</div>
-    </div>`;
-    return;
-  }
-
-  const cards = items.map((it,i)=>{
-    const icon    = getLogroIcon(it);
-    const label   = it.concepto;
-    const monto   = it.monto ? '$ '+Math.abs(it.monto).toLocaleString('es-MX',{minimumFractionDigits:0}) : '';
-    const tag     = it.grupo !== it.proyecto ? it.grupo : '';
-    const tooltip = [label, monto, it.proyecto, it.fecha].filter(Boolean).join(' · ');
-    const isDone  = it.completado;
-    const isInc   = it.incompleto; // faltan campos
-
-    return `<div class="inv-item${isDone?' done':''}${isInc?' inc':''}"
-      title="${tooltip}" onclick="toggleLogro(${i},event)">
-      <div class="inv-corner ${isDone?'done':isInc?'warn':'pend'}">
-        <i class="fas fa-${isDone?'check':isInc?'exclamation':'lock'}"></i>
-      </div>
-      <div class="inv-icon" style="opacity:${isDone?.5:1}">${icon}</div>
-      <div class="inv-label" style="color:${isDone?'var(--m)':isInc?'var(--warn)':'var(--t)'};
-        text-decoration:${isDone?'line-through':'none'}">
-        ${label.length>28?label.slice(0,27)+'…':label}
-      </div>
-      ${monto?`<div class="inv-monto" style="opacity:${isDone?.5:1}">${monto}</div>`:''}
-      ${tag?`<div class="inv-tag">${tag}</div>`:''}
-    </div>`;
-  }).join('');
-
-  body.innerHTML = `<div class="inv-grid">${cards}</div>`;
 }
 
 function toggleLogro(idx, event){
@@ -2994,12 +2702,12 @@ function toggleLogro(idx, event){
   const item = _logrosRaw[idx];
   if(!item) return;
   if(item.incompleto){
-    showToast('⚠ Completa todos los campos en el Sheet primero', false);
+    showToast('⚠ Agrega el Concepto en el Sheet primero', false);
     return;
   }
   const nuevoVal = item.completado ? 'No' : 'Sí';
   item.completado = !item.completado;
-  pintarInventario([]); // actualiza contador btn-flip
+  pintarInventario([]);
   if(_boardFlipped) pintarReverso();
   if(item.fila){
     api.marcarLogro(item.fila, nuevoVal)
@@ -3007,7 +2715,7 @@ function toggleLogro(idx, event){
                  else showToast(nuevoVal==='Sí'?'✓ Logro completado':'Logro desmarcado', nuevoVal==='Sí'); })
       .catch(()=>{ item.completado=!item.completado; pintarInventario([]); if(_boardFlipped) pintarReverso(); });
   } else {
-    showToast(nuevoVal==='Sí'?'✓ Marcado (solo visual — sin fila en Sheet)':'Desmarcado', true);
+    showToast(nuevoVal==='Sí'?'✓ Marcado':'Desmarcado', true);
   }
 }
 
@@ -3020,10 +2728,6 @@ function renderFlujoMensual(data){
     body.innerHTML='<div style="padding:16px;color:var(--m);text-align:center">Sin datos</div>';return;
   }
   const mesActual = MESES_ES[new Date().getMonth()];
-  const TH = (txt,align,color) =>
-    `<th style="padding:6px 10px;font-size:11px;font-weight:700;text-transform:uppercase;
-    letter-spacing:.4px;color:${color||'var(--m)'};background:var(--card);
-    border-bottom:1px solid var(--border);white-space:nowrap;text-align:${align}">${txt}</th>`;
 
   const rows = data.meses.map(mes=>{
     const g = data.grupos[mes]||{ingresos:0,egresos:0,excedente:null};
@@ -3032,8 +2736,6 @@ function renderFlujoMensual(data){
     const excedente  = g.excedente!==undefined ? g.excedente : (ingresos+egresos);
     const esActual   = mes===mesActual;
     const fmtMXN = v=>'$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2});
-    const td = 'r';
-    const mc = '';
 
     const ingCell = ingresos===0
       ? `<td class="r" style="color:var(--m)">$ 0</td>`
@@ -3065,7 +2767,6 @@ function renderFlujoMensual(data){
   </table>`;
 }
 
-// renderLogros y renderEventuales definidos arriba
 // ══════════════════════════════════════════
 //  GRÁFICA FIJOS
 // ══════════════════════════════════════════
@@ -3082,7 +2783,6 @@ const FIJOS_COLORS = [
 function initGraficaFijos(data){
   if(!data||!data.ok||!data.grupos||!data.grupos.length) return;
   if(!window.Chart){
-    // Chart.js ya debería estar cargado por initGraficas — esperar si no
     const wait = setInterval(()=>{
       if(window.Chart){ clearInterval(wait); renderGraficaFijos(data); }
     }, 100);
@@ -3097,7 +2797,6 @@ function renderGraficaFijos(data){
   const leyenda = document.getElementById('graf-fijos-leyenda');
   if(!canvas) return;
 
-  // Claves (meses) como eje X — orden natural de los datos
   const claves = [...new Set(data.grupos.flatMap(g => g.items.map(it => it.clave)))];
 
   const datasets = data.grupos.map((g, i) => {
@@ -3165,7 +2864,6 @@ function renderGraficaFijos(data){
     }
   });
 
-  // Leyenda custom
   if(leyenda){
     leyenda.innerHTML = datasets.map(d =>
       `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:${d.borderColor}">
@@ -3183,7 +2881,6 @@ let _necData  = null;
 let _necVista = 'piramide';
 let _radarChart = null;
 
-// Colores chakra: base=rojo → cima=violeta
 const NEC_NIVELES = [
   { key:'1', label:'Fisiológicas',   sub:'Comer, dormir, agua',        color:'#EF4444', glow:'rgba(239,68,68,.3)',   emoji:'🔴' },
   { key:'2', label:'Seguridad',      sub:'Estabilidad y vivienda',     color:'#F97316', glow:'rgba(249,115,22,.3)',  emoji:'🟠' },
@@ -3196,15 +2893,6 @@ let _necMesesSeleccionados = new Set();
 
 function renderNecesidades(data){
   _necData = data;
-  // Debug — quitar después
-  console.log('[NEC response]', JSON.stringify({
-    ok: data.ok,
-    error: data.error,
-    nivelesCount: data.niveles ? data.niveles.length : 'undefined',
-    niveles: data.niveles,
-    mesesDisponibles: data.mesesDisponibles,
-    periodo: data.periodo
-  }));
   if(_boardFlipped){
     poblarFiltrosMes();
     dibujarNecesidades();
@@ -3240,11 +2928,9 @@ function resetFiltrosMes(){
 
 function calcularNivelesFiltrados(){
   if(!_necData) return [];
-  // Si no hay rawPorMes (GAS viejo) o no hay filtros activos → usar niveles directos
   if(!_necData.rawPorMes || _necMesesSeleccionados.size === 0) {
     return _necData.niveles || [];
   }
-  // Con filtros de mes → recalcular desde rawPorMes
   const sumas = {};
   [..._necMesesSeleccionados].forEach(mes=>{
     (_necData.rawPorMes[mes]||[]).forEach(({key,monto,concepto})=>{
@@ -3282,9 +2968,7 @@ function dibujarNecesidades(){
     cont.innerHTML='<div style="padding:40px;text-align:center;color:var(--m);font-size:13px">Cargando datos de necesidades…</div>';
     return;
   }
-  // Calcular niveles según filtro activo
   const nivelesFiltrados = calcularNivelesFiltrados();
-  // Periodo en el label
   const per = document.getElementById('nec-periodo');
   if(per){
     if(_necMesesSeleccionados.size > 0)
@@ -3303,19 +2987,14 @@ function dataNivel(key, nivelesArr){
 }
 function fmtK(v){ const a=Math.abs(v); return a>=1000?'$'+Math.round(a/1000)+'k':'$'+a.toLocaleString('es-MX',{maximumFractionDigits:0}); }
 
-// ── PIRÁMIDE ──────────────────────────────
 function dibujarPiramide(cont, niveles){
   niveles = niveles || (_necData ? _necData.niveles : []);
   const maxAbs = Math.max(...NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key,niveles).total||0)),1);
-
-  // Renderizar de 5 (cima) a 1 (base) — pirámide visual top→bottom
-  const pisos = [...NEC_NIVELES].reverse(); // 5,4,3,2,1
-
+  const pisos = [...NEC_NIVELES].reverse();
   const totalSum = pisos.reduce((s,t)=>s+Math.abs(dataNivel(t.key,niveles).total||0),0);
   const html = pisos.map((niv,i)=>{
     const d    = dataNivel(niv.key, niveles);
     const abs  = Math.abs(d.total||0);
-    // Ancho proporcional al monto: base 20% mínimo, crece hasta 100% según gasto real
     const pctMonto = abs/maxAbs;
     const ancho = abs===0 ? 20 : Math.max(22, 20 + 80*pctMonto);
     const pct   = totalSum>0 ? abs/totalSum : 0;
@@ -3361,7 +3040,6 @@ function dibujarPiramide(cont, niveles){
   cont.innerHTML=`<div style="padding:4px 0 8px">${html}</div>`;
 }
 
-// ── RADAR con Chart.js ────────────────────
 function dibujarRadar(cont, niveles){
   niveles = niveles || (_necData ? _necData.niveles : []);
   cont.innerHTML=`<canvas id="radar-canvas" style="max-height:380px"></canvas>`;
@@ -3372,7 +3050,6 @@ function dibujarRadar(cont, niveles){
   const valores  = NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key, niveles).total||0));
   const colors   = NEC_NIVELES.map(n=>n.color);
   const maxVal   = Math.max(...valores,1);
-  // Normalizar 0-100 para el radar
   const norm     = valores.map(v=>(v/maxVal*100));
 
   if(_radarChart){ try{_radarChart.destroy();}catch(e){} _radarChart=null; }
@@ -3423,17 +3100,11 @@ function dibujarRadar(cont, niveles){
           backgroundColor:'rgba(0,0,0,.2)',
           angleLines:{ color:'rgba(255,255,255,.08)', lineWidth:1 },
           grid:{ color:'rgba(255,255,255,.07)' },
-          ticks:{
-            display:false,
-            stepSize:20,
-          },
+          ticks:{ display:false, stepSize:20 },
           pointLabels:{
             font:{ size:12, weight:'700', family:'system-ui' },
             color: ctx => colors[ctx.index]||'#94A3B8',
-            callback:(label,i)=>{
-              const abs = valores[i];
-              return [label, fmtK(abs)];
-            }
+            callback:(label,i)=>{ const abs = valores[i]; return [label, fmtK(abs)]; }
           }
         }
       }
@@ -3441,15 +3112,12 @@ function dibujarRadar(cont, niveles){
   });
 }
 
-// ── TABLA DE ANÁLISIS ────────────────────
 function dibujarTablaAnalisis(niveles){
   niveles = niveles || (_necData ? _necData.niveles : []);
   const cont = document.getElementById('nec-tabla');
   if(!cont||!_necData||!_necData.niveles) return;
 
   const total = NEC_NIVELES.reduce((s,n)=>s+Math.abs(dataNivel(n.key).total||0),0);
-
-  // Ordenar por monto desc
   const sorted = [...NEC_NIVELES]
     .map(n=>({ ...n, ...dataNivel(n.key, niveles) }))
     .sort((a,b)=>Math.abs(b.total||0)-Math.abs(a.total||0));
@@ -3499,45 +3167,23 @@ function dibujarTablaAnalisis(niveles){
     <div style="display:flex;flex-direction:column;gap:8px">${rows}</div>`;
 }
 
-// Llamar dibujarNecesidades cuando se abre el reverso
-// necesidades se dibujan directamente desde flipBoard y pintarReverso
-
-// ── Tab Bar Móvil ────────────────────────────────────────
+// ── Tab Bar Móvil ──
 let _mobTabActivo = 'entrada';
 
 function mobTab(tab){
   _mobTabActivo = tab;
-
-  // Actualizar estilos de tabs
   document.querySelectorAll('.mob-tab').forEach(b=>{
     b.classList.toggle('active', b.dataset.tab===tab);
   });
-
-  if(tab==='logros'){
-    irALogros();
-    return;
-  }
-  if(tab==='maslow'){
-    irAMaslow();
-    return;
-  }
-
-  // Para el resto: volver al anverso si estamos en otro panel
+  if(tab==='logros'){ irALogros(); return; }
+  if(tab==='maslow'){ irAMaslow(); return; }
   if(_pantalla!=='anverso') volverAlAnverso();
-
-  // Scroll a la sección correspondiente
-  const ids = {
-    entrada: 'col1-wrap',
-    bancos:  'col1-wrap',
-    flujo:   'sec-flujo',
-  };
+  const ids = { entrada:'col1-wrap', bancos:'col1-wrap', flujo:'sec-flujo' };
   const targetId = ids[tab];
   if(targetId){
-    // Pequeño delay para que el anverso termine de aparecer
     setTimeout(()=>{
       const el = document.getElementById(targetId);
       if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-      // Si es sección colapsable, abrirla
       const hdr = document.getElementById('sec-flujo-hdr');
       if(tab==='flujo' && hdr){
         const body = document.getElementById('sec-flujo-body');
@@ -3551,9 +3197,6 @@ function mobTab(tab){
   }
 }
 
-// Sincronizar tab bar cuando se cambia de pantalla por botones del hero
-const _origSetPantalla = _setPantalla;
-// Monkey-patch: actualizar tab activo al cambiar pantalla
 function _syncMobTab(p){
   const map = {anverso:'entrada', logros:'logros', maslow:'maslow'};
   const t = map[p]||'entrada';
