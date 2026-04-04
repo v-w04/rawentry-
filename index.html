@@ -872,7 +872,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.2.0060 · Trello · Sheets</div>
+          <div class="hero-sub">v.2.0061 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2098,19 +2098,40 @@ let grafChart = null;
 let grafData  = null;
 
 const GRAF_COLORS = {
-  'Final':   { line:'#FFFFFF', width:3, z:10 },
-  'P':       { line:'#3B82F6', width:1.5 },
-  'M':       { line:'#06B6D4', width:1.5 },
-  'BW':      { line:'#8B5CF6', width:1.5 },
-  'Foodies': { line:'#F59E0B', width:1.5 },
-  'Blue':    { line:'#10B981', width:1.5 },
-  'Espiritu':{ line:'#EF4444', width:1.5 },
-  'Mercader':{ line:'#EC4899', width:1.5 },
-  '_default':{ line:'#64748B', width:1 },
+  'Final':       { line:'#FFFFFF', width:3 },
+  'P':           { line:'#3B82F6', width:1.5 },
+  'M':           { line:'#06B6D4', width:1.5 },
+  'BW':          { line:'#8B5CF6', width:1.5 },
+  'Foodies':     { line:'#F59E0B', width:1.5 },
+  'Blue':        { line:'#4ADE80', width:1.5 },
+  'Espiritu':    { line:'#EF4444', width:1.5 },
+  'Espíritu':    { line:'#EF4444', width:1.5 },
+  'Mercader':    { line:'#EC4899', width:1.5 },
+  'Aseo':        { line:'#FB923C', width:1.5 },
+  'Suscripción': { line:'#A78BFA', width:1.5 },
+  'Inicio':      { line:'#34D399', width:1.5 },
+  '∴':           { line:'#67E8F9', width:1.5 },
 };
 
+// Paleta rotativa amplia — nunca queda gris
+const PALETA_ROTATIVA = [
+  '#3B82F6','#06B6D4','#8B5CF6','#F59E0B','#4ADE80','#EF4444',
+  '#EC4899','#FB923C','#A78BFA','#34D399','#67E8F9','#FBBF24',
+  '#F472B6','#60A5FA','#2DD4BF','#C084FC','#FCA5A5','#86EFAC',
+  '#7DD3FC','#FCD34D','#E879F9','#4ADE80','#F87171','#38BDF8',
+  '#A3E635','#FB7185','#818CF8','#34D399','#FDBA74','#E2E8F0'
+];
+let _paletaIdx = 0;
+const _colorCache = {}; // nombre → color asignado dinámicamente
+
 function getEnteColor(ente){
-  return GRAF_COLORS[ente] || GRAF_COLORS['_default'];
+  if(GRAF_COLORS[ente]) return GRAF_COLORS[ente];
+  // Asignar color rotativo y cachear para consistencia entre renders
+  if(!_colorCache[ente]){
+    _colorCache[ente] = { line: PALETA_ROTATIVA[_paletaIdx % PALETA_ROTATIVA.length], width:1.5 };
+    _paletaIdx++;
+  }
+  return _colorCache[ente];
 }
 
 function initGraficas(data){
@@ -2578,9 +2599,11 @@ function renderFlujoMensual(data){
 let grafFijosChart = null;
 
 const FIJOS_COLORS = [
-  '#3B82F6','#06B6D4','#8B5CF6','#F59E0B',
-  '#10B981','#EF4444','#EC4899','#F97316',
-  '#14B8A6','#6366F1','#84CC16','#A78BFA'
+  '#3B82F6','#06B6D4','#8B5CF6','#F59E0B','#4ADE80','#EF4444',
+  '#EC4899','#FB923C','#A78BFA','#34D399','#67E8F9','#FBBF24',
+  '#F472B6','#60A5FA','#2DD4BF','#C084FC','#FCA5A5','#86EFAC',
+  '#7DD3FC','#FCD34D','#E879F9','#F87171','#38BDF8','#A3E635',
+  '#FB7185','#818CF8','#FDBA74','#E2E8F0','#84CC16','#6366F1'
 ];
 
 function initGraficaFijos(data){
