@@ -881,7 +881,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0004 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0005 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2880,7 +2880,7 @@ function dibujarPiramide(cont){
     const pct   = totalSum>0 ? abs/totalSum : 0;
     const vacio = abs===0;
     const monto = vacio?'—':'$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
-    const tops  = (d.conceptos||[]).slice(0,3).join(' · ');
+    const tops  = (d.conceptos||[]).join(' · ');
 
     return `<div style="width:${ancho}%;margin:0 auto 6px;transition:width .5s cubic-bezier(.4,0,.2,1)">
       <div style="
@@ -3014,7 +3014,7 @@ function dibujarTablaAnalisis(){
   const rows = sorted.map(n=>{
     const abs  = Math.abs(n.total||0);
     const pct  = total>0?(abs/total*100).toFixed(1):0;
-    const tops = (n.conceptos||[]).slice(0,4).join(', ')||'—';
+    const tops = (n.conceptos||[]).join(', ')||'—';
     const vacio= abs===0;
     return `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
       <td style="padding:8px 10px;white-space:nowrap">
