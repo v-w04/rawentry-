@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0012 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0013 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2968,13 +2968,14 @@ function dataNivel(key, nivelesArr){
 function fmtK(v){ const a=Math.abs(v); return a>=1000?'$'+Math.round(a/1000)+'k':'$'+a.toLocaleString('es-MX',{maximumFractionDigits:0}); }
 
 // ── PIRÁMIDE ──────────────────────────────
-function dibujarPiramide(cont){
-  const maxAbs = Math.max(...NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key).total||0)),1);
+function dibujarPiramide(cont, niveles){
+  niveles = niveles || (_necData ? _necData.niveles : []);
+  const maxAbs = Math.max(...NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key,niveles).total||0)),1);
 
   // Renderizar de 5 (cima) a 1 (base) — pirámide visual top→bottom
   const pisos = [...NEC_NIVELES].reverse(); // 5,4,3,2,1
 
-  const totalSum = pisos.reduce((s,t)=>s+Math.abs(dataNivel(t.key).total||0),0);
+  const totalSum = pisos.reduce((s,t)=>s+Math.abs(dataNivel(t.key,niveles).total||0),0);
   const html = pisos.map((niv,i)=>{
     const d    = dataNivel(niv.key, niveles);
     const abs  = Math.abs(d.total||0);
