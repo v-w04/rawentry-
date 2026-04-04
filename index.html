@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0009 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0010 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -2055,6 +2055,7 @@ function refreshTodo(){
 // ══════════════════════════════════════════
 let _boardFlipped = false;
 let _reversoMostrarDone = false;
+let _ordenLogros = 'az';
 
 function flipBoard(){
   _boardFlipped = !_boardFlipped;
@@ -2714,7 +2715,7 @@ function renderFlujoMensual(data){
       : `<td style="${td};color:var(--err);font-weight:600">− ${fmtMXN(Math.abs(egresos))}</td>`;
     const excCell = excedente===0
       ? `<td style="${td};color:var(--m)">$ 0</td>`
-      : `<td style="${td};color:${excedente>0?'#A78BFA':'var(--err)'};font-weight:700">${excedente<0?'− ':''}${fmtMXN(excedente)}</td>`;
+      : `<td style="${td};color:${excedente>0?'var(--ok)':'var(--err)'};font-weight:700">${excedente<0?'− ':''}${fmtMXN(excedente)}</td>`;
 
     return `<tr style="${esActual?'background:rgba(59,130,246,.07)':''}">
       <td style="${mc}">${mes}${esActual?' 📍':''}</td>
@@ -2727,7 +2728,7 @@ function renderFlujoMensual(data){
       ${TH('Mes','left','')}
       ${TH('Ingresos','right','var(--ok)')}
       ${TH('Egresos','right','var(--err)')}
-      ${TH('Excedente','right','#A78BFA')}
+      ${TH('Excedente','right','')}
     </tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
