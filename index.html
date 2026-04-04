@@ -552,7 +552,7 @@ html,body{
   .sections{
     display:grid;
     /* columna gráfica: 624px */
-    grid-template-columns:300px 624px 624px minmax(340px,auto);
+    grid-template-columns:300px 624px 624px;
     grid-template-rows:auto auto;
     gap:12px;padding:12px 20px;
     align-items:start;
@@ -562,10 +562,10 @@ html,body{
     width:fit-content;
     margin:0 auto;
   }
-  #col1-wrap{grid-column:1;grid-row:1 / span 3;align-self:start}
-  #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
+  #col1-wrap{grid-column:1;grid-row:1;align-self:start}
   #sec-gastos{grid-column:2;grid-row:1;align-self:start}
-  #sec-flujo{grid-column:4;grid-row:1;align-self:start}
+  #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
+  #sec-flujo{grid-column:1;grid-row:2;align-self:start}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0014 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0016 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
