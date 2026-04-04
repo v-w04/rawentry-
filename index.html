@@ -329,11 +329,15 @@ html,body{
   cursor:pointer;
 }
 .ente-row:last-child{border-bottom:none}
-.ente-nombre{font-size:var(--base);font-weight:700}
-.ente-right{display:flex;align-items:center;gap:10px}
-.ente-monto{font-size:var(--lg);font-weight:800;font-variant-numeric:tabular-nums}
+.ente-nombre{font-size:var(--base);font-weight:700;letter-spacing:-.01em}
+.ente-right{display:flex;align-items:baseline;gap:12px}
+.ente-monto{
+  font-size:var(--lg);font-weight:800;
+  font-variant-numeric:tabular-nums;
+  min-width:90px;text-align:right;
+}
 .ente-monto.pos{color:var(--ok)}.ente-monto.neg{color:var(--err)}.ente-monto.z{color:var(--m)}
-.ente-fecha{font-size:11px;color:var(--m)}
+.ente-fecha{font-size:10px;color:var(--m);min-width:68px;text-align:right;letter-spacing:.2px}
 
 /* Edición inline de ente */
 .ente-edit{
@@ -751,13 +755,26 @@ html.mob .panel-overlay.show{display:block !important}
 }
 
 /* Flujo Mensual — unificar con el resto */
-#flujo-body table{font-size:13px;font-variant-numeric:tabular-nums}
-#flujo-body th{
-  padding:6px 14px;font-size:11px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border);
+#flujo-body{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#flujo-body table{
+  font-size:13px;font-variant-numeric:tabular-nums;
+  width:100%;border-collapse:collapse;table-layout:fixed;
 }
-#flujo-body td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+#flujo-body col.c-mes  { width:30% }
+#flujo-body col.c-num  { width:23.33% }
+#flujo-body th{
+  padding:7px 12px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.6px;color:var(--m);
+  border-bottom:2px solid var(--border);white-space:nowrap;
+}
+#flujo-body th.r{text-align:right}
+#flujo-body td{
+  padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+#flujo-body td.r{text-align:right}
+#flujo-body tr:last-child td{border-bottom:none}
+#flujo-body tr:hover td{background:rgba(255,255,255,.02)}
 
 /* ── Scrollbar personalizado ── */
 *::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -928,7 +945,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0019 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0020 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1143,7 +1160,7 @@ html.mob .hero-right{display:none !important}
         <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
       </div>
       <div class="sec-body" id="sec-flujo-body">
-        <div id="flujo-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%">
+        <div id="flujo-body">
           <div style="text-align:center;padding:20px;color:var(--m)">
             <i class="fas fa-circle-notch fa-spin" style="color:var(--ok)"></i>
           </div>
@@ -2722,34 +2739,37 @@ function renderFlujoMensual(data){
     const excedente  = g.excedente!==undefined ? g.excedente : (ingresos+egresos);
     const esActual   = mes===mesActual;
     const fmtMXN = v=>'$ '+Math.abs(v).toLocaleString('es-MX',{minimumFractionDigits:2});
-    const td = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right`;
-    const mc = `padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:${esActual?'700':'500'};color:${esActual?'var(--p)':'var(--t)'};white-space:nowrap`;
+    const td = 'r';
+    const mc = '';
 
     const ingCell = ingresos===0
-      ? `<td style="${td};color:var(--m)">$ 0</td>`
-      : `<td style="${td};color:var(--ok);font-weight:600">${fmtMXN(ingresos)}</td>`;
+      ? `<td class="r" style="color:var(--m)">$ 0</td>`
+      : `<td class="r" style="color:var(--ok);font-weight:600">${fmtMXN(ingresos)}</td>`;
     const egrCell = egresos===0
-      ? `<td style="${td};color:var(--m)">$ 0</td>`
-      : `<td style="${td};color:var(--err);font-weight:600">− ${fmtMXN(Math.abs(egresos))}</td>`;
+      ? `<td class="r" style="color:var(--m)">$ 0</td>`
+      : `<td class="r" style="color:var(--err);font-weight:600">− ${fmtMXN(Math.abs(egresos))}</td>`;
     const excCell = excedente===0
-      ? `<td style="${td};color:var(--m)">$ 0</td>`
-      : `<td style="${td};color:${excedente>0?'var(--ok)':'var(--err)'};font-weight:700">${excedente<0?'− ':''}${fmtMXN(excedente)}</td>`;
+      ? `<td class="r" style="color:var(--m)">$ 0</td>`
+      : `<td class="r" style="color:${excedente>0?'var(--ok)':'var(--err)'};font-weight:700">${excedente<0?'− ':''}${fmtMXN(excedente)}</td>`;
 
-    return `<tr style="${esActual?'background:rgba(59,130,246,.07)':''}">
-      <td style="${mc}">${mes}${esActual?' 📍':''}</td>
+    return `<tr style="${esActual?'background:rgba(59,130,246,.08)':''}">
+      <td style="font-weight:${esActual?700:500};color:${esActual?'var(--p)':'var(--t)'}">${mes}${esActual?' ↑':''}</td>
       ${ingCell}${egrCell}${excCell}
     </tr>`;
   }).join('');
 
-  body.innerHTML=`<div class="tbl-wrap"><table class="tbl" style="width:max-content;min-width:100%">
+  body.innerHTML=`<table id="flujo-tbl">
+    <colgroup>
+      <col class="c-mes"><col class="c-num"><col class="c-num"><col class="c-num">
+    </colgroup>
     <thead><tr>
-      ${TH('Mes','left','')}
-      ${TH('Ingresos','right','var(--ok)')}
-      ${TH('Egresos','right','var(--err)')}
-      ${TH('Excedente','right','')}
+      <th>Mes</th>
+      <th class="r" style="color:var(--ok)">Ingresos</th>
+      <th class="r" style="color:var(--err)">Egresos</th>
+      <th class="r">Excedente</th>
     </tr></thead>
     <tbody>${rows}</tbody>
-  </table></div>`;
+  </table>`;
 }
 
 // renderLogros y renderEventuales definidos arriba
