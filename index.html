@@ -913,7 +913,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0006 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0007 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1271,17 +1271,29 @@ html.mob .hero-right{display:none !important}
 
       <!-- IZQUIERDA: Mapa de Necesidades -->
       <div>
-        <!-- Toggle -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-          <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
-            style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;
-            background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.6);color:#C4B5FD;
-            cursor:pointer;font-family:inherit;transition:all .2s">🔺 Pirámide</button>
-          <button id="nec-btn-radar" onclick="switchVistaNec('radar')"
-            style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;
-            background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--m);
-            cursor:pointer;font-family:inherit;transition:all .2s">🕸 Radar</button>
-          <span id="nec-periodo" style="font-size:11px;color:var(--m);margin-left:auto"></span>
+        <!-- Filtros de mes + Toggle -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+          <!-- Filtros mes -->
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--m);margin-right:2px">Filtrar:</span>
+            <div id="nec-filtros-mes" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+            <button onclick="resetFiltrosMes()"
+              style="padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;
+              background:none;border:1px solid var(--border);color:var(--m);
+              cursor:pointer;font-family:inherit;margin-left:4px">✕ Todo</button>
+          </div>
+          <!-- Toggle vista + periodo -->
+          <div style="display:flex;align-items:center;gap:8px">
+            <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
+              style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;
+              background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.6);color:#C4B5FD;
+              cursor:pointer;font-family:inherit;transition:all .2s">🔺 Pirámide</button>
+            <button id="nec-btn-radar" onclick="switchVistaNec('radar')"
+              style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;
+              background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--m);
+              cursor:pointer;font-family:inherit;transition:all .2s">🕸 Radar</button>
+            <span id="nec-periodo" style="font-size:11px;color:var(--m);margin-left:auto"></span>
+          </div>
         </div>
         <!-- Visualización principal -->
         <div id="nec-container" style="margin-bottom:16px"></div>
@@ -2146,6 +2158,7 @@ function pintarReverso(){
     </div>`;
   }).join('');
   // Dibujar necesidades al mismo tiempo
+  poblarFiltrosMes();
   dibujarNecesidades();
 }
 
@@ -2883,15 +2896,24 @@ function dibujarNecesidades(){
     cont.innerHTML='<div style="padding:40px;text-align:center;color:var(--m);font-size:13px">Sin datos aún — asigna necesidades en RAW col K</div>';
     return;
   }
+  // Calcular niveles según filtro activo
+  const nivelesFiltrados = calcularNivelesFiltrados();
+  // Periodo en el label
   const per = document.getElementById('nec-periodo');
-  if(per) per.textContent = _necData.periodo||'';
-  if(_necVista==='piramide') dibujarPiramide(cont);
-  else dibujarRadar(cont);
-  dibujarTablaAnalisis();
+  if(per){
+    if(_necMesesSeleccionados.size > 0)
+      per.textContent = [..._necMesesSeleccionados].join(', ');
+    else
+      per.textContent = _necData.periodo || '';
+  }
+  if(_necVista==='piramide') dibujarPiramide(cont, nivelesFiltrados);
+  else dibujarRadar(cont, nivelesFiltrados);
+  dibujarTablaAnalisis(nivelesFiltrados);
 }
 
-function dataNivel(key){
-  return (_necData.niveles||[]).find(n=>n.key===key)||{key,total:0,conceptos:[]};
+function dataNivel(key, nivelesArr){
+  const arr = nivelesArr || (_necData ? _necData.niveles : []);
+  return arr.find(n=>n.key===key)||{key,total:0,conceptos:[]};
 }
 function fmtK(v){ const a=Math.abs(v); return a>=1000?'$'+Math.round(a/1000)+'k':'$'+a.toLocaleString('es-MX',{maximumFractionDigits:0}); }
 
@@ -2904,7 +2926,7 @@ function dibujarPiramide(cont){
 
   const totalSum = pisos.reduce((s,t)=>s+Math.abs(dataNivel(t.key).total||0),0);
   const html = pisos.map((niv,i)=>{
-    const d    = dataNivel(niv.key);
+    const d    = dataNivel(niv.key, niveles);
     const abs  = Math.abs(d.total||0);
     // Ancho proporcional al monto: base 20% mínimo, crece hasta 100% según gasto real
     const pctMonto = abs/maxAbs;
@@ -2953,13 +2975,14 @@ function dibujarPiramide(cont){
 }
 
 // ── RADAR con Chart.js ────────────────────
-function dibujarRadar(cont){
+function dibujarRadar(cont, niveles){
+  niveles = niveles || (_necData ? _necData.niveles : []);
   cont.innerHTML=`<canvas id="radar-canvas" style="max-height:380px"></canvas>`;
   const canvas = document.getElementById('radar-canvas');
   if(!canvas||!window.Chart) return;
 
   const labels  = NEC_NIVELES.map(n=>n.label);
-  const valores  = NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key).total||0));
+  const valores  = NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key, niveles).total||0));
   const colors   = NEC_NIVELES.map(n=>n.color);
   const maxVal   = Math.max(...valores,1);
   // Normalizar 0-100 para el radar
@@ -3032,7 +3055,8 @@ function dibujarRadar(cont){
 }
 
 // ── TABLA DE ANÁLISIS ────────────────────
-function dibujarTablaAnalisis(){
+function dibujarTablaAnalisis(niveles){
+  niveles = niveles || (_necData ? _necData.niveles : []);
   const cont = document.getElementById('nec-tabla');
   if(!cont||!_necData||!_necData.niveles) return;
 
@@ -3040,7 +3064,7 @@ function dibujarTablaAnalisis(){
 
   // Ordenar por monto desc
   const sorted = [...NEC_NIVELES]
-    .map(n=>({ ...n, ...dataNivel(n.key) }))
+    .map(n=>({ ...n, ...dataNivel(n.key, niveles) }))
     .sort((a,b)=>Math.abs(b.total||0)-Math.abs(a.total||0));
 
   const rows = sorted.map(n=>{
