@@ -562,10 +562,9 @@ html,body{
     width:fit-content;
     margin:0 auto;
   }
-  #col1-wrap{grid-column:1;grid-row:1;align-self:start}
+  #col1-wrap{grid-column:1;grid-row:1 / span 2;align-self:start}
   #sec-gastos{grid-column:2;grid-row:1;align-self:start}
   #sec-anualidad{grid-column:3;grid-row:1;align-self:start}
-  #sec-flujo{grid-column:1;grid-row:2;align-self:start}
   .sec-hdr{cursor:default}
   .sec-chevron{display:none}
   .sec-body{display:block!important}
@@ -913,7 +912,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0017 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0018 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1116,6 +1115,25 @@ html.mob .hero-right{display:none !important}
         </div>
       </div>
     </div>
+    <!-- ⑤ FLUJO MENSUAL -->
+    <div class="section" id="sec-flujo">
+      <div class="sec-hdr" onclick="togSec(this)" id="sec-flujo-hdr">
+        <div class="sec-hdr-left">
+          <div class="sec-hdr-icon" style="background:rgba(34,197,94,.15);color:#22C55E">
+            <i class="fas fa-arrow-right-arrow-left"></i>
+          </div>
+          <span class="sec-hdr-title">Flujo Mensual</span>
+        </div>
+        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
+      </div>
+      <div class="sec-body" id="sec-flujo-body">
+        <div id="flujo-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%">
+          <div style="text-align:center;padding:20px;color:var(--m)">
+            <i class="fas fa-circle-notch fa-spin" style="color:var(--ok)"></i>
+          </div>
+        </div>
+      </div>
+    </div>
     </div><!-- /col1-wrap -->
 
     <!-- ③ VARIABLES (tabla + gráfica fusionadas) -->
@@ -1196,26 +1214,6 @@ html.mob .hero-right{display:none !important}
     </div>
 
 
-
-    <!-- ⑤ FLUJO MENSUAL -->
-    <div class="section" id="sec-flujo">
-      <div class="sec-hdr" onclick="togSec(this)" id="sec-flujo-hdr">
-        <div class="sec-hdr-left">
-          <div class="sec-hdr-icon" style="background:rgba(34,197,94,.15);color:#22C55E">
-            <i class="fas fa-arrow-right-arrow-left"></i>
-          </div>
-          <span class="sec-hdr-title">Flujo Mensual</span>
-        </div>
-        <div class="sec-hdr-right"><i class="fas fa-chevron-down sec-chevron"></i></div>
-      </div>
-      <div class="sec-body" id="sec-flujo-body">
-        <div id="flujo-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:max-content;min-width:100%">
-          <div style="text-align:center;padding:20px;color:var(--m)">
-            <i class="fas fa-circle-notch fa-spin" style="color:var(--ok)"></i>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </div><!-- /sections -->
   </div><!-- /board-anverso -->
