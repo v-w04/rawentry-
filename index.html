@@ -872,7 +872,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0002 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0003 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
@@ -1230,19 +1230,24 @@ html.mob .hero-right{display:none !important}
 
       <!-- IZQUIERDA: Mapa de Necesidades -->
       <div>
-        <!-- Toggle pirámide / radar -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <!-- Toggle -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
           <button id="nec-btn-piramide" onclick="switchVistaNec('piramide')"
             style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;
-            background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.5);color:#A78BFA;
+            background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.6);color:#C4B5FD;
             cursor:pointer;font-family:inherit;transition:all .2s">🔺 Pirámide</button>
           <button id="nec-btn-radar" onclick="switchVistaNec('radar')"
-            style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;
-            background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--m);
+            style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;
+            background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--m);
             cursor:pointer;font-family:inherit;transition:all .2s">🕸 Radar</button>
           <span id="nec-periodo" style="font-size:11px;color:var(--m);margin-left:auto"></span>
         </div>
-        <div id="nec-container"></div>
+        <!-- Visualización principal -->
+        <div id="nec-container" style="margin-bottom:16px"></div>
+        <!-- Tabla de análisis -->
+        <div id="nec-tabla"
+          style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px">
+        </div>
       </div>
 
       <!-- DERECHA: Logros -->
@@ -2770,20 +2775,21 @@ function renderGraficaFijos(data){
 // ══════════════════════════════════════════
 //  NECESIDADES — Pirámide de Maslow + Radar
 // ══════════════════════════════════════════
-let _necData    = null;
-let _necVista   = 'piramide'; // 'piramide' | 'radar'
+let _necData  = null;
+let _necVista = 'piramide';
+let _radarChart = null;
 
+// Colores chakra: base=rojo → cima=violeta
 const NEC_NIVELES = [
-  { key:'5', label:'Autorrealización',  sub:'Propósito y potencial',   color:'#8B5CF6', emoji:'✨' },
-  { key:'4', label:'Reconocimiento',    sub:'Logros y autoestima',      color:'#3B82F6', emoji:'🏅' },
-  { key:'3', label:'Afiliación',        sub:'Relaciones y pertenencia', color:'#06B6D4', emoji:'🤝' },
-  { key:'2', label:'Seguridad',         sub:'Estabilidad y vivienda',   color:'#4ADE80', emoji:'🛡' },
-  { key:'1', label:'Fisiológicas',      sub:'Comer, dormir, agua',      color:'#FBBF24', emoji:'⚡' },
+  { key:'1', label:'Fisiológicas',   sub:'Comer, dormir, agua',        color:'#EF4444', glow:'rgba(239,68,68,.3)',   emoji:'🔴' },
+  { key:'2', label:'Seguridad',      sub:'Estabilidad y vivienda',     color:'#F97316', glow:'rgba(249,115,22,.3)',  emoji:'🟠' },
+  { key:'3', label:'Afiliación',     sub:'Relaciones y pertenencia',   color:'#EAB308', glow:'rgba(234,179,8,.3)',   emoji:'🟡' },
+  { key:'4', label:'Reconocimiento', sub:'Logros y autoestima',        color:'#22C55E', glow:'rgba(34,197,94,.3)',   emoji:'🟢' },
+  { key:'5', label:'Autorrealización',sub:'Propósito y potencial',     color:'#8B5CF6', glow:'rgba(139,92,246,.3)',  emoji:'🟣' },
 ];
 
 function renderNecesidades(data){
   _necData = data;
-  console.log('[Necesidades]', data);
   if(_boardFlipped) dibujarNecesidades();
 }
 
@@ -2792,158 +2798,233 @@ function switchVistaNec(vista){
   ['piramide','radar'].forEach(v=>{
     const btn = document.getElementById('nec-btn-'+v);
     if(!btn) return;
-    const activo = v === vista;
-    btn.style.background = activo ? 'rgba(139,92,246,.2)' : 'rgba(255,255,255,.05)';
-    btn.style.borderColor = activo ? 'rgba(139,92,246,.5)' : 'var(--border)';
-    btn.style.color = activo ? '#A78BFA' : 'var(--m)';
+    const on = v===vista;
+    btn.style.background   = on?'rgba(139,92,246,.25)':'rgba(255,255,255,.04)';
+    btn.style.borderColor  = on?'rgba(139,92,246,.6)':'var(--border)';
+    btn.style.color        = on?'#C4B5FD':'var(--m)';
+    btn.style.fontWeight   = on?'700':'500';
   });
+  if(_radarChart){ try{_radarChart.destroy();}catch(e){} _radarChart=null; }
   dibujarNecesidades();
 }
 
 function dibujarNecesidades(){
   const cont = document.getElementById('nec-container');
   if(!cont) return;
-  if(!_necData || !_necData.niveles){
-    cont.innerHTML = '<div style="padding:32px;text-align:center;color:var(--m)">Sin datos de necesidades aún.<br><small>Agrega el campo en tus registros de RAW.</small></div>';
+  if(!_necData || !_necData.niveles || !_necData.niveles.length){
+    cont.innerHTML='<div style="padding:40px;text-align:center;color:var(--m);font-size:13px">Sin datos aún — asigna necesidades en RAW col K</div>';
     return;
   }
-
-  const periodo = document.getElementById('nec-periodo');
-  if(periodo) periodo.textContent = _necData.periodo || '';
-
-  if(_necVista === 'piramide') dibujarPiramide(cont);
+  const per = document.getElementById('nec-periodo');
+  if(per) per.textContent = _necData.periodo||'';
+  if(_necVista==='piramide') dibujarPiramide(cont);
   else dibujarRadar(cont);
+  dibujarTablaAnalisis();
 }
 
+function dataNivel(key){
+  return (_necData.niveles||[]).find(n=>n.key===key)||{key,total:0,conceptos:[]};
+}
+function fmtK(v){ const a=Math.abs(v); return a>=1000?'$'+Math.round(a/1000)+'k':'$'+a.toLocaleString('es-MX',{maximumFractionDigits:0}); }
+
+// ── PIRÁMIDE ──────────────────────────────
 function dibujarPiramide(cont){
-  const niveles = _necData.niveles; // [{key, total, pct, conceptos}]
-  const maxTotal = Math.max(...niveles.map(n => Math.abs(n.total||0)), 1);
+  const maxAbs = Math.max(...NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key).total||0)),1);
 
-  // Pirámide: nivel 1 (base) más ancho, nivel 5 (cima) más angosto
-  const pisos = NEC_NIVELES.slice().reverse(); // 1→5 de abajo hacia arriba → render top→bottom en DOM inverso
+  // Renderizar de 5 (cima) a 1 (base) — pirámide visual top→bottom
+  const pisos = [...NEC_NIVELES].reverse(); // 5,4,3,2,1
 
-  const html = NEC_NIVELES.map((niv, i) => {
-    const data  = niveles.find(n => n.key === niv.key) || { total:0, pct:0, conceptos:[] };
-    const abs   = Math.abs(data.total||0);
-    const pct   = maxTotal > 0 ? abs/maxTotal : 0;
-    // Ancho decrece de base (100%) a cima (~30%)
-    // nivel 1=base ancho, nivel 5=cima angosto
-    const nivelNum = parseInt(niv.key);
-    const anchoBase = 100;
-    const anchoCima = 30;
-    const ancho = anchoCima + (anchoBase - anchoCima) * ((5 - nivelNum) / 4);
+  const html = pisos.map((niv,i)=>{
+    const d    = dataNivel(niv.key);
+    const abs  = Math.abs(d.total||0);
+    const pct  = abs/maxAbs;
+    // Ancho: nivel5=35%, nivel4=50%, nivel3=65%, nivel2=80%, nivel1=100%
+    const ancho = 35 + (parseInt(niv.key)-1)*16.25;
+    const vacio = abs===0;
+    const monto = vacio?'Sin registros':'$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
+    const tops  = (d.conceptos||[]).slice(0,3).join(' · ');
 
-    const monto = abs === 0 ? '$ 0' : '$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
-    const topConcepts = (data.conceptos||[]).slice(0,2).join(', ');
-    const descuidado = abs === 0;
-
-    return `<div style="width:${ancho}%;margin:0 auto 3px;transition:width .4s">
-      <div style="background:${descuidado?'rgba(255,255,255,.04)':'rgba(0,0,0,.3)'};
-        border:1px solid ${descuidado?'rgba(255,255,255,.08)':niv.color+'66'};
-        border-radius:8px;padding:10px 14px;
-        box-shadow:${descuidado?'none':'0 0 12px '+niv.color+'22'};
-        transition:all .3s;cursor:default"
-        title="${niv.label}: ${monto}${topConcepts?' · '+topConcepts:''}">
+    return `<div style="width:${ancho}%;margin:0 auto 6px;transition:width .5s cubic-bezier(.4,0,.2,1)">
+      <div style="
+        background:${vacio?'rgba(255,255,255,.03)':'linear-gradient(135deg,'+niv.color+'18,'+niv.color+'08)'};
+        border:1px solid ${vacio?'rgba(255,255,255,.06)':niv.color+'55'};
+        border-radius:10px;padding:12px 16px;
+        box-shadow:${vacio?'none':'0 0 20px '+niv.glow};
+        transition:all .3s">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px;min-width:0">
-            <span style="font-size:16px">${niv.emoji}</span>
+          <div style="display:flex;align-items:center;gap:10px;min-width:0">
+            <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;
+              background:${niv.color}22;border:2px solid ${niv.color}66;
+              display:flex;align-items:center;justify-content:center;font-size:14px">
+              ${niv.emoji}
+            </div>
             <div style="min-width:0">
-              <div style="font-size:12px;font-weight:700;color:${descuidado?'var(--m)':niv.color};
-                white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${niv.label}</div>
-              <div style="font-size:10px;color:var(--m);white-space:nowrap">${niv.sub}</div>
+              <div style="font-size:13px;font-weight:700;color:${vacio?'var(--m)':niv.color}">${niv.label}</div>
+              <div style="font-size:10px;color:var(--m)">${niv.sub}</div>
             </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;font-weight:800;color:${descuidado?'var(--m)':niv.color};
-              font-variant-numeric:tabular-nums">${monto}</div>
-            ${descuidado?'<div style="font-size:9px;color:var(--warn);font-weight:700">⚠ Descuidado</div>':''}
+            <div style="font-size:14px;font-weight:800;color:${vacio?'var(--dim)':niv.color};font-variant-numeric:tabular-nums">
+              ${vacio?'—':monto}
+            </div>
+            ${vacio?'<div style="font-size:9px;color:var(--warn);font-weight:700;margin-top:2px">⚠ Descuidado</div>':'<div style="font-size:9px;color:var(--m);margin-top:2px">'+Math.round(pct*100)+'% del total</div>'}
           </div>
         </div>
-        <!-- Barra de proporción -->
-        <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:8px;overflow:hidden">
-          <div style="height:100%;width:${(pct*100).toFixed(1)}%;background:${niv.color};
-            border-radius:2px;transition:width .6s ease"></div>
+        <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:10px;overflow:hidden">
+          <div style="height:100%;width:${(pct*100).toFixed(1)}%;background:linear-gradient(90deg,${niv.color},${niv.color}88);
+            border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
         </div>
-        ${topConcepts?`<div style="font-size:9px;color:var(--m);margin-top:4px;overflow:hidden;
-          text-overflow:ellipsis;white-space:nowrap">↳ ${topConcepts}</div>`:''}
+        ${tops?`<div style="font-size:10px;color:var(--m);margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">↳ ${tops}</div>`:''}
       </div>
     </div>`;
   }).join('');
 
-  cont.innerHTML = `<div style="padding:8px 0">${html}</div>`;
+  cont.innerHTML=`<div style="padding:4px 0 8px">${html}</div>`;
 }
 
+// ── RADAR con Chart.js ────────────────────
 function dibujarRadar(cont){
-  const niveles = _necData.niveles;
-  const N = NEC_NIVELES.length; // 5
-  const W = 340, H = 300;
-  const cx = W/2, cy = H/2;
-  const maxR = Math.min(cx, cy) - 40;
+  cont.innerHTML=`<canvas id="radar-canvas" style="max-height:380px"></canvas>`;
+  const canvas = document.getElementById('radar-canvas');
+  if(!canvas||!window.Chart) return;
 
-  const maxTotal = Math.max(...niveles.map(n => Math.abs(n.total||0)), 1);
+  const labels  = NEC_NIVELES.map(n=>n.label);
+  const valores  = NEC_NIVELES.map(n=>Math.abs(dataNivel(n.key).total||0));
+  const colors   = NEC_NIVELES.map(n=>n.color);
+  const maxVal   = Math.max(...valores,1);
+  // Normalizar 0-100 para el radar
+  const norm     = valores.map(v=>(v/maxVal*100));
 
-  // Calcular puntos del pentágono
-  function angleOf(i){ return (Math.PI * 2 * i / N) - Math.PI/2; }
-  function point(r, i){ return [cx + r*Math.cos(angleOf(i)), cy + r*Math.sin(angleOf(i))]; }
+  if(_radarChart){ try{_radarChart.destroy();}catch(e){} _radarChart=null; }
 
-  // Anillos de referencia (20%, 40%, 60%, 80%, 100%)
-  const rings = [.2,.4,.6,.8,1].map(f => {
-    const pts = NEC_NIVELES.map((_,i) => point(maxR*f, i));
-    return `<polygon points="${pts.map(p=>p.join(',')).join(' ')}"
-      fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
-  }).join('');
-
-  // Ejes
-  const axes = NEC_NIVELES.map((_,i) => {
-    const [x,y] = point(maxR, i);
-    return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`;
-  }).join('');
-
-  // Polígono de datos
-  const dataPts = NEC_NIVELES.map((niv,i) => {
-    const data  = niveles.find(n => n.key === niv.key) || { total:0 };
-    const r = maxR * (Math.abs(data.total||0) / maxTotal);
-    return point(r, i);
+  _radarChart = new Chart(canvas,{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Gasto por necesidad',
+        data: norm,
+        backgroundColor:'rgba(139,92,246,.15)',
+        borderColor:'rgba(139,92,246,.8)',
+        borderWidth:2,
+        pointBackgroundColor: colors,
+        pointBorderColor:'#111827',
+        pointBorderWidth:2,
+        pointRadius:6,
+        pointHoverRadius:8,
+        fill:true,
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(15,23,42,.95)',
+          borderColor:'rgba(139,92,246,.3)',
+          borderWidth:1,
+          titleColor:'#fff',
+          bodyColor:'#94A3B8',
+          padding:10,
+          callbacks:{
+            label: ctx=>{
+              const i   = ctx.dataIndex;
+              const abs = valores[i];
+              return ' '+NEC_NIVELES[i].emoji+' $ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0});
+            }
+          }
+        }
+      },
+      scales:{
+        r:{
+          min:0, max:100,
+          backgroundColor:'rgba(0,0,0,.2)',
+          angleLines:{ color:'rgba(255,255,255,.08)', lineWidth:1 },
+          grid:{ color:'rgba(255,255,255,.07)' },
+          ticks:{
+            display:false,
+            stepSize:20,
+          },
+          pointLabels:{
+            font:{ size:12, weight:'700', family:'system-ui' },
+            color: ctx => colors[ctx.index]||'#94A3B8',
+            callback:(label,i)=>{
+              const abs = valores[i];
+              return [label, fmtK(abs)];
+            }
+          }
+        }
+      }
+    }
   });
-  const polyData = `<polygon points="${dataPts.map(p=>p.join(',')).join(' ')}"
-    fill="rgba(139,92,246,.15)" stroke="#8B5CF6" stroke-width="2"
-    stroke-linejoin="round"/>`;
+}
 
-  // Puntos en cada vértice
-  const dots = NEC_NIVELES.map((niv,i) => {
-    const data = niveles.find(n => n.key === niv.key) || { total:0 };
-    const r    = maxR * (Math.abs(data.total||0) / maxTotal);
-    const [x,y] = point(r, i);
-    return `<circle cx="${x}" cy="${y}" r="5" fill="${niv.color}" stroke="#111827" stroke-width="2"/>`;
+// ── TABLA DE ANÁLISIS ────────────────────
+function dibujarTablaAnalisis(){
+  const cont = document.getElementById('nec-tabla');
+  if(!cont||!_necData||!_necData.niveles) return;
+
+  const total = NEC_NIVELES.reduce((s,n)=>s+Math.abs(dataNivel(n.key).total||0),0);
+
+  // Ordenar por monto desc
+  const sorted = [...NEC_NIVELES]
+    .map(n=>({ ...n, ...dataNivel(n.key) }))
+    .sort((a,b)=>Math.abs(b.total||0)-Math.abs(a.total||0));
+
+  const rows = sorted.map(n=>{
+    const abs  = Math.abs(n.total||0);
+    const pct  = total>0?(abs/total*100).toFixed(1):0;
+    const tops = (n.conceptos||[]).slice(0,4).join(', ')||'—';
+    const vacio= abs===0;
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td style="padding:8px 10px;white-space:nowrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:10px;height:10px;border-radius:50%;background:${n.color};flex-shrink:0"></div>
+          <span style="font-size:12px;font-weight:700;color:${vacio?'var(--m)':n.color}">${n.label}</span>
+        </div>
+      </td>
+      <td style="padding:8px 10px;text-align:right;font-variant-numeric:tabular-nums;
+        font-size:13px;font-weight:700;color:${vacio?'var(--dim)':n.color};white-space:nowrap">
+        ${vacio?'—':'$ '+abs.toLocaleString('es-MX',{minimumFractionDigits:0})}
+      </td>
+      <td style="padding:8px 10px;text-align:right;font-size:11px;color:var(--m)">${pct}%</td>
+      <td style="padding:8px 10px;min-width:140px">
+        <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${n.color};border-radius:2px"></div>
+        </div>
+      </td>
+      <td style="padding:8px 10px;font-size:10px;color:var(--m);max-width:200px;
+        overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tops}</td>
+      <td style="padding:8px 10px;text-align:center">
+        ${vacio
+          ?'<span style="font-size:10px;color:var(--warn);font-weight:700;background:rgba(245,158,11,.1);padding:2px 8px;border-radius:10px;border:1px solid rgba(245,158,11,.2)">⚠ Descuidado</span>'
+          :pct>40
+            ?'<span style="font-size:10px;color:var(--err);background:rgba(239,68,68,.1);padding:2px 8px;border-radius:10px;border:1px solid rgba(239,68,68,.2)">Sobreinvertido</span>'
+            :'<span style="font-size:10px;color:var(--ok);background:rgba(74,222,128,.1);padding:2px 8px;border-radius:10px;border:1px solid rgba(74,222,128,.2)">✓ OK</span>'
+        }
+      </td>
+    </tr>`;
   }).join('');
 
-  // Labels de ejes
-  const labels = NEC_NIVELES.map((niv,i) => {
-    const [x,y] = point(maxR+22, i);
-    const data  = niveles.find(n => n.key === niv.key) || { total:0 };
-    const abs   = Math.abs(data.total||0);
-    const monto = abs===0?'':' $'+Math.round(abs/1000)+'k';
-    const anchor = x < cx-5 ? 'end' : x > cx+5 ? 'start' : 'middle';
-    return `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle"
-      fill="${niv.color}" font-size="11" font-weight="700" font-family="system-ui">${niv.emoji} ${niv.label}${monto}</text>`;
-  }).join('');
-
-  // % sin dato
-  const sinDato = NEC_NIVELES.filter(niv => {
-    const d = niveles.find(n => n.key === niv.key);
-    return !d || !d.total;
-  });
-  const advertencia = sinDato.length
-    ? `<div style="margin-top:10px;padding:8px 12px;background:rgba(245,158,11,.08);
-        border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:11px;color:var(--warn)">
-        ⚠ Sin registros: ${sinDato.map(n=>n.emoji+' '+n.label).join(' · ')}
-      </div>` : '';
-
-  cont.innerHTML = `
-    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:360px;display:block;margin:0 auto">
-      ${rings}${axes}${polyData}${dots}${labels}
-    </svg>
-    ${advertencia}`;
+  cont.innerHTML=`
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+      color:var(--m);margin-bottom:8px">Análisis por necesidad · Total: $ ${total.toLocaleString('es-MX',{minimumFractionDigits:0})}</div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border)">
+          <th style="padding:6px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">Nivel</th>
+          <th style="padding:6px 10px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">Monto</th>
+          <th style="padding:6px 10px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">%</th>
+          <th style="padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">Distribución</th>
+          <th style="padding:6px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">Top conceptos</th>
+          <th style="padding:6px 10px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--m)">Estado</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>`;
 }
 
 // Llamar dibujarNecesidades cuando se abre el reverso
