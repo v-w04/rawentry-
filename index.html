@@ -576,6 +576,22 @@ html,body{
 @media(max-width:899px){
   .tbl-wrap{display:none!important}
   .cards-grid{display:grid!important}
+  /* Grid anverso: una columna en móvil */
+  .sections{
+    grid-template-columns:1fr !important;
+  }
+  #col1-wrap,#sec-gastos,#sec-anualidad{
+    grid-column:1 !important;
+    grid-row:auto !important;
+  }
+  /* Reverso: una columna en móvil */
+  .reverso > div[style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr !important;
+  }
+  /* Grid logros: 2 cols en móvil */
+  #inv-grid-full{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
 }
 
 /* MÓVIL REAL — clase .mob aplicada por JS cuando detecta iPhone/Android */
@@ -912,7 +928,7 @@ html.mob .hero-right{display:none !important}
         <div class="hero-icon"><i class="fas fa-table-list"></i></div>
         <div>
           <div class="hero-title">RAW <span style="color:var(--p)">Entry</span></div>
-          <div class="hero-sub">v.3.0018 · Trello · Sheets</div>
+          <div class="hero-sub">v.3.0019 · Trello · Sheets</div>
         </div>
       </div>
       <!-- Estado+reloj+refresh — en móvil aparece aquí a la derecha de fila 1 -->
